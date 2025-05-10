@@ -1,0 +1,21 @@
+name: monitoring
+
+services:
+  nodesight:
+    extends:
+      file: monitoring.yml
+      service: nodesight
+    environment:
+      HOSTNAME: ${ZEPHYR_HOSTNAME}
+      ENABLE_STATS_API: true
+      STATS_API_URL: ${STATS_API_URL}
+      SERVER_PORT: ${ZEPHYR_NODESIGHT_PORT}
+    labels:
+      traefik-conf.port: ${ZEPHYR_NODESIGHT_PORT}
+      traefik-conf.name: nodesight.zephyr
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:${ZEPHYR_NODESIGHT_PORT} || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

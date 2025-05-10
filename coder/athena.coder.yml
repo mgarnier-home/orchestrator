@@ -1,0 +1,77 @@
+name: coder
+
+services:
+#   coder:
+#     image: ghcr.io/coder/coder:v2.16.0
+#     container_name: coder
+#     restart: unless-stopped
+#     ports:
+#       - ${ATHENA_CODER_PORT}:7080
+#     # network_mode: "host"
+#     labels:
+#       traefik-conf.port: ${ATHENA_CODER_PORT}
+#       wud.watch: false
+#     environment:
+#       CODER_PG_CONNECTION_URL: "postgresql://${CODER_PG_USER:-username}:${CODER_PG_PWD:-password}@coder-db/${CODER_PG_DB:-coder}?sslmode=disable"
+#       CODER_HTTP_ADDRESS: "0.0.0.0:7080"
+#       # You'll need to set CODER_ACCESS_URL to an IP or domain
+#       # that workspaces can reach. This cannot be localhost
+#       # or 127.0.0.1 for non-Docker templates!
+#       CODER_ACCESS_URL: "https://coder.int.mgarnier11.fr<"
+#       # CODER_ACCESS_URL: "http://192.168.0.100:7080"
+#       CODER_WILDCARD_ACCESS_URL: "*.coder.int.mgarnier11.fr"
+#       CODER_EXTERNAL_AUTH_0_DISPLAY_NAME: "Gitlab"
+#       CODER_EXTERNAL_AUTH_0_ID: "gitlab"
+#       CODER_EXTERNAL_AUTH_0_TYPE: "gitlab"
+#       CODER_EXTERNAL_AUTH_0_CLIENT_ID: "705091eb24c45a1eda8b6960cc80f0ef3ded71cd1e090c24859520fd7d03510f"
+#       CODER_EXTERNAL_AUTH_0_CLIENT_SECRET: "gloas-eb01c15b6a730199ae57526f33b69d54e4996f7f582507ef2af143e3b2970aa9"
+#       # CODER_EXTERNAL_AUTH_1_DISPLAY_NAME: "Github"
+#       # CODER_EXTERNAL_AUTH_1_ID: "github"
+#       # CODER_EXTERNAL_AUTH_1_TYPE: "github"
+#       # CODER_EXTERNAL_AUTH_1_CLIENT_ID: "Iv23liqD1ElZ84WaVvgi"
+#       # CODER_EXTERNAL_AUTH_1_CLIENT_SECRET: "gloas-446051afa5c0fd124e57593cf5dac8a96b6c709f"
+#       # CODER_DERP_SERVER_ENABLE: "false"
+#     group_add:
+#       - "996" # docker group on host
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock
+#     depends_on:
+#       coder-db:
+#         condition: service_healthy
+#     secrets:
+#       - ssh_private_key
+
+#   coder-db:
+#     image: postgres:14.2
+#     restart: unless-stopped
+#     container_name: coder-db
+#     labels:
+#       traefik-conf.port: ${ATHENA_CODER_DB_PORT}
+#       wud.watch: false
+#     environment:
+#       POSTGRES_USER: ${CODER_PG_USER:-username} # The PostgreSQL user (useful to connect to the database)
+#       POSTGRES_PASSWORD: ${CODER_PG_PWD:-password} # The PostgreSQL password (useful to connect to the database)
+#       POSTGRES_DB: ${CODER_PG_DB:-coder} # The PostgreSQL default database (automatically created at first launch)
+#     volumes:
+#       - docker-data-coder-db:/var/lib/postgresql/data
+#     healthcheck:
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "pg_isready -U ${POSTGRES_USER:-username} -d ${POSTGRES_DB:-coder}",
+#         ]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 5
+
+# volumes:
+#   docker-data-coder-db:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${ATHENA_DOCKER_DATA}/coder/db
+#       o: bind
+
+# secrets:
+#   ssh_private_key:
+#     environment: "SSH_PRIVATE_KEY"

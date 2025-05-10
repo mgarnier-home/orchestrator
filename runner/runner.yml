@@ -1,0 +1,11 @@
+services:
+  gitlab-runner:
+    container_name: gitlab-runner
+    restart: unless-stopped
+    image: gitlab/gitlab-runner:latest
+    healthcheck:
+      test: gitlab-runner verify
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

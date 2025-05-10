@@ -1,0 +1,140 @@
+name: paperless
+
+services:
+  broker:
+    image: redis:${PAPERLESS_REDIS_VERSION}
+    container_name: paperless-broker
+    restart: unless-stopped
+    networks:
+      - paperless-net
+    labels:
+      wud.tag.include: ^7\.\d+\.\d+$$
+    healthcheck:
+      test: redis-cli ping
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  db:
+    image: mariadb:10.5
+    container_name: paperless-db
+    restart: unless-stopped
+    volumes:
+      - &volume
+        type: volume
+        source: docker-data-paperless
+        volume:
+          subpath: db
+        target: /var/lib/mysql
+    labels:
+      wud.watch: false
+    networks:
+      - paperless-net
+    environment:
+      MARIADB_HOST: paperless
+      MYSQL_DATABASE: ${PAPERLESS_DB_NAME}
+      MYSQL_USER: ${PAPERLESS_DB_USER}
+      MYSQL_PASSWORD: ${PAPERLESS_DB_PASSWD}
+      MYSQL_ROOT_PASSWORD: ${PAPERLESS_DB_ROOT_PASSWD}
+      MYSQL_LOG_CONSOLE: true
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_VERSION}
+    container_name: paperless-web
+    restart: unless-stopped
+    networks:
+      - paperless-net
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    ports:
+      - ${ATHENA_PAPERLESS_PORT}:8000
+    labels:
+      traefik-conf.port: ${ATHENA_PAPERLESS_PORT}
+    volumes:
+      - <<: *volume
+        volume:
+          subpath: data
+        target: /usr/src/paperless/data
+      - <<: *volume
+        volume:
+          subpath: media
+        target: /usr/src/paperless/media
+      - <<: *volume
+        volume:
+          subpath: export
+        target: /usr/src/paperless/export
+      - <<: *volume
+        volume:
+          subpath: consume
+        target: /usr/src/paperless/consume
+    environment:
+      PAPERLESS_TIME_ZONE: ${TIMEZONE}
+      PAPERLESS_DBENGINE: mariadb
+      PAPERLESS_OCR_LANGUAGE: fra
+      PAPERLESS_OCR_ROTATE_PAGES: false
+      PAPERLESS_TASK_WORKERS: 2
+      PAPERLESS_THREADS_PER_WORKER: 2
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBNAME: ${PAPERLESS_DB_NAME}
+      PAPERLESS_DBUSER: ${PAPERLESS_DB_USER}
+      PAPERLESS_DBPASS: ${PAPERLESS_DB_PASSWD}
+      PAPERLESS_DBPORT: 3306
+      PAPERLESS_URL: ${PAPERLESS_URL}
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
+
+  gotenberg:
+    image: gotenberg/gotenberg:${PAPERLESS_GOTENBERG_VERSION}
+    container_name: paperless-gotenberg
+    restart: unless-stopped
+    networks:
+      - paperless-net
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+    healthcheck:
+      test: wget -q --tries=1 http://localhost:3000/health -O - | grep -q '^{"status":"up"' || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  tika:
+    container_name: paperless-tika
+    image: ghcr.io/paperless-ngx/tika:${PAPERLESS_TIKA_VERSION}
+    restart: unless-stopped
+    networks:
+      - paperless-net
+    labels:
+      wud.tag.include: ^\d+\.\d+\.\d+-minimal$$
+    healthcheck:
+      test: timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9998' || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  paperless-net:
+
+volumes:
+  docker-data-paperless:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}/paperless
+      o: bind

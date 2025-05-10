@@ -1,0 +1,34 @@
+name: orchestrator
+
+services:
+  orchestrator:
+    container_name: orchestrator
+    restart: unless-stopped
+    image: mgarnier11/home-cli:${ORCHESTRATOR_VERSION}
+    ports:
+      - ${ZEPHYR_ORCHESTRATOR_PORT}:1337
+    environment:
+      COMPOSE_DIR: /orchestrator
+      ENV_DIR: /orchestrator
+      ATHENA_HOST: ssh://${SSH_USER}@${ATHENA_IP}
+      ZEPHYR_HOST: ssh://${SSH_USER}@${ZEPHYR_IP}
+      APOLLON_HOST: ssh://${SSH_USER}@${APOLLON_IP}
+      SSH_KEY_PATH: /run/secrets/ssh_private_key
+    labels:
+      traefik-conf.port: ${ZEPHYR_ORCHESTRATOR_PORT}
+    volumes:
+      - docker-data-orchestrator:/orchestrator
+    secrets:
+      - ssh_private_key
+
+volumes:
+  docker-data-orchestrator:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ZEPHYR_DOCKER_DATA}/orchestrator
+      o: bind
+
+secrets:
+  ssh_private_key:
+    environment: "SSH_PRIVATE_KEY"

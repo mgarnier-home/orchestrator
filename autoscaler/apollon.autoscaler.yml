@@ -1,0 +1,37 @@
+name: autoscaler
+
+services:
+  autoscaler:
+    image: mgarnier11/autoscaler:${AUTOSCALER_VERSION}
+    restart: unless-stopped
+    container_name: autoscaler
+    env_file:
+      - ./autoscaler.env
+    environment:
+      SSH_USER: ${SSH_USER}
+      NTFY_SERVER: ${NTFY_SERVER}
+      NTFY_TOPIC: ${NTFY_TOPIC}
+    ports:
+      - ${APOLLON_AUTOSCALER_PORT}:3000
+    secrets:
+      - ssh_private_key
+    labels:
+      my-traefik.http.routers.autoscaler.rule: Host(`autoscaler.${PUBLIC_DOMAIN_NAME}`)
+      my-traefik.http.routers.autoscaler.service: apollon_autoscaler
+      my-traefik.http.routers.autoscaler.entrypoints: https
+      my-traefik.http.routers.autoscaler.tls.certResolver: tls-resolver
+      traefik-conf.port: ${APOLLON_AUTOSCALER_PORT}
+    volumes:
+      - docker-data-autoscaler:/config
+
+volumes:
+  docker-data-autoscaler:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}/autoscaler
+      o: bind
+
+secrets:
+  ssh_private_key:
+    environment: "SSH_PRIVATE_KEY"

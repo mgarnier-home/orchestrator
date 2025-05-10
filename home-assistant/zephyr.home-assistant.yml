@@ -1,0 +1,68 @@
+name: home-assistant
+
+services:
+  home-assistant:
+    container_name: home-assistant
+    image: ghcr.io/home-assistant/home-assistant:${HOME_ASSISTANT_VERSION}
+    restart: unless-stopped
+    volumes:
+      # - /docker-data/home_assistant:/config
+      - docker-data-home-assistant:/config
+      - /etc/localtime:/etc/localtime:ro
+    privileged: true
+    environment:
+      TZ: ${TIMEZONE}
+      PUID: ${PUID}
+      PGID: ${PGID}
+    ports:
+      - ${ZEPHYR_HOME_ASSISTANT_PORT}:8123
+    labels:
+      traefik-conf.port: ${ZEPHYR_HOME_ASSISTANT_PORT}
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:8123 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  mosquitto:
+    image: eclipse-mosquitto:${MOSQUITTO_VERSION}
+    container_name: mosquitto
+    restart: unless-stopped
+    volumes:
+      - docker-data-mosquitto:/mosquitto
+    ports:
+      - ${ZEPHYR_MOSQUITTO_1_PORT}:1883
+      - ${ZEPHYR_MOSQUITTO_2_PORT}:9001
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mosquitto_sub",
+          "-t",
+          "$$SYS/#",
+          "-C",
+          "1",
+          "-i",
+          "healthcheck",
+          "-W",
+          "3",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  docker-data-home-assistant:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ZEPHYR_DOCKER_DATA}/home-assistant
+      o: bind
+  docker-data-mosquitto:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ZEPHYR_DOCKER_DATA}/mosquitto
+      o: bind

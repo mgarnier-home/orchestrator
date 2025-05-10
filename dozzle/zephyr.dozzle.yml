@@ -1,0 +1,29 @@
+name: dozzle
+
+services:
+  dozzle-agent:
+    image: amir20/dozzle:${DOZZLE_VERSION}
+    container_name: dozzle-agent
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    ports:
+      - ${ZEPHYR_DOZZLE_AGENT_PORT}:7007
+
+  dozzle:
+    image: amir20/dozzle:${DOZZLE_VERSION}
+    container_name: dozzle
+    restart: unless-stopped
+    environment:
+      DOZZLE_REMOTE_AGENT: ${ZEPHYR_IP}:${ZEPHYR_DOZZLE_AGENT_PORT},${ATHENA_IP}:${ATHENA_DOZZLE_AGENT_PORT},${APOLLON_IP}:${APOLLON_DOZZLE_AGENT_PORT}
+    ports:
+      - ${ZEPHYR_DOZZLE_PORT}:8080
+    labels:
+      traefik-conf.port: ${ZEPHYR_DOZZLE_PORT}

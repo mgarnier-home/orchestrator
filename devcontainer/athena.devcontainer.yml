@@ -1,0 +1,67 @@
+name: devcontainer
+
+services:
+  operis:
+    container_name: operis-devcontainer
+    restart: unless-stopped
+    image: mgarnier11/operis-devcontainer:latest
+    runtime: sysbox-runc
+    env_file:
+      - ./devcontainer.env
+    ports:
+      - ${ATHENA_OPERISDEVCONTAINER_SSH_PORT}:2222
+      - ${ATHENA_OPERISDEVCONTAINER_VSCODE_PORT}:8080
+    environment:
+      - EXPERT_REGISTRY_TOKEN=${EXPERT_REGISTRY_TOKEN}
+      - DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN=${DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN}
+    secrets:
+      - SSH_PRIVATE_KEY
+    volumes:
+      - /ssd-1/operis-devcontainer:/mnt/dev
+    labels:
+      traefik-conf.port: ${ATHENA_OPERISDEVCONTAINER_VSCODE_PORT}
+      traefik-conf.name: operis
+      proxy.ports: ${ATHENA_OPERISDEVCONTAINER_SSH_PORT}
+
+  devcontainer:
+    container_name: devcontainer
+    restart: unless-stopped
+    image: mgarnier11/home-container:${HOME_CONTAINER_VERSION}
+    runtime: sysbox-runc
+    ports:
+      - ${ATHENA_DEVCONTAINER_SSH_PORT}:2222
+      - ${ATHENA_DEVCONTAINER_VSCODE_PORT}:8080
+    secrets:
+      - SSH_PRIVATE_KEY
+    volumes:
+      - /ssd-1/devcontainer:/mnt/dev
+      - mnt-docker-data-athena:/mnt/docker-data/athena
+      - mnt-docker-data-zephyr:/mnt/docker-data/zephyr
+      - mnt-docker-data-apollon:/mnt/docker-data/apollon
+    labels:
+      traefik-conf.port: ${ATHENA_DEVCONTAINER_VSCODE_PORT}
+      proxy.ports: ${ATHENA_DEVCONTAINER_SSH_PORT}
+
+volumes:
+  mnt-docker-data-athena:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: //100.64.98.100/share/docker-data
+      o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
+  mnt-docker-data-zephyr:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: //100.64.98.97/share/docker-data
+      o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
+  mnt-docker-data-apollon:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: //100.64.98.99/share/docker-data
+      o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
+
+secrets:
+  SSH_PRIVATE_KEY:
+    environment: "SSH_PRIVATE_KEY"

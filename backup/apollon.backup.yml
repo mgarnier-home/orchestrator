@@ -1,0 +1,41 @@
+name: backup
+
+services:
+  go-autosaver:
+    container_name: go-autosaver
+    restart: unless-stopped
+    image: mgarnier11/go-autosaver:${GO_AUTOSAVER_VERSION}
+    volumes:
+      - docker-data:/backups/docker-data-apollon
+      - docker-data-autosaver:/config
+    ports:
+      - ${APOLLON_AUTOSAVER_PORT}:8080
+    labels:
+      traefik-conf.port: ${APOLLON_AUTOSAVER_PORT}
+      traefik-conf.name: autosaver.apollon
+    privileged: true
+    environment:
+      CONFIG_FILE_PATH: /config/config.yml
+      # LOG_LEVEL: 5
+      NTFY_SERVER: ${NTFY_SERVER}
+      NTFY_TOPIC: ${NTFY_TOPIC}
+    secrets:
+      - ssh_private_key
+
+volumes:
+  docker-data-autosaver:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}/autosaver
+      o: bind
+  docker-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}
+      o: bind
+
+secrets:
+  ssh_private_key:
+    environment: "SSH_PRIVATE_KEY"

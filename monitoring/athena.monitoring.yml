@@ -1,0 +1,41 @@
+name: monitoring
+
+services:
+  nodesight:
+    # extends:
+    #   file: monitoring.yml
+    #   service: nodesight
+
+    image: mgarnier11/nodesight:dev
+    container_name: nodesight
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    volumes:
+      - /:/mnt/host:ro
+    environment:
+      HOSTNAME: ${ATHENA_HOSTNAME}
+      ENABLE_STATS_API: true
+      STATS_API_URL: ${STATS_API_URL}
+      SERVER_PORT: ${ATHENA_NODESIGHT_PORT}
+    labels:
+      traefik-conf.port: ${ATHENA_NODESIGHT_PORT}
+      traefik-conf.name: nodesight.athena
+    group_add:
+      - 105
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    # runtime: nvidia
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:${ATHENA_NODESIGHT_PORT} || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

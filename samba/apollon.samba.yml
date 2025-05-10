@@ -1,0 +1,10 @@
+name: samba
+
+services:
+  samba:
+    extends:
+      file: samba.yml
+      service: samba
+    volumes:
+      - /home/mgarnier:/share/apollon-home
+      - /docker-data:/share/docker-data

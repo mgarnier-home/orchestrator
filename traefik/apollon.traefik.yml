@@ -1,0 +1,118 @@
+name: traefik
+
+services:
+  traefik:
+    container_name: traefik
+    restart: unless-stopped
+    image: mgarnier11/my-traefik
+    networks:
+      traefik-net:
+        ipv4_address: 172.19.0.2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - &volume
+        type: volume
+        source: docker-data-traefik
+        volume:
+          subpath: certs
+        target: /certs
+      - <<: *volume
+        volume:
+          subpath: data
+        target: /data
+    ports:
+      - 80:80/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 80
+      - 443:443/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 443
+      - ${APOLLON_TRAEFIK_PORT}:8080/tcp
+    labels:
+      traefik-conf.port: ${APOLLON_TRAEFIK_PORT}
+    env_file:
+      - ./traefik.env
+    environment:
+      ZEPHYR_IP: ${ZEPHYR_IP}
+      APOLLON_IP: ${APOLLON_IP}
+      ATHENA_IP: ${ATHENA_IP}
+    depends_on:
+      - traefik-conf
+    command:
+      - --configFile=/data/static.yml
+      - --ping=true
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:8080/ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  traefik-conf:
+    container_name: traefik-conf
+    restart: unless-stopped
+    image: mgarnier11/traefik-conf:${TRAEFIK_CONF_VERSION}
+    volumes:
+      - <<: *volume
+        volume:
+          subpath: conf
+        target: /traefik-data
+    environment:
+      DATA_FILE_PATH: /traefik-data/config.yml
+      SERVER_PORT: 3000
+      SSH_USER: ${SSH_USER}
+    secrets:
+      - ssh_private_key
+    ports:
+      - ${APOLLON_TRAEFIK_CONFIG_PORT}:3000/tcp
+    labels:
+      traefik-conf.port: ${APOLLON_TRAEFIK_CONFIG_PORT}
+    networks:
+      traefik-net:
+        ipv4_address: 172.19.0.3
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:3000 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # infrared:
+  #   image: ghcr.io/haveachin/infrared:${INFRARED_VERSION}
+  #   container_name: infrared
+  #   restart: unless-stopped
+  #   networks:
+  #     traefik-net:
+  #       ipv4_address: 172.19.0.4
+  #   ports:
+  #     - "25565:25565/tcp" # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.4 port 25565
+  #     - ${APOLLON_INFRARED_API_PORT}:8080/tcp
+  #   labels:
+  #     traefik-conf.port: ${APOLLON_INFRARED_API_PORT}
+  #   volumes:
+  #     - docker-data-infrared:/configs
+  #   environment:
+  #     INFRARED_CONFIG_PATH: "/configs"
+  #     INFRARED_API_ENABLED: true
+  #     INFRARED_API_BIND: 0.0.0.0:8080
+
+networks:
+  traefik-net:
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          ip_range: 172.19.0.0/24
+
+volumes:
+  docker-data-traefik:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}/traefik
+      o: bind
+
+  docker-data-infrared:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}/infrared
+      o: bind
+secrets:
+  ssh_private_key:
+    environment: "SSH_PRIVATE_KEY"

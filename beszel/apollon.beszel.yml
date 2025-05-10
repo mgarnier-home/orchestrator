@@ -1,0 +1,13 @@
+name: beszel
+
+services:
+  beszel-agent:
+    image: henrygd/beszel-agent:${BESZEL_VERSION}
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      PORT: ${APOLLON_BESZEL_AGENT_PORT}
+      KEY: ${BESZEL_AGENT_KEY}

@@ -1,0 +1,39 @@
+name: proxy
+
+services:
+  proxy:
+    image: mgarnier11/go-proxy:${PROXY_VERSION}
+    container_name: proxy
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      CONFIG_FILE_PATH: /config/go-config.yml
+      SERVER_PORT: ${ZEPHYR_PROXY_PORT}
+      SSH_KEY_PATH: /run/secrets/ssh_private_key
+      LOG_LEVEL: info
+      NTFY_SERVER: ${NTFY_SERVER}
+      NTFY_TOPIC: ${NTFY_TOPIC}
+    volumes:
+      - docker-data-proxy:/config
+    labels:
+      traefik-conf.port: ${ZEPHYR_PROXY_PORT}
+    secrets:
+      - ssh_private_key
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:${ZEPHYR_PROXY_PORT}/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  docker-data-proxy:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ZEPHYR_DOCKER_DATA}/proxy
+      o: bind
+
+secrets:
+  ssh_private_key:
+    environment: "SSH_PRIVATE_KEY"

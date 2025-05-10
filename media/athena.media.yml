@@ -1,0 +1,137 @@
+name: media
+
+services:
+  jellyfin:
+    container_name: jellyfin
+    restart: unless-stopped
+    image: jellyfin/jellyfin:${JELLYFIN_VERSION}
+    ports:
+      - ${ATHENA_MEDIA_VIDEO_PORT}:8096
+    labels:
+      traefik-conf.port: ${ATHENA_MEDIA_VIDEO_PORT}
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TIMEZONE}
+      # - NVIDIA_VISIBLE_DEVICES=all
+      # - JELLYFIN_PublishedServerUrl=192.168.0.5
+    volumes:
+      - docker-data-jellyfin-config:/config
+      - docker-data-jellyfin-cache:/cache
+      - /big-hdd/media:/media
+    group_add:
+      - 105
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    # security_opt:
+    #   - seccomp:unconfined
+    # runtime: nvidia
+    healthcheck:
+      test: curl -f http://localhost:8096 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  navidrome-music:
+    image: deluan/navidrome:${NAVIDROME_VERSION}
+    container_name: navidrome-music
+    user: 1000:1000 # should be owner of volumes
+    ports:
+      - ${ATHENA_MEDIA_MUSIC_PORT}:4533
+    restart: unless-stopped
+    environment:
+      # Optional: put your config options customization here. Examples:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      # ND_BASEURL=""
+      ND_SPOTIFY_ID: ${SPOTIFY_ID}
+      ND_SPOTIFY_SECRET: ${SPOTIFY_SECRET}
+      ND_ARTISTARTPRIORITY: external
+    volumes:
+      - docker-data-navidrome-music:/data
+      - /big-hdd/media/musics:/music:ro # your music
+    labels:
+      traefik-conf.port: ${ATHENA_MEDIA_MUSIC_PORT}
+      traefik-conf.name: music
+
+  navidrome-sagas:
+    image: deluan/navidrome:${NAVIDROME_VERSION}
+    container_name: navidrome-sagas
+    user: 1000:1000 # should be owner of volumes
+    ports:
+      - ${ATHENA_MEDIA_SAGAS_PORT}:4533
+    restart: unless-stopped
+    environment:
+      # Optional: put your config options customization here. Examples:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      # ND_BASEURL=""
+      ND_SPOTIFY_ID: ${SPOTIFY_ID}
+      ND_SPOTIFY_SECRET: ${SPOTIFY_SECRET}
+    volumes:
+      - docker-data-navidrome-sagas:/data
+      - /big-hdd/media/sagas-mp3:/music:ro # your music
+    labels:
+      traefik-conf.port: ${ATHENA_MEDIA_SAGAS_PORT}
+      traefik-conf.name: sagas
+
+  downloader:
+    image: registry.gitlab.com/bockiii/deemix-docker
+    container_name: downloader
+    restart: unless-stopped
+    ports:
+      - ${ATHENA_DOWNLOADER_PORT}:6595
+    labels:
+      traefik-conf.port: ${ATHENA_DOWNLOADER_PORT}
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      UMASK_SET: 022
+      DEEMIX_SINGLE_USER: true
+    volumes:
+      - /big-hdd/media/musics:/downloads
+      - docker-data-downloader-config:/config
+volumes:
+  docker-data-jellyfin-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}/jellyfin/config
+      o: bind
+  docker-data-jellyfin-cache:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}/jellyfin/cache
+      o: bind
+
+  docker-data-downloader-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}/downloader
+      o: bind
+
+  docker-data-navidrome-music:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}/navidrome-music
+      o: bind
+
+  docker-data-navidrome-sagas:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}/navidrome-sagas
+      o: bind

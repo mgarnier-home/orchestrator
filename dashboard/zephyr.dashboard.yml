@@ -1,0 +1,70 @@
+name: dashboard
+
+services:
+  dashboard:
+    container_name: dashboard
+    restart: unless-stopped
+    image: mgarnier11/dashboard:${DASHBOARD_VERSION}
+    environment:
+      APP_CONF_PATH: /config/conf.yml
+      ICONS_PATH: /config/icons
+    volumes:
+      - docker-data-dashboard:/config
+    ports:
+      - ${ZEPHYR_DASHBOARD_PORT}:3000
+    labels:
+      traefik-conf.port: ${ZEPHYR_DASHBOARD_PORT}
+
+  influxdb:
+    container_name: influxdb
+    image: influxdb:${INFLUXDB_VERSION}
+    restart: unless-stopped
+    ports:
+      - ${ZEPHYR_INFLUXDB_PORT}:8086
+    volumes:
+      - docker-data-influxdb:/var/lib/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USER}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PWD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+      # DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+    labels:
+      traefik-conf.port: ${ZEPHYR_INFLUXDB_PORT}
+
+    healthcheck:
+      test: influx ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  stats-api:
+    container_name: stats-api
+    restart: unless-stopped
+    image: mgarnier11/stats-api:${STATS_API_VERSION}
+    environment:
+      DB_HOST: http://influxdb:8086
+      DB_ORG: ${INFLUXDB_ORG}
+      DB_BUCKET: ${INFLUXDB_BUCKET}
+      DB_TOKEN: ${INFLUXDB_TOKEN}
+    ports:
+      - ${ZEPHYR_STATS_API_PORT}:3000
+    labels:
+      traefik-conf.port: ${ZEPHYR_STATS_API_PORT}
+
+volumes:
+  docker-data-dashboard:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ZEPHYR_DOCKER_DATA}/dashboard
+      o: bind
+
+  docker-data-influxdb:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ZEPHYR_DOCKER_DATA}/influxdb
+      o: bind

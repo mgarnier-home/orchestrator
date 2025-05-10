@@ -1,0 +1,44 @@
+name: stirling-pdf
+
+services:
+  stirling-pdf:
+    container_name: stirling-pdf
+    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:${STIRLING_PDF_VERSION}
+    ports:
+      - ${APOLLON_STIRLING_PDF_PORT}:8080
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - LANGS=en_GB
+    volumes:
+      - &volume
+        type: volume
+        source: docker-data-stirling-pdf
+        volume:
+          subpath: trainingData
+        target: /usr/share/tessdata
+      - <<: *volume
+        volume:
+          subpath: extraConfigs
+        target: /configs
+      - <<: *volume
+        volume:
+          subpath: customFiles
+        target: /customFiles
+      - <<: *volume
+        volume:
+          subpath: logs
+        target: /logs
+      - <<: *volume
+        volume:
+          subpath: pipeline
+        target: /pipeline
+    labels:
+      traefik-conf.port: ${APOLLON_STIRLING_PDF_PORT}
+
+volumes:
+  docker-data-stirling-pdf:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}/stirling-pdf
+      o: bind
