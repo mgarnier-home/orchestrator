@@ -19,10 +19,10 @@ services:
       - docker-data-jellyfin-config:/config
       - docker-data-jellyfin-cache:/cache
       - /big-hdd/media:/media
-    group_add:
-      - 105
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
+    # group_add:
+    #   - 105
+    # devices:
+    #   - /dev/dri/renderD128:/dev/dri/renderD128
     # security_opt:
     #   - seccomp:unconfined
     # runtime: nvidia
