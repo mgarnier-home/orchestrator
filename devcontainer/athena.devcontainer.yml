@@ -15,7 +15,7 @@ services:
       - EXPERT_REGISTRY_TOKEN=${EXPERT_REGISTRY_TOKEN}
       - DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN=${DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN}
     secrets:
-      - SSH_PRIVATE_KEY
+      - OPERIS_PRIVATE_KEY
     volumes:
       - /ssd-1/operis-devcontainer:/mnt/dev
     labels:
@@ -65,3 +65,5 @@ volumes:
 secrets:
   SSH_PRIVATE_KEY:
     environment: "SSH_PRIVATE_KEY"
+  OPERIS_PRIVATE_KEY:
+    environment: "OPERIS_PRIVATE_KEY"

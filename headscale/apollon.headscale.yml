@@ -1,14 +1,14 @@
 name: headscale
 
 services:
-  headscale-ui:
-    image: ghcr.io/gurucomputing/headscale-ui:${HEADSCALE_UI_VERSION}
-    restart: unless-stopped
-    container_name: headscale-ui
-    ports:
-      - "${APOLLON_HEADSCALE_UI_PORT}:8080"
-    labels:
-      traefik-conf.port: ${APOLLON_HEADSCALE_UI_PORT}
+  # headscale-ui:
+  #   image: ghcr.io/gurucomputing/headscale-ui:${HEADSCALE_UI_VERSION}
+  #   restart: unless-stopped
+  #   container_name: headscale-ui
+  #   ports:
+  #     - "${APOLLON_HEADSCALE_UI_PORT}:8080"
+  #   labels:
+  #     traefik-conf.port: ${APOLLON_HEADSCALE_UI_PORT}
 
   # headplane:
   #   # I recommend you pin the version to a specific release
@@ -18,10 +18,10 @@ services:
   #   ports:
   #     - "$APOLLON_HEADPLANE_PORT:3000"
   #   labels:
-  #     my-traefik.http.routers.headplane-adm.rule: Host(`headplane.int.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/admin`)
-  #     my-traefik.http.routers.headplane-adm.service: apollon_headplane
-  #     my-traefik.http.routers.headplane-adm.entrypoints: https
-  #     my-traefik.http.routers.headplane-adm.tls.certResolver: tls-resolver
+  #     # my-traefik.http.routers.headplane-adm.rule: Host(`headplane.int.${PUBLIC_DOMAIN_NAME}`)
+  #     # my-traefik.http.routers.headplane-adm.service: apollon_headplane
+  #     # my-traefik.http.routers.headplane-adm.entrypoints: https
+  #     # my-traefik.http.routers.headplane-adm.tls.certResolver: tls-resolver
   #     traefik-conf.port: ${APOLLON_HEADPLANE_PORT}
   #   volumes:
   #     - type: volume
@@ -50,35 +50,35 @@ services:
 
   #     # If you are using the Docker integration, mount the Docker socket
   #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
-  headscale:
-    image: headscale/headscale:$HEADSCALE_VERSION
-    container_name: headscale
-    restart: unless-stopped
-    command: serve
-    ports:
-      - "${APOLLON_HEADSCALE_PORT}:8080"
-    labels:
-      my-traefik.http.routers.headscale-ext.rule: Host(`headscale.${PUBLIC_DOMAIN_NAME}`)
-      my-traefik.http.routers.headscale-ext.middlewares: cors@file
-      my-traefik.http.routers.headscale-ext.service: apollon_headscale
-      my-traefik.http.routers.headscale-ext.entrypoints: https
-      my-traefik.http.routers.headscale-ext.tls.certResolver: tls-resolver
-      traefik-conf.port: ${APOLLON_HEADSCALE_PORT}
-      com.headplane.selector: headscale
-    volumes:
-      - type: volume
-        source: docker-data-headscale
-        volume:
-          subpath: data
-        target: /var/lib/headscale
-      - type: volume
-        source: docker-data-headscale
-        volume:
-          subpath: config
-        target: /etc/headscale
+  # headscale:
+  #   image: headscale/headscale:$HEADSCALE_VERSION
+  #   container_name: headscale
+  #   restart: unless-stopped
+  #   command: serve
+  #   ports:
+  #     - "${APOLLON_HEADSCALE_PORT}:8080"
+  #   labels:
+  #     my-traefik.http.routers.headscale-ext.rule: Host(`headscale.${PUBLIC_DOMAIN_NAME}`)
+  #     my-traefik.http.routers.headscale-ext.middlewares: cors@file
+  #     my-traefik.http.routers.headscale-ext.service: apollon_headscale
+  #     my-traefik.http.routers.headscale-ext.entrypoints: https
+  #     my-traefik.http.routers.headscale-ext.tls.certResolver: tls-resolver
+  #     traefik-conf.port: ${APOLLON_HEADSCALE_PORT}
+  #     com.headplane.selector: headscale
+  #   volumes:
+  #     - type: volume
+  #       source: docker-data-headscale
+  #       volume:
+  #         subpath: data
+  #       target: /var/lib/headscale
+  #     - type: volume
+  #       source: docker-data-headscale
+  #       volume:
+  #         subpath: config
+  #       target: /etc/headscale
 
-      # - "./headscale-data:/var/lib/headscale"
-      # - "./headscale-config:/etc/headscale"
+  # - "./headscale-data:/var/lib/headscale"
+  # - "./headscale-config:/etc/headscale"
 
 volumes:
   docker-data-headscale:
