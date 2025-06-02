@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     image: mgarnier11/go-autosaver:${GO_AUTOSAVER_VERSION}
     volumes:
-      - /hdd-2/backups:/local-backups
+      - /hdd-1/backups:/local-backups
       - docker-data:/backups/docker-data-athena
       - docker-data-autosaver:/config
     ports:

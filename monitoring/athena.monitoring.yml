@@ -21,18 +21,14 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_NODESIGHT_PORT}
       traefik-conf.name: nodesight.athena
-    group_add:
-      - 105
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
-    # runtime: nvidia
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     healthcheck:
       test: wget -q --spider --timeout=5 --tries=1 http://localhost:${ATHENA_NODESIGHT_PORT} || exit 1
       interval: 30s

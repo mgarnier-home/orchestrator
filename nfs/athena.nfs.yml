@@ -9,7 +9,7 @@ services:
       - NFS_EXPORT_0=/nfs-share *(rw,sync,no_subtree_check)
     volumes:
       - /hdd-1:/nfs-share/hdd-1
-      - /hdd-2:/nfs-share/hdd-2
+      # - /hdd-2:/nfs-share/hdd-2
       - /hdd-3:/nfs-share/hdd-3
       - /ssd-1:/nfs-share/ssd-1
       - /home/mgarnier:/nfs-share/athena-home

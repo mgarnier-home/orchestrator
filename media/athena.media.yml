@@ -1,6 +1,24 @@
 name: media
 
 services:
+  jdownloader:
+    container_name: jdownloader
+    restart: unless-stopped
+    image: jlesage/jdownloader-2:${JDOWNLOADER_VERSION}
+    ports:
+      - ${ATHENA_JDOWNLOADER_PORT}:5800
+    volumes:
+      - docker-data-jdownloader-config:/config
+      - /big-hdd/media:/output
+    labels:
+      traefik-conf.port: ${ATHENA_JDOWNLOADER_PORT}
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TIMEZONE: ${TIMEZONE}
+      # - NVIDIA_VISIBLE_DEVICES=all
+      # - JDOWNLOADER_PUBLISHED_SERVER_URL=
+
   jellyfin:
     container_name: jellyfin
     restart: unless-stopped
@@ -19,26 +37,27 @@ services:
       - docker-data-jellyfin-config:/config
       - docker-data-jellyfin-cache:/cache
       - /big-hdd/media:/media
+      - /ssd-1/temp:/media-temp
     # group_add:
     #   - 105
     # devices:
     #   - /dev/dri/renderD128:/dev/dri/renderD128
     # security_opt:
     #   - seccomp:unconfined
-    # runtime: nvidia
     healthcheck:
       test: curl -f http://localhost:8096 || exit 1
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   navidrome-music:
     image: deluan/navidrome:${NAVIDROME_VERSION}
@@ -120,6 +139,13 @@ volumes:
     driver_opts:
       type: none
       device: ${ATHENA_DOCKER_DATA}/downloader
+      o: bind
+
+  docker-data-jdownloader-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}/jdownloader
       o: bind
 
   docker-data-navidrome-music:

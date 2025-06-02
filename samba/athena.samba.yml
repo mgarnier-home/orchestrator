@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/mgarnier:/share/athena-home
       - /hdd-1:/share/hdd-1
-      - /hdd-2:/share/hdd-2
+      # - /hdd-2:/share/hdd-2
       - /hdd-3:/share/hdd-3
       - /ssd-1:/share/ssd-1
       - /big-hdd:/share/big-hdd
