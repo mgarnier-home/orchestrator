@@ -13,6 +13,7 @@ services:
       ATHENA_HOST: ssh://${SSH_USER}@${ATHENA_IP}
       ZEPHYR_HOST: ssh://${SSH_USER}@${ZEPHYR_IP}
       APOLLON_HOST: ssh://${SSH_USER}@${APOLLON_IP}
+      ATLAS_HOST: ssh://${SSH_USER}@${ATLAS_IP}
       SSH_KEY_PATH: /run/secrets/ssh_private_key
     labels:
       traefik-conf.port: ${ZEPHYR_ORCHESTRATOR_PORT}
