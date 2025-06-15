@@ -28,6 +28,8 @@ services:
     restart: unless-stopped
     image: mgarnier11/home-container:${HOME_CONTAINER_VERSION}
     runtime: sysbox-runc
+    environment:
+      - NODE_VERSION=22
     ports:
       - ${ATHENA_DEVCONTAINER_SSH_PORT}:2222
       - ${ATHENA_DEVCONTAINER_VSCODE_PORT}:8080

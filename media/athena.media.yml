@@ -9,7 +9,10 @@ services:
       - ${ATHENA_JDOWNLOADER_PORT}:5800
     volumes:
       - docker-data-jdownloader-config:/config
-      - /big-hdd/media:/output
+      - type: volume
+        source: atlas-media
+        target: /output
+      # - /big-hdd/media:/output
     labels:
       traefik-conf.port: ${ATHENA_JDOWNLOADER_PORT}
     environment:
@@ -36,8 +39,11 @@ services:
     volumes:
       - docker-data-jellyfin-config:/config
       - docker-data-jellyfin-cache:/cache
-      - /big-hdd/media:/media
-      - /ssd-1/temp:/media-temp
+      - type: volume
+        source: atlas-media
+        target: /media
+        read_only: true
+      # - /big-hdd/media:/media
     # group_add:
     #   - 105
     # devices:
@@ -77,7 +83,13 @@ services:
       ND_ARTISTARTPRIORITY: external
     volumes:
       - docker-data-navidrome-music:/data
-      - /big-hdd/media/musics:/music:ro # your music
+      # - /big-hdd/media/musics:/music:ro # your music
+      - type: volume
+        source: atlas-media
+        volume:
+          subpath: musics
+        target: /musics
+        read_only: true
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_MUSIC_PORT}
       traefik-conf.name: music
@@ -99,7 +111,13 @@ services:
       ND_SPOTIFY_SECRET: ${SPOTIFY_SECRET}
     volumes:
       - docker-data-navidrome-sagas:/data
-      - /big-hdd/media/sagas-mp3:/music:ro # your music
+      # - /big-hdd/media/sagas-mp3:/music:ro # your music
+      - type: volume
+        source: atlas-media
+        volume:
+          subpath: sagas-mp3
+        target: /musics
+        read_only: true
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_SAGAS_PORT}
       traefik-conf.name: sagas
@@ -118,7 +136,13 @@ services:
       UMASK_SET: 022
       DEEMIX_SINGLE_USER: true
     volumes:
-      - /big-hdd/media/musics:/downloads
+      # - /big-hdd/media/musics:/downloads
+      - type: volume
+        source: atlas-media
+        volume:
+          subpath: musics
+        target: /musics
+        read_only: true
       - docker-data-downloader-config:/config
 volumes:
   docker-data-jellyfin-config:
@@ -161,3 +185,10 @@ volumes:
       type: none
       device: ${ATHENA_DOCKER_DATA}/navidrome-sagas
       o: bind
+
+  atlas-media:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=100.64.98.98,rw
+      device: :/export/media

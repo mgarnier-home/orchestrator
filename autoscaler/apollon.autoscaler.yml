@@ -23,8 +23,16 @@ services:
       traefik-conf.port: ${APOLLON_AUTOSCALER_PORT}
     volumes:
       - docker-data-autoscaler:/config
+      # - type: volume
+      #   source: docker-data
+      #   volume:
+      #     subpath: autoscaler
+      #   target: /config
 
 volumes:
+  # docker-data:
+  #   external: true
+
   docker-data-autoscaler:
     driver: local
     driver_opts:
