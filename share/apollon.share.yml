@@ -16,14 +16,22 @@ services:
     environment:
       - TRUST_PROXY=true # Set to true if a reverse proxy is in front of the container
     volumes:
-      - docker-data-pingvin-data:/opt/app/backend/data
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: pingvin
+        target: /opt/app/backend/data
+      # - docker-data-pingvin-data:/opt/app/backend/data
     #   - "./data:/opt/app/backend/data"
     #   - "./data/images:/opt/app/frontend/public/img"
+# volumes:
+#   docker-data-pingvin-data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/pingvin
+#       o: bind
 
 volumes:
-  docker-data-pingvin-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/pingvin
-      o: bind
+  docker-data:
+    external: true

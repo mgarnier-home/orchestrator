@@ -10,16 +10,27 @@ services:
         ipv4_address: 172.19.0.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - &volume
-        type: volume
-        source: docker-data-traefik
+      - type: volume
+        source: docker-data
         volume:
-          subpath: certs
+          subpath: traefik/certs
         target: /certs
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: data
+          subpath: traefik/data
         target: /data
+
+      # - &volume
+      #   type: volume
+      #   source: docker-data-traefik
+      #   volume:
+      #     subpath: certs
+      #   target: /certs
+      # - <<: *volume
+      #   volume:
+      #     subpath: data
+      #   target: /data
     ports:
       - 80:80/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 80
       - 443:443/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 443
@@ -49,10 +60,15 @@ services:
     restart: unless-stopped
     image: mgarnier11/traefik-conf:${TRAEFIK_CONF_VERSION}
     volumes:
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: conf
+          subpath: traefik/conf
         target: /traefik-data
+      # - <<: *volume
+      #   volume:
+      #     subpath: conf
+      #   target: /traefik-data
     environment:
       DATA_FILE_PATH: /traefik-data/config.yml
       SERVER_PORT: 3000
@@ -87,6 +103,11 @@ services:
   #     traefik-conf.port: ${APOLLON_INFRARED_API_PORT}
   #   volumes:
   #     - docker-data-infrared:/configs
+  # - type: volume
+  #   source: docker-data
+  #   volume:
+  #     subpath: infrared
+  #   target: /configs
   #   environment:
   #     INFRARED_CONFIG_PATH: "/configs"
   #     INFRARED_API_ENABLED: true
@@ -100,19 +121,23 @@ networks:
           ip_range: 172.19.0.0/24
 
 volumes:
-  docker-data-traefik:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/traefik
-      o: bind
+  docker-data:
+    external: true
 
-  docker-data-infrared:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/infrared
-      o: bind
+# volumes:
+#   docker-data-traefik:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/traefik
+#       o: bind
+
+#   docker-data-infrared:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/infrared
+#       o: bind
 secrets:
   ssh_private_key:
     environment: "SSH_PRIVATE_KEY"

@@ -3,14 +3,19 @@ name: hoppscotch
 services:
   hoppscotch-db:
     image: postgres:15
-    user: postgres
+    user: 1000:1000
     container_name: hoppscotch-db
     restart: unless-stopped
     env_file: ./hoppscotch-db.env
     networks:
       - hoppscotch-net
     volumes:
-      - docker-data-hoppscotch-db:/var/lib/postgresql/data
+      #   - docker-data-hoppscotch-db:/var/lib/postgresql/data
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: hoppscotch
+        target: /var/lib/postgresql/data
     healthcheck:
       test:
         [
@@ -99,10 +104,14 @@ services:
 networks:
   hoppscotch-net:
 
+# volumes:
+#   docker-data-hoppscotch-db:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/hoppscotch
+#       o: bind
+
 volumes:
-  docker-data-hoppscotch-db:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/hoppscotch
-      o: bind
+  docker-data:
+    external: true

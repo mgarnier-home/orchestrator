@@ -10,35 +10,65 @@ services:
       - DOCKER_ENABLE_SECURITY=false
       - LANGS=en_GB
     volumes:
-      - &volume
-        type: volume
-        source: docker-data-stirling-pdf
+      - type: volume
+        source: docker-data
         volume:
-          subpath: trainingData
+          subpath: stirling-pdf/trainingData
         target: /usr/share/tessdata
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: extraConfigs
+          subpath: stirling-pdf/extraConfigs
         target: /configs
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: customFiles
+          subpath: stirling-pdf/customFiles
         target: /customFiles
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: logs
+          subpath: stirling-pdf/logs
         target: /logs
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: pipeline
+          subpath: stirling-pdf/pipeline
         target: /pipeline
+
+      # - &volume
+      #   type: volume
+      #   source: docker-data-stirling-pdf
+      #   volume:
+      #     subpath: trainingData
+      #   target: /usr/share/tessdata
+      # - <<: *volume
+      #   volume:
+      #     subpath: extraConfigs
+      #   target: /configs
+      # - <<: *volume
+      #   volume:
+      #     subpath: customFiles
+      #   target: /customFiles
+      # - <<: *volume
+      #   volume:
+      #     subpath: logs
+      #   target: /logs
+      # - <<: *volume
+      #   volume:
+      #     subpath: pipeline
+      #   target: /pipeline
     labels:
       traefik-conf.port: ${APOLLON_STIRLING_PDF_PORT}
 
+# volumes:
+#   docker-data-stirling-pdf:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/stirling-pdf
+#       o: bind
+
 volumes:
-  docker-data-stirling-pdf:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/stirling-pdf
-      o: bind
+  docker-data:
+    external: true

@@ -5,12 +5,18 @@ services:
     container_name: nextcloud-db
     restart: unless-stopped
     image: mariadb:10.5
+    user: 1000:1000
     volumes:
       - type: volume
-        source: docker-data-nextcloud
+        source: docker-data
         volume:
-          subpath: db
+          subpath: nextcloud/db
         target: /var/lib/mysql
+      # - type: volume
+      #   source: docker-data-nextcloud
+      #   volume:
+      #     subpath: db
+      #   target: /var/lib/mysql
     networks:
       - nextcloud-net
     environment:
@@ -19,6 +25,7 @@ services:
       MYSQL_DATABASE: ${NEXTCLOUD_DB_NAME}
       MYSQL_USER: ${NEXTCLOUD_DB_USER}
       MYSQL_LOG_CONSOLE: true
+
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect"]
@@ -33,15 +40,25 @@ services:
     image: nextcloud:${NEXTCLOUD_VERSION}
     volumes:
       - type: volume
-        source: docker-data-nextcloud
+        source: docker-data
         volume:
-          subpath: data
+          subpath: nextcloud/data
         target: /data
       - type: volume
-        source: docker-data-nextcloud
+        source: docker-data
         volume:
-          subpath: config
+          subpath: nextcloud/config
         target: /var/www/html/config
+      # - type: volume
+      #   source: docker-data-nextcloud
+      #   volume:
+      #     subpath: data
+      #   target: /data
+      # - type: volume
+      #   source: docker-data-nextcloud
+      #   volume:
+      #     subpath: config
+      #   target: /var/www/html/config
     networks:
       - nextcloud-net
     ports:
@@ -76,10 +93,14 @@ services:
 networks:
   nextcloud-net:
 
+# volumes:
+#   docker-data-nextcloud:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/nextcloud
+#       o: bind
+
 volumes:
-  docker-data-nextcloud:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/nextcloud
-      o: bind
+  docker-data:
+    external: true

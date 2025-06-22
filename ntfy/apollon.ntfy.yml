@@ -12,7 +12,12 @@ services:
     ports:
       - ${APOLLON_NTFY_PORT}:80
     volumes:
-      - docker-data-ntfy:/etc/ntfy
+      # - docker-data-ntfy:/etc/ntfy
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: ntfy
+        target: /etc/ntfy
     labels:
       traefik-conf.port: ${APOLLON_NTFY_PORT}
     healthcheck:
@@ -22,10 +27,14 @@ services:
       retries: 3
       start_period: 10s
 
+# volumes:
+#   docker-data-ntfy:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/ntfy
+#       o: bind
+
 volumes:
-  docker-data-ntfy:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/ntfy
-      o: bind
+  docker-data:
+    external: true

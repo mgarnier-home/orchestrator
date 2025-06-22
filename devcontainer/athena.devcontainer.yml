@@ -39,7 +39,7 @@ services:
       - /ssd-1/devcontainer:/mnt/dev
       - mnt-docker-data-athena:/mnt/docker-data/athena
       - mnt-docker-data-zephyr:/mnt/docker-data/zephyr
-      - mnt-docker-data-apollon:/mnt/docker-data/apollon
+      # - mnt-docker-data-apollon:/mnt/docker-data/apollon
     labels:
       traefik-conf.port: ${ATHENA_DEVCONTAINER_VSCODE_PORT}
       proxy.ports: ${ATHENA_DEVCONTAINER_SSH_PORT}
@@ -57,12 +57,12 @@ volumes:
       type: cifs
       device: //100.64.98.97/share/docker-data
       o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
-  mnt-docker-data-apollon:
-    driver: local
-    driver_opts:
-      type: cifs
-      device: //100.64.98.99/share/docker-data
-      o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
+  # mnt-docker-data-apollon:
+  #   driver: local
+  #   driver_opts:
+  #     type: cifs
+  #     device: //100.64.98.99/share/docker-data
+  #     o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
 
 secrets:
   SSH_PRIVATE_KEY:

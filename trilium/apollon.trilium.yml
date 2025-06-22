@@ -10,14 +10,23 @@ services:
     ports:
       - ${APOLLON_TRILIUM_PORT}:8080
     volumes:
-      - docker-data-trilium:/home/node/trilium-data
+      # - docker-data-trilium:/home/node/trilium-data
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: trilium
+        target: /home/node/trilium-data
     labels:
       traefik-conf.port: ${APOLLON_TRILIUM_PORT}
 
+# volumes:
+#   docker-data-trilium:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ${APOLLON_DOCKER_DATA}/trilium
+#       o: bind
+
 volumes:
-  docker-data-trilium:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}/trilium
-      o: bind
+  docker-data:
+    external: true
