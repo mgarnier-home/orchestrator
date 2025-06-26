@@ -1,38 +1,38 @@
 services:
-  # satisfactory-server:
-  #   container_name: satisfactory-server
-  #   image: wolveix/satisfactory-server:${SATISFACTORY_VERSION}
-  #   ports:
-  #     - ${ATHENA_SATISFACTORY_PORT}:7777/udp
-  #     - ${ATHENA_SATISFACTORY_PORT}:7777/tcp
-  #   volumes:
-  #     - docker-data-satisfactory:/config
-  #   environment:
-  #     MAXPLAYERS: 4
-  #     PGID: ${PGID}
-  #     PUID: ${PUID}
-  #     ROOTLESS: false
-  #     STEAMBETA: false
-  #   restart: unless-stopped
-  #   labels:
-  #   #   - traefik-conf.port=${ATHENA_SATISFACTORY_PORT}
-  #   #   - my-traefik.http.routers.apollon_bitwarden_cert.rule=Host(`satisfactory.${PUBLIC_DOMAIN_NAME}`)
-  #   #   - my-traefik.http.routers.apollon_bitwarden_cert.service=apollon_bitwarden
-  #   #   - my-traefik.http.routers.apollon_bitwarden_cert.entrypoints=https
-  #   #   - my-traefik.http.routers.apollon_bitwarden_cert.tls.certResolver=tls-resolver
-  #   #   - my-traefik.http.routers.apollon_bitwarden_cert.tls.options=ca-mgarnier11@file
-  #   healthcheck:
-  #     test: bash /healthcheck.sh
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 120s
-  #   # deploy:
-  #   #   resources:
-  #   #     limits:
-  #   #       memory: 6G
-  #   #     reservations:
-  #   #       memory: 4G
+  satisfactory-server:
+    container_name: satisfactory-server
+    image: wolveix/satisfactory-server:${SATISFACTORY_VERSION}
+    ports:
+      - ${ATHENA_SATISFACTORY_PORT}:7777/udp
+      - ${ATHENA_SATISFACTORY_PORT}:7777/tcp
+    volumes:
+      - docker-data-satisfactory:/config
+    environment:
+      MAXPLAYERS: 4
+      PGID: ${PGID}
+      PUID: ${PUID}
+      ROOTLESS: false
+      STEAMBETA: false
+    restart: unless-stopped
+    # labels:
+    #   - traefik-conf.port=${ATHENA_SATISFACTORY_PORT}
+    #   - my-traefik.http.routers.apollon_bitwarden_cert.rule=Host(`satisfactory.${PUBLIC_DOMAIN_NAME}`)
+    #   - my-traefik.http.routers.apollon_bitwarden_cert.service=apollon_bitwarden
+    #   - my-traefik.http.routers.apollon_bitwarden_cert.entrypoints=https
+    #   - my-traefik.http.routers.apollon_bitwarden_cert.tls.certResolver=tls-resolver
+    #   - my-traefik.http.routers.apollon_bitwarden_cert.tls.options=ca-mgarnier11@file
+    healthcheck:
+      test: bash /healthcheck.sh
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 6G
+    #     reservations:
+    #       memory: 4G
 
 volumes:
   docker-data-satisfactory:
