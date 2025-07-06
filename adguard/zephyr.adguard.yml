@@ -7,14 +7,14 @@ services:
     image: adguard/adguardhome:${ADGUARD_VERSION}
     volumes:
       - type: volume
-        source: docker-data-adguard
+        source: docker-data
         volume:
-          subpath: conf
+          subpath: adguard/conf
         target: /opt/adguardhome/conf
       - type: volume
-        source: docker-data-adguard
+        source: docker-data
         volume:
-          subpath: work
+          subpath: adguard/work
         target: /opt/adguardhome/work
     ports:
       - 53:53/tcp
@@ -30,9 +30,5 @@ services:
       start_period: 10s
 
 volumes:
-  docker-data-adguard:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/adguard
-      o: bind
+  docker-data:
+    external: true

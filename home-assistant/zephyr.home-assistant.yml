@@ -6,8 +6,11 @@ services:
     image: ghcr.io/home-assistant/home-assistant:${HOME_ASSISTANT_VERSION}
     restart: unless-stopped
     volumes:
-      # - /docker-data/home_assistant:/config
-      - docker-data-home-assistant:/config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: home-assistant
+        target: /config
       - /etc/localtime:/etc/localtime:ro
     privileged: true
     environment:
@@ -30,7 +33,11 @@ services:
     container_name: mosquitto
     restart: unless-stopped
     volumes:
-      - docker-data-mosquitto:/mosquitto
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: mosquitto
+        target: /mosquitto
     ports:
       - ${ZEPHYR_MOSQUITTO_1_PORT}:1883
       - ${ZEPHYR_MOSQUITTO_2_PORT}:9001
@@ -54,15 +61,5 @@ services:
       start_period: 10s
 
 volumes:
-  docker-data-home-assistant:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/home-assistant
-      o: bind
-  docker-data-mosquitto:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/mosquitto
-      o: bind
+  docker-data:
+    external: true

@@ -20,17 +20,6 @@ services:
         volume:
           subpath: traefik/data
         target: /data
-
-      # - &volume
-      #   type: volume
-      #   source: docker-data-traefik
-      #   volume:
-      #     subpath: certs
-      #   target: /certs
-      # - <<: *volume
-      #   volume:
-      #     subpath: data
-      #   target: /data
     ports:
       - 80:80/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 80
       - 443:443/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 443
@@ -65,10 +54,6 @@ services:
         volume:
           subpath: traefik/conf
         target: /traefik-data
-      # - <<: *volume
-      #   volume:
-      #     subpath: conf
-      #   target: /traefik-data
     environment:
       DATA_FILE_PATH: /traefik-data/config.yml
       SERVER_PORT: 3000
@@ -121,23 +106,15 @@ networks:
           ip_range: 172.19.0.0/24
 
 volumes:
+  # docker-data:
+  #   external: true
   docker-data:
-    external: true
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}
+      o: bind
 
-# volumes:
-#   docker-data-traefik:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: ${APOLLON_DOCKER_DATA}/traefik
-#       o: bind
-
-#   docker-data-infrared:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: ${APOLLON_DOCKER_DATA}/infrared
-#       o: bind
 secrets:
   ssh_private_key:
     environment: "SSH_PRIVATE_KEY"

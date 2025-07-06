@@ -9,7 +9,11 @@ services:
       APP_CONF_PATH: /config/conf.yml
       ICONS_PATH: /config/icons
     volumes:
-      - docker-data-dashboard:/config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: dashboard
+        target: /config
     ports:
       - ${ZEPHYR_DASHBOARD_PORT}:3000
     labels:
@@ -22,7 +26,11 @@ services:
     ports:
       - ${ZEPHYR_INFLUXDB_PORT}:8086
     volumes:
-      - docker-data-influxdb:/var/lib/influxdb2
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: influxdb
+        target: /var/lib/influxdb2
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USER}
@@ -55,16 +63,5 @@ services:
       traefik-conf.port: ${ZEPHYR_STATS_API_PORT}
 
 volumes:
-  docker-data-dashboard:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/dashboard
-      o: bind
-
-  docker-data-influxdb:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/influxdb
-      o: bind
+  docker-data:
+    external: true

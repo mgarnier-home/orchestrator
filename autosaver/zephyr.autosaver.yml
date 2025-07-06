@@ -6,8 +6,12 @@ services:
     restart: unless-stopped
     image: mgarnier11/go-autosaver:${GO_AUTOSAVER_VERSION}
     volumes:
-      - docker-data:/backups/docker-data-zephyr
-      - docker-data-autosaver:/config
+      - docker-data-local:/backups
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: autosaver
+        target: /config
     ports:
       - ${ZEPHYR_AUTOSAVER_PORT}:8080
     labels:
@@ -15,7 +19,7 @@ services:
       traefik-conf.name: autosaver.zephyr
     privileged: true
     environment:
-      CONFIG_FILE_PATH: /config/config.yml
+      CONFIG_FILE_PATH: /config/config-zephyr.yml
       # LOG_LEVEL: 5
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
@@ -27,7 +31,11 @@ services:
     restart: unless-stopped
     image: mgarnier11/cron-runner:${CRON_RUNNER_VERSION}
     volumes:
-      - docker-data-cron-runner:/config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: cron-runner
+        target: /config
     ports:
       - ${ZEPHYR_CRON_RUNNER_PORT}:3000
     labels:
@@ -37,26 +45,14 @@ services:
       CRON_CONFIG_PATH: /config/config.yml
 
 volumes:
-  docker-data:
+  docker-data-local:
     driver: local
     driver_opts:
       type: none
       device: ${ZEPHYR_DOCKER_DATA}
       o: bind
-
-  docker-data-autosaver:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/autosaver
-      o: bind
-
-  docker-data-cron-runner:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/cron-runner
-      o: bind
+  docker-data:
+    external: true
 
 secrets:
   ssh_private_key:

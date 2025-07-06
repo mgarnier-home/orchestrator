@@ -21,16 +21,6 @@ services:
         volume:
           subpath: pingvin
         target: /opt/app/backend/data
-      # - docker-data-pingvin-data:/opt/app/backend/data
-    #   - "./data:/opt/app/backend/data"
-    #   - "./data/images:/opt/app/frontend/public/img"
-# volumes:
-#   docker-data-pingvin-data:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: ${APOLLON_DOCKER_DATA}/pingvin
-#       o: bind
 
 volumes:
   docker-data:

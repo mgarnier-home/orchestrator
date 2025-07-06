@@ -8,7 +8,6 @@ services:
     ports:
       - ${APOLLON_BITWARDEN_PORT}:80
     volumes:
-      # - docker-data-bitwarden:/data
       - type: volume
         source: docker-data
         volume:
@@ -22,14 +21,10 @@ services:
       # my-traefik.http.routers.apollon_bitwarden_cert.tls.certResolver: tls-resolver
       # my-traefik.http.routers.apollon_bitwarden_cert.tls.options: ca-mgarnier11@file
 
-# volumes:
-#   docker-data-bitwarden:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: ${APOLLON_DOCKER_DATA}/bitwarden
-#       o: bind
-
 volumes:
   docker-data:
-    external: true
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APOLLON_DOCKER_DATA}
+      o: bind

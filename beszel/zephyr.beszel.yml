@@ -8,7 +8,11 @@ services:
     ports:
       - ${ZEPHYR_BESZEL_PORT}:8090
     volumes:
-      - docker-data-beszel:/beszel_data
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: beszel
+        target: /beszel_data
     labels:
       traefik-conf.port: ${ZEPHYR_BESZEL_PORT}
 
@@ -24,9 +28,5 @@ services:
       KEY: ${BESZEL_AGENT_KEY}
 
 volumes:
-  docker-data-beszel:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ZEPHYR_DOCKER_DATA}/beszel
-      o: bind
+  docker-data:
+    external: true

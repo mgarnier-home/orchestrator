@@ -15,6 +15,11 @@ services:
       NTFY_TOPIC: ${NTFY_TOPIC}
     volumes:
       - docker-data-proxy:/config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: proxy
+        target: /proxy
     labels:
       traefik-conf.port: ${ZEPHYR_PROXY_PORT}
     secrets:
@@ -27,11 +32,11 @@ services:
       start_period: 10s
 
 volumes:
-  docker-data-proxy:
+  docker-data:
     driver: local
     driver_opts:
       type: none
-      device: ${ZEPHYR_DOCKER_DATA}/proxy
+      device: ${ZEPHYR_DOCKER_DATA}
       o: bind
 
 secrets:
