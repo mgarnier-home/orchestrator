@@ -23,8 +23,4 @@ services:
 
 volumes:
   docker-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}
-      o: bind
+    external: true

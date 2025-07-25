@@ -11,10 +11,9 @@ services:
       SSH_USER: ${SSH_USER}
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
+      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     ports:
       - ${APOLLON_AUTOSCALER_PORT}:3000
-    secrets:
-      - ssh_private_key
     labels:
       my-traefik.http.routers.autoscaler.rule: Host(`autoscaler.${PUBLIC_DOMAIN_NAME}`)
       my-traefik.http.routers.autoscaler.service: apollon_autoscaler
@@ -22,7 +21,6 @@ services:
       my-traefik.http.routers.autoscaler.tls.certResolver: tls-resolver
       traefik-conf.port: ${APOLLON_AUTOSCALER_PORT}
     volumes:
-      # - docker-data-autoscaler:/config
       - type: volume
         source: docker-data
         volume:
@@ -32,14 +30,3 @@ services:
 volumes:
   docker-data:
     external: true
-
-  # docker-data-autoscaler:
-  #   driver: local
-  #   driver_opts:
-  #     type: none
-  #     device: ${APOLLON_DOCKER_DATA}/autoscaler
-  #     o: bind
-
-secrets:
-  ssh_private_key:
-    environment: "SSH_PRIVATE_KEY"

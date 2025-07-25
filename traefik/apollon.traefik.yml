@@ -58,8 +58,7 @@ services:
       DATA_FILE_PATH: /traefik-data/config.yml
       SERVER_PORT: 3000
       SSH_USER: ${SSH_USER}
-    secrets:
-      - ssh_private_key
+      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     ports:
       - ${APOLLON_TRAEFIK_CONFIG_PORT}:3000/tcp
     labels:
@@ -106,15 +105,5 @@ networks:
           ip_range: 172.19.0.0/24
 
 volumes:
-  # docker-data:
-  #   external: true
   docker-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APOLLON_DOCKER_DATA}
-      o: bind
-
-secrets:
-  ssh_private_key:
-    environment: "SSH_PRIVATE_KEY"
+    external: true

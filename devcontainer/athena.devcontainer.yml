@@ -14,6 +14,8 @@ services:
     environment:
       - EXPERT_REGISTRY_TOKEN=${EXPERT_REGISTRY_TOKEN}
       - DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN=${DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN}
+      - GIT_EMAIL=${GIT_EMAIL}
+      - GIT_NAME=${GIT_NAME}
     secrets:
       - OPERIS_PRIVATE_KEY
     volumes:
@@ -30,6 +32,9 @@ services:
     runtime: sysbox-runc
     environment:
       - NODE_VERSION=22
+      - GIT_EMAIL=${GIT_EMAIL}
+      - GIT_NAME=${GIT_NAME}
+      - ORCHESTRATOR_API_URL=${ORCHESTRATOR_API_URL}
     ports:
       - ${ATHENA_DEVCONTAINER_SSH_PORT}:2222
       - ${ATHENA_DEVCONTAINER_VSCODE_PORT}:8080
@@ -37,32 +42,15 @@ services:
       - SSH_PRIVATE_KEY
     volumes:
       - /ssd-1/devcontainer:/mnt/dev
-      - mnt-docker-data-athena:/mnt/docker-data/athena
-      - mnt-docker-data-zephyr:/mnt/docker-data/zephyr
+      - docker-data:/mnt/docker-data
       # - mnt-docker-data-apollon:/mnt/docker-data/apollon
     labels:
       traefik-conf.port: ${ATHENA_DEVCONTAINER_VSCODE_PORT}
       proxy.ports: ${ATHENA_DEVCONTAINER_SSH_PORT}
 
 volumes:
-  mnt-docker-data-athena:
-    driver: local
-    driver_opts:
-      type: cifs
-      device: //100.64.98.100/share/docker-data
-      o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
-  mnt-docker-data-zephyr:
-    driver: local
-    driver_opts:
-      type: cifs
-      device: //100.64.98.97/share/docker-data
-      o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
-  # mnt-docker-data-apollon:
-  #   driver: local
-  #   driver_opts:
-  #     type: cifs
-  #     device: //100.64.98.99/share/docker-data
-  #     o: rw,vers=3.02,mfsymlinks,cache=none,username=${SMB_USER},password=${SMB_PWD},iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777,noperm
+  docker-data:
+    external: true
 
 secrets:
   SSH_PRIVATE_KEY:

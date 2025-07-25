@@ -25,8 +25,7 @@ services:
       # LOG_LEVEL: 5
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
-    secrets:
-      - ssh_private_key
+      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
 
 volumes:
   docker-data-local:
@@ -38,7 +37,3 @@ volumes:
 
   docker-data:
     external: true
-
-secrets:
-  ssh_private_key:
-    environment: "SSH_PRIVATE_KEY"
