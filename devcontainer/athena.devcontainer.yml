@@ -34,16 +34,14 @@ services:
       - NODE_VERSION=22
       - GIT_EMAIL=${GIT_EMAIL}
       - GIT_NAME=${GIT_NAME}
-      - ORCHESTRATOR_API_URL=${ORCHESTRATOR_API_URL}
+      - API_ORCHESTRATOR_URL=${API_ORCHESTRATOR_URL}
+      - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
     ports:
       - ${ATHENA_DEVCONTAINER_SSH_PORT}:2222
       - ${ATHENA_DEVCONTAINER_VSCODE_PORT}:8080
-    secrets:
-      - SSH_PRIVATE_KEY
     volumes:
       - /ssd-1/devcontainer:/mnt/dev
       - docker-data:/mnt/docker-data
-      # - mnt-docker-data-apollon:/mnt/docker-data/apollon
     labels:
       traefik-conf.port: ${ATHENA_DEVCONTAINER_VSCODE_PORT}
       proxy.ports: ${ATHENA_DEVCONTAINER_SSH_PORT}

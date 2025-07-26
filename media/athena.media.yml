@@ -8,7 +8,11 @@ services:
     ports:
       - ${ATHENA_JDOWNLOADER_PORT}:5800
     volumes:
-      - docker-data-jdownloader-config:/config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: jdownloader
+        target: /config
       - type: volume
         source: atlas-media
         target: /output
@@ -37,12 +41,19 @@ services:
       # - NVIDIA_VISIBLE_DEVICES=all
       # - JELLYFIN_PublishedServerUrl=192.168.0.5
     volumes:
-      - docker-data-jellyfin-config:/config
-      - docker-data-jellyfin-cache:/cache
+      - type: volume
+        source: docker-data-local
+        volume:
+          subpath: jellyfin/config
+        target: /config
+      - type: volume
+        source: docker-data-local
+        volume:
+          subpath: jellyfin/cache
+        target: /cache
       - type: volume
         source: atlas-media
         target: /media
-        read_only: true
       # - /big-hdd/media:/media
     # group_add:
     #   - 105
@@ -82,13 +93,16 @@ services:
       ND_SPOTIFY_SECRET: ${SPOTIFY_SECRET}
       ND_ARTISTARTPRIORITY: external
     volumes:
-      - docker-data-navidrome-music:/data
-      # - /big-hdd/media/musics:/music:ro # your music
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: navidrome-music
+        target: /data
       - type: volume
         source: atlas-media
         volume:
           subpath: musics
-        target: /musics
+        target: /music
         read_only: true
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_MUSIC_PORT}
@@ -110,13 +124,16 @@ services:
       ND_SPOTIFY_ID: ${SPOTIFY_ID}
       ND_SPOTIFY_SECRET: ${SPOTIFY_SECRET}
     volumes:
-      - docker-data-navidrome-sagas:/data
-      # - /big-hdd/media/sagas-mp3:/music:ro # your music
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: navidrome-sagas
+        target: /data
       - type: volume
         source: atlas-media
         volume:
           subpath: sagas-mp3
-        target: /musics
+        target: /music
         read_only: true
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_SAGAS_PORT}
@@ -143,47 +160,20 @@ services:
           subpath: musics
         target: /musics
         read_only: true
-      - docker-data-downloader-config:/config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: downloader
+        target: /config
 volumes:
-  docker-data-jellyfin-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ATHENA_DOCKER_DATA}/jellyfin/config
-      o: bind
-  docker-data-jellyfin-cache:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ATHENA_DOCKER_DATA}/jellyfin/cache
-      o: bind
+  docker-data:
+    external: true
 
-  docker-data-downloader-config:
+  docker-data-local:
     driver: local
     driver_opts:
       type: none
-      device: ${ATHENA_DOCKER_DATA}/downloader
-      o: bind
-
-  docker-data-jdownloader-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ATHENA_DOCKER_DATA}/jdownloader
-      o: bind
-
-  docker-data-navidrome-music:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ATHENA_DOCKER_DATA}/navidrome-music
-      o: bind
-
-  docker-data-navidrome-sagas:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ATHENA_DOCKER_DATA}/navidrome-sagas
+      device: ${ATHENA_DOCKER_DATA}
       o: bind
 
   atlas-media:

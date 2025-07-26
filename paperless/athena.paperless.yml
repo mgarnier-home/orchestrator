@@ -20,12 +20,12 @@ services:
     image: mariadb:10.5
     container_name: paperless-db
     restart: unless-stopped
+    user: 1000:1000
     volumes:
-      - &volume
-        type: volume
-        source: docker-data-paperless
+      - type: volume
+        source: docker-data
         volume:
-          subpath: db
+          subpath: paperless/db
         target: /var/lib/mysql
     labels:
       wud.watch: false
@@ -61,21 +61,25 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_PAPERLESS_PORT}
     volumes:
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: data
+          subpath: paperless/data
         target: /usr/src/paperless/data
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: media
+          subpath: paperless/media
         target: /usr/src/paperless/media
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: export
+          subpath: paperless/export
         target: /usr/src/paperless/export
-      - <<: *volume
+      - type: volume
+        source: docker-data
         volume:
-          subpath: consume
+          subpath: paperless/consume
         target: /usr/src/paperless/consume
     environment:
       PAPERLESS_TIME_ZONE: ${TIMEZONE}
@@ -132,9 +136,11 @@ networks:
   paperless-net:
 
 volumes:
-  docker-data-paperless:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ATHENA_DOCKER_DATA}/paperless
-      o: bind
+  docker-data:
+    external: true
+  # docker-data-paperless:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: ${ATHENA_DOCKER_DATA}/paperless
+  #     o: bind

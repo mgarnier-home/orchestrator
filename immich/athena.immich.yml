@@ -11,9 +11,9 @@ services:
     #   service: cpu # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
     volumes:
       - type: volume
-        source: docker-data-immich
+        source: docker-data
         volume:
-          subpath: upload
+          subpath: immich/upload
         target: /usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -67,13 +67,14 @@ services:
       POSTGRES_USER: ${IMMICH_DB_USERNAME}
       POSTGRES_DB: ${IMMICH_DB_DATABASE_NAME}
       POSTGRES_INITDB_ARGS: "--data-checksums"
+    user: 1000:1000
     networks:
       - immich-net
     volumes:
       - type: volume
-        source: docker-data-immich
+        source: docker-data
         volume:
-          subpath: db
+          subpath: immich/db
         target: /var/lib/postgresql/data
     healthcheck:
       test: >-
@@ -100,9 +101,11 @@ networks:
 
 volumes:
   model-cache:
-  docker-data-immich:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${ATHENA_DOCKER_DATA}/immich
-      o: bind
+  docker-data:
+    external: true
+  # docker-data:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: ${ATHENA_DOCKER_DATA}/immich
+  #     o: bind

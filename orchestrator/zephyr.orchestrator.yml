@@ -6,14 +6,14 @@ services:
     restart: unless-stopped
     image: mgarnier11/orchestrator:${ORCHESTRATOR_VERSION}
     ports:
-      - ${ZEPHYR_ORCHESTRATOR_PORT}:1337
+      - ${ZEPHYR_ORCHESTRATOR_PORT}:3000
     environment:
       COMPOSE_DIRECTORY: /compose
       ATHENA_HOST: ssh://${SSH_USER}@${ATHENA_IP}
       ZEPHYR_HOST: ssh://${SSH_USER}@${ZEPHYR_IP}
       APOLLON_HOST: ssh://${SSH_USER}@${APOLLON_IP}
       ATLAS_HOST: ssh://${SSH_USER}@${ATLAS_IP}
-      SSH_KEY_PATH: /run/secrets/ssh_private_key
+      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     labels:
       traefik-conf.port: ${ZEPHYR_ORCHESTRATOR_PORT}
     volumes:
@@ -22,8 +22,6 @@ services:
         volume:
           subpath: orchestrator
         target: /compose
-    secrets:
-      - ssh_private_key
 
 volumes:
   docker-data:
@@ -34,7 +32,3 @@ volumes:
   #     type: none
   #     device: ${ZEPHYR_DOCKER_DATA}/orchestrator
   #     o: bind
-
-secrets:
-  ssh_private_key:
-    environment: "SSH_PRIVATE_KEY"
