@@ -168,7 +168,7 @@ services:
           subpath: downloader
         target: /config
     healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://localhost:6595 || exit 1
+      test: wget -q --spider --timeout=5 --tries=1 http://127.0.0.1:6595 || exit 1
       start_period: 10s
 
 volumes:

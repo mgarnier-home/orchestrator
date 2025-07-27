@@ -13,12 +13,12 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/certs
+          subpath: traefik/apollon/certs
         target: /certs
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/data
+          subpath: traefik/apollon/data
         target: /data
     ports:
       - 80:80/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 80
@@ -26,12 +26,14 @@ services:
       - ${APOLLON_TRAEFIK_PORT}:8080/tcp
     labels:
       traefik-conf.port: ${APOLLON_TRAEFIK_PORT}
+      traefik-conf.name: traefik.apollon
     env_file:
       - ./traefik.env
     environment:
       ZEPHYR_IP: ${ZEPHYR_IP}
       APOLLON_IP: ${APOLLON_IP}
       ATHENA_IP: ${ATHENA_IP}
+      ATLAS_IP: ${ATLAS_IP}
     depends_on:
       - traefik-conf
     command:
