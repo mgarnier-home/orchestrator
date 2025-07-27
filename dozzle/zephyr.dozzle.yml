@@ -31,3 +31,9 @@ services:
       - ${ZEPHYR_DOZZLE_PORT}:8080
     labels:
       traefik-conf.port: ${ZEPHYR_DOZZLE_PORT}
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

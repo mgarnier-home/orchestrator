@@ -43,9 +43,6 @@ services:
 
     healthcheck:
       test: influx ping || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
       start_period: 10s
 
   stats-api:

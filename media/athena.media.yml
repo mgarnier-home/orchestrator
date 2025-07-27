@@ -16,7 +16,6 @@ services:
       - type: volume
         source: atlas-media
         target: /output
-      # - /big-hdd/media:/output
     labels:
       traefik-conf.port: ${ATHENA_JDOWNLOADER_PORT}
     environment:
@@ -25,6 +24,9 @@ services:
       TIMEZONE: ${TIMEZONE}
       # - NVIDIA_VISIBLE_DEVICES=all
       # - JDOWNLOADER_PUBLISHED_SERVER_URL=
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:5800 || exit 1
+      start_period: 10s
 
   jellyfin:
     container_name: jellyfin
@@ -165,6 +167,10 @@ services:
         volume:
           subpath: downloader
         target: /config
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:6595 || exit 1
+      start_period: 10s
+
 volumes:
   docker-data:
     external: true

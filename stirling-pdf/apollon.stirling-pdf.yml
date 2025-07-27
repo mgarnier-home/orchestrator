@@ -35,39 +35,15 @@ services:
         volume:
           subpath: stirling-pdf/pipeline
         target: /pipeline
-
-      # - &volume
-      #   type: volume
-      #   source: docker-data-stirling-pdf
-      #   volume:
-      #     subpath: trainingData
-      #   target: /usr/share/tessdata
-      # - <<: *volume
-      #   volume:
-      #     subpath: extraConfigs
-      #   target: /configs
-      # - <<: *volume
-      #   volume:
-      #     subpath: customFiles
-      #   target: /customFiles
-      # - <<: *volume
-      #   volume:
-      #     subpath: logs
-      #   target: /logs
-      # - <<: *volume
-      #   volume:
-      #     subpath: pipeline
-      #   target: /pipeline
     labels:
       traefik-conf.port: ${APOLLON_STIRLING_PDF_PORT}
-
-# volumes:
-#   docker-data-stirling-pdf:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: ${APOLLON_DOCKER_DATA}/stirling-pdf
-#       o: bind
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/api/v1/info/status | grep -q 'UP'",
+        ]
+      start_period: 10s
 
 volumes:
   docker-data:
