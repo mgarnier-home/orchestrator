@@ -46,6 +46,27 @@ services:
       retries: 3
       start_period: 10s
 
+  authelia:
+    image: authelia/authelia:${AUTHELIA_VERSION}
+    container_name: authelia
+    user: 1000:1000
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: authelia
+        target: /config
+    ports:
+      - ${APOLLON_AUTHELIA_PORT}:9091/tcp
+    labels:
+      traefik-conf.port: ${APOLLON_AUTHELIA_PORT}
+    environment:
+      TZ: Europe/Paris
+    networks:
+      traefik-net:
+        ipv4_address: 172.19.0.4
+    restart: unless-stopped
+
   traefik-conf:
     container_name: traefik-conf
     restart: unless-stopped

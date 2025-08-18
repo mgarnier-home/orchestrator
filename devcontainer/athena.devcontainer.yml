@@ -6,8 +6,6 @@ services:
     restart: unless-stopped
     image: mgarnier11/operis-devcontainer:latest
     runtime: sysbox-runc
-    env_file:
-      - ./devcontainer.env
     ports:
       - ${ATHENA_OPERISDEVCONTAINER_SSH_PORT}:2222
       - ${ATHENA_OPERISDEVCONTAINER_VSCODE_PORT}:8080
@@ -16,8 +14,7 @@ services:
       - DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN=${DEVCONTAINER_ARTIFACTORY_AUTH_TOKEN}
       - GIT_EMAIL=${GIT_EMAIL}
       - GIT_NAME=${GIT_NAME}
-    secrets:
-      - OPERIS_PRIVATE_KEY
+      - SSH_PRIVATE_KEY=${OPERIS_PRIVATE_KEY}
     volumes:
       - /ssd-1/operis-devcontainer:/mnt/dev
     labels:
