@@ -26,7 +26,7 @@ services:
       - ${APOLLON_TRAEFIK_PORT}:8080/tcp
     labels:
       traefik-conf.port: ${APOLLON_TRAEFIK_PORT}
-      traefik-conf.name: traefik.apollon
+      # traefik-conf.name: traefik.apollon
     env_file:
       - ./traefik.env
     environment:
@@ -59,6 +59,10 @@ services:
     ports:
       - ${APOLLON_AUTHELIA_PORT}:9091/tcp
     labels:
+      my-traefik.http.routers.authelia-ext.rule: Host(`authelia.${PUBLIC_DOMAIN_NAME}`)
+      my-traefik.http.routers.authelia-ext.service: apollon_authelia
+      my-traefik.http.routers.authelia-ext.entrypoints: https
+      my-traefik.http.routers.authelia-ext.tls.certResolver: tls-resolver
       traefik-conf.port: ${APOLLON_AUTHELIA_PORT}
     environment:
       TZ: Europe/Paris

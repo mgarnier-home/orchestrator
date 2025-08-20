@@ -12,7 +12,8 @@ services:
       my-traefik.http.routers.share-ext.service: apollon_share
       my-traefik.http.routers.share-ext.entrypoints: https
       my-traefik.http.routers.share-ext.tls.certResolver: tls-resolver
-      my-traefik.http.routers.share-ext.tls.options: ca-mgarnier11@file
+      my-traefik.http.routers.share-ext.app.middlewares: authelia@file
+      # my-traefik.http.routers.share-ext.tls.options: ca-mgarnier11@file
       traefik-conf.port: ${APOLLON_SHARE_PORT}
     environment:
       - TRUST_PROXY=true # Set to true if a reverse proxy is in front of the container

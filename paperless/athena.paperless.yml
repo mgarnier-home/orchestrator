@@ -99,6 +99,9 @@ services:
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
       PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
+      PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
+      PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
+      PAPERLESS_LOGOUT_REDIRECT_URL: https://authelia.mgarnier11.fr/logout
 
   gotenberg:
     image: gotenberg/gotenberg:${PAPERLESS_GOTENBERG_VERSION}

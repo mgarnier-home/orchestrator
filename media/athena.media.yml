@@ -78,36 +78,6 @@ services:
               count: all
               capabilities: [gpu]
 
-  plex:
-    image: lscr.io/linuxserver/plex:latest
-    container_name: plex
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TIMEZONE}
-      - VERSION=docker
-      - NVIDIA_VISIBLE_DEVICES=all
-    volumes:
-      - type: volume
-        source: docker-data-local
-        volume:
-          subpath: plex/config
-        target: /config
-      - type: volume
-        source: docker-data-local
-        volume:
-          subpath: plex/transcode
-        target: /transcode
-      - type: volume
-        source: atlas-media
-        target: /data
-    ports:
-      - ${ATHENA_PLEX_PORT}:32400
-    labels:
-      traefik-conf.port: ${ATHENA_PLEX_PORT}
-    restart: unless-stopped
-    runtime: nvidia
-
   navidrome-music:
     image: deluan/navidrome:${NAVIDROME_VERSION}
     container_name: navidrome-music
@@ -124,6 +94,8 @@ services:
       ND_SPOTIFY_ID: ${SPOTIFY_ID}
       ND_SPOTIFY_SECRET: ${SPOTIFY_SECRET}
       ND_ARTISTARTPRIORITY: external
+      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
+      ND_ENABLEUSEREDITING: false
     volumes:
       - type: volume
         source: docker-data
@@ -139,6 +111,11 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_MUSIC_PORT}
       traefik-conf.name: music
+      my-traefik.http.routers.athena_music_api.rule: Host(`music.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+      my-traefik.http.routers.athena_music_api.service: athena_music
+      my-traefik.http.routers.athena_music_api.entrypoints: https
+      my-traefik.http.routers.athena_music_api.app.middlewares: authelia-basic@file
+      my-traefik.http.routers.athena_music_api.tls.certResolver: tls-resolver
 
   navidrome-sagas:
     image: deluan/navidrome:${NAVIDROME_VERSION}
@@ -155,6 +132,8 @@ services:
       # ND_BASEURL=""
       ND_SPOTIFY_ID: ${SPOTIFY_ID}
       ND_SPOTIFY_SECRET: ${SPOTIFY_SECRET}
+      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
+      ND_ENABLEUSEREDITING: false
     volumes:
       - type: volume
         source: docker-data
@@ -170,6 +149,11 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_SAGAS_PORT}
       traefik-conf.name: sagas
+      my-traefik.http.routers.athena_sagas_api.rule: Host(`sagas.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+      my-traefik.http.routers.athena_sagas_api.service: athena_sagas
+      my-traefik.http.routers.athena_sagas_api.entrypoints: https
+      my-traefik.http.routers.athena_sagas_api.app.middlewares: authelia-basic@file
+      my-traefik.http.routers.athena_sagas_api.tls.certResolver: tls-resolver
 
   downloader:
     image: registry.gitlab.com/bockiii/deemix-docker

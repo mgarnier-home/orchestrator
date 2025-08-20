@@ -2,11 +2,17 @@ name: trilium
 
 services:
   trilium:
-    image: triliumnext/notes:${TRILIUM_VERSION}
+    image: triliumnext/trilium:${TRILIUM_VERSION}
     container_name: trilium
     restart: unless-stopped
     environment:
       TZ: ${TIMEZONE}
+      # TRILIUM_OAUTH_BASE_URL: "https://trilium.mgarnier11.fr"
+      # TRILIUM_OAUTH_CLIENT_ID: "trilium"
+      # TRILIUM_OAUTH_CLIENT_SECRET: "insecure_secret"
+      # TRILIUM_OAUTH_ISSUER_BASE_URL: "https://authelia.mgarnier11.fr"
+      # TRILIUM_OAUTH_ISSUER_NAME: "Authelia"
+      # TRILIUM_OAUTH_ISSUER_ICON: "https://www.authelia.com/images/branding/logo-cropped.png"
     ports:
       - ${APOLLON_TRILIUM_PORT}:8080
     volumes:
