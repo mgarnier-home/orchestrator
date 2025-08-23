@@ -4,7 +4,8 @@ services:
   traefik:
     container_name: traefik
     restart: unless-stopped
-    image: mgarnier11/my-traefik
+    image: traefik:${TRAEFIK_VERSION}
+    # image: mgarnier11/my-traefik
     networks:
       traefik-net:
         ipv4_address: 172.19.0.2
