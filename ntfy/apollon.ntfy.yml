@@ -20,6 +20,12 @@ services:
         target: /etc/ntfy
     labels:
       traefik-conf.port: ${APOLLON_NTFY_PORT}
+      my-traefik.http.routers.apollon_ntfy.app.rule: Host(`ntfy.${PUBLIC_DOMAIN_NAME}`)
+      my-traefik.http.routers.apollon_ntfy.app.middlewares: geoblock@file,authelia-basic@file
+      my-traefik.http.routers.apollon_ntfy.entrypoints: https
+      my-traefik.http.routers.apollon_ntfy.tls.certResolver: tls-resolver
+      my-traefik.http.routers.apollon_ntfy.service: apollon_ntfy
+
     healthcheck:
       test: wget -q --tries=1 http://localhost/v1/health -O - | grep -Eo '\"healthy\":true' || exit 1
       interval: 30s

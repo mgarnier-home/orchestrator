@@ -57,6 +57,11 @@ services:
         volume:
           subpath: authelia
         target: /config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: authelia/logs
+        target: /logs
     ports:
       - ${APOLLON_AUTHELIA_PORT}:9091/tcp
     labels:
