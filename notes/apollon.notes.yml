@@ -1,4 +1,4 @@
-name: trilium
+name: notes
 
 services:
   trilium:
@@ -16,7 +16,6 @@ services:
     ports:
       - ${APOLLON_TRILIUM_PORT}:8080
     volumes:
-      # - docker-data-trilium:/home/node/trilium-data
       - type: volume
         source: docker-data
         volume:
@@ -25,13 +24,23 @@ services:
     labels:
       traefik-conf.port: ${APOLLON_TRILIUM_PORT}
 
-# volumes:
-#   docker-data-trilium:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: ${APOLLON_DOCKER_DATA}/trilium
-#       o: bind
+  # memos:
+  #   image: neosmemo/memos:${MEMOS_VERSION}
+  #   container_name: memos
+  #   restart: unless-stopped
+  #   environment:
+  #     - MEMOS_MODE=prod
+  #     - MEMOS_PORT=5230
+  #   volumes:
+  #     - type: volume
+  #       source: docker-data
+  #       volume:
+  #         subpath: memos
+  #       target: /var/opt/memos
+  #   ports:
+  #     - ${APOLLON_MEMOS_PORT}:5230
+  #   labels:
+  #     traefik-conf.port: ${APOLLON_MEMOS_PORT}
 
 volumes:
   docker-data:

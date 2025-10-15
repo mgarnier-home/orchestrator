@@ -169,13 +169,11 @@ services:
       UMASK_SET: 022
       DEEMIX_SINGLE_USER: true
     volumes:
-      # - /big-hdd/media/musics:/downloads
       - type: volume
         source: atlas-media
         volume:
           subpath: musics
-        target: /musics
-        read_only: true
+        target: /downloads
       - type: volume
         source: docker-data
         volume:
