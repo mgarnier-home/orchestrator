@@ -8,6 +8,7 @@ services:
     env_file:
       - ./autoscaler.env
     environment:
+      RUNNER_IMAGE: mgarnier11/github-runner:latest
       SSH_USER: ${SSH_USER}
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
@@ -15,10 +16,10 @@ services:
     ports:
       - ${APOLLON_AUTOSCALER_PORT}:3000
     labels:
-      my-traefik.http.routers.autoscaler.rule: Host(`autoscaler.${PUBLIC_DOMAIN_NAME}`)
-      my-traefik.http.routers.autoscaler.service: apollon_autoscaler
-      my-traefik.http.routers.autoscaler.entrypoints: https
-      my-traefik.http.routers.autoscaler.tls.certResolver: tls-resolver
+      # my-traefik.http.routers.autoscaler.rule: Host(`autoscaler.${PUBLIC_DOMAIN_NAME}`)
+      # my-traefik.http.routers.autoscaler.service: apollon_autoscaler
+      # my-traefik.http.routers.autoscaler.entrypoints: https
+      # my-traefik.http.routers.autoscaler.tls.certResolver: tls-resolver
       traefik-conf.port: ${APOLLON_AUTOSCALER_PORT}
     volumes:
       - type: volume

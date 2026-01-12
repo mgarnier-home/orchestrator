@@ -1,21 +1,32 @@
 name: monitoring
 
 services:
-  nodesight:
-    extends:
-      file: monitoring.yml
-      service: nodesight
+  telegraf:
+    image: telegraf:${TELEGRAF_VERSION}
+    container_name: telegraf
+    restart: unless-stopped
+    command: ["--config", "/config/atlas.conf"]
+    network_mode: host # required for host-level metrics
+    user: telegraf:989 # required for docker socket access, got from : stat -c '%g' /var/run/docker.sock
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: monitoring/telegraf
+        target: /config
+      - /:/hostfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/host/sys:ro
+      - /proc:/host/proc:ro
     environment:
-      HOSTNAME: ${ATLAS_HOSTNAME}
-      ENABLE_STATS_API: true
-      STATS_API_URL: ${STATS_API_URL}
-      SERVER_PORT: ${ATLAS_NODESIGHT_PORT}
-    labels:
-      traefik-conf.port: ${ATLAS_NODESIGHT_PORT}
-      traefik-conf.name: nodesight.atlas
-    healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://localhost:${ATLAS_NODESIGHT_PORT} || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      HOST_PROC: /hostfs/proc
+      HOST_SYS: /hostfs/sys
+      HOST_ETC: /hostfs/etc
+      HOST_MOUNT_PREFIX: /hostfs
+      INFLUX_URL: "http://${ZEPHYR_IP}:${ZEPHYR_INFLUXDB_PORT}"
+      INFLUX_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      INFLUX_BUCKET: ${INFLUXDB_BUCKET}
+volumes:
+  docker-data:
+    external: true

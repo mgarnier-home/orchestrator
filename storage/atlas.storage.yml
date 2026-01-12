@@ -1,0 +1,94 @@
+services:
+  master:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-master
+    restart: unless-stopped
+    networks:
+      - seaweedfs-net
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: seaweedfs/master
+        target: /data
+    command: "master -ip=master -ip.bind=0.0.0.0 -metricsPort=9324"
+
+  volume:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-volume
+    restart: unless-stopped
+    networks:
+      - seaweedfs-net
+    volumes:
+      - type: volume
+        source: s3
+        volume:
+          subpath: data
+        target: /data
+    command: 'volume -ip=volume -mserver="master:9333" -ip.bind=0.0.0.0 -port=8080 -metricsPort=9325'
+    depends_on:
+      - master
+  filer:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-filer
+    restart: unless-stopped
+    networks:
+      - seaweedfs-net
+    volumes:
+      - type: volume
+        source: s3
+        volume:
+          subpath: filer
+        target: /data
+    command: 'filer -ip=filer -master="master:9333" -ip.bind=0.0.0.0 -metricsPort=9326'
+    tty: true
+    stdin_open: true
+    depends_on:
+      - master
+      - volume
+  s3:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-s3
+    restart: unless-stopped
+    networks:
+      - seaweedfs-net
+    ports:
+      - ${ATLAS_S3_PORT}:8333
+    labels:
+      traefik-conf.port: ${ATLAS_S3_PORT}
+      traefik-conf.name: s3
+    volumes:
+      - type: volume
+        source: docker-data
+        read_only: true
+        volume:
+          subpath: seaweedfs/config
+        target: /config
+    command: 's3 -filer="filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327 -config=/config/s3.json'
+    depends_on:
+      - master
+      - volume
+      - filer
+  admin:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-admin
+    restart: unless-stopped
+    networks:
+      - seaweedfs-net
+    command: 'admin -master="master:9333" -adminUser=${SEAWEEDFS_ADMIN_USER} -adminPassword=${SEAWEEDFS_ADMIN_PASSWORD}'
+    ports:
+      - ${ATLAS_S3_ADMIN_PORT}:23646
+    labels:
+      traefik-conf.port: ${ATLAS_S3_ADMIN_PORT}
+      traefik-conf.name: s3-admin
+    depends_on:
+      - master
+
+networks:
+  seaweedfs-net:
+
+volumes:
+  docker-data:
+    external: true
+  s3:
+    external: true

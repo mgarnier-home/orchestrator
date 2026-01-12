@@ -1,0 +1,46 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:${MEALIE_VERSION} #
+
+    container_name: mealie
+    restart: unless-stopped
+    ports:
+      - "${ATHENA_MEALIE_PORT}:9000" #
+
+    deploy:
+      resources:
+        limits:
+          memory: 1000M #
+    labels:
+      traefik-conf.port: ${ATHENA_MEALIE_PORT}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: mealie
+        target: /app/data/
+    environment:
+      # Set Backend ENV Variables Here
+      ALLOW_SIGNUP: "false"
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Paris
+      BASE_URL: https://mealie.${PUBLIC_DOMAIN_NAME}
+      OIDC_AUTH_ENABLED: "true"
+      OIDC_SIGNUP_ENABLED: "true"
+      OIDC_CONFIGURATION_URL: "https://authelia.${PUBLIC_DOMAIN_NAME}/.well-known/openid-configuration"
+      OIDC_CLIENT_ID: "mealie"
+      OIDC_CLIENT_SECRET: "insecure_secret"
+      OIDC_AUTO_REDIRECT: "false"
+      OIDC_ADMIN_GROUP: "mealie-admins"
+      OIDC_USER_GROUP: "mealie-users"
+      ALLOW_PASSWORD_LOGIN: "false"
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: mgarnier11@gmail.com
+      SMTP_PASSWORD: "wxpb dsdb pqom xfts"
+      SMTP_FROM_EMAIL: mgarnier11@gmail.com
+
+volumes:
+  docker-data:
+    external: true

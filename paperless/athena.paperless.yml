@@ -2,13 +2,11 @@ name: paperless
 
 services:
   broker:
-    image: redis:${PAPERLESS_REDIS_VERSION}
+    image: docker.io/library/redis:${PAPERLESS_REDIS_VERSION}
     container_name: paperless-broker
     restart: unless-stopped
     networks:
       - paperless-net
-    labels:
-      wud.tag.include: ^7\.\d+\.\d+$$
     healthcheck:
       test: redis-cli ping
       interval: 30s
@@ -104,7 +102,7 @@ services:
       PAPERLESS_LOGOUT_REDIRECT_URL: https://authelia.mgarnier11.fr/logout
 
   gotenberg:
-    image: gotenberg/gotenberg:${PAPERLESS_GOTENBERG_VERSION}
+    image: docker.io/gotenberg/gotenberg:${PAPERLESS_GOTENBERG_VERSION}
     container_name: paperless-gotenberg
     restart: unless-stopped
     networks:
@@ -122,7 +120,7 @@ services:
 
   tika:
     container_name: paperless-tika
-    image: ghcr.io/paperless-ngx/tika:${PAPERLESS_TIKA_VERSION}
+    image: docker.io/apache/tika:${PAPERLESS_TIKA_VERSION}
     restart: unless-stopped
     networks:
       - paperless-net

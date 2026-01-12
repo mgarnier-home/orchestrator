@@ -1,37 +1,41 @@
 name: monitoring
 
 services:
-  nodesight:
-    # extends:
-    #   file: monitoring.yml
-    #   service: nodesight
-
-    image: mgarnier11/nodesight:dev
-    container_name: nodesight
+  telegraf:
+    image: telegraf:${TELEGRAF_VERSION}
+    container_name: telegraf
     restart: unless-stopped
-    network_mode: host
-    privileged: true
+    command: ["--config", "/config/athena.conf"]
+    user: telegraf:989 # required for docker socket access, got from : stat -c '%g' /var/run/docker.sock
+    network_mode: host # required for host-level metrics
+    runtime: nvidia # required for GPU metrics
+    devices:
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia0:/dev/nvidia0
     volumes:
-      - /:/mnt/host:ro
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: monitoring/telegraf
+        target: /config
+      # - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      # GPU metrics (if using NVIDIA GPUs)
+      - /:/hostfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/host/sys:ro
+      - /proc:/host/proc:ro
+      - /usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro
+      - /usr/lib/x86_64-linux-gnu/nvidia:/usr/lib/x86_64-linux-gnu/nvidia:ro
     environment:
-      HOSTNAME: ${ATHENA_HOSTNAME}
-      ENABLE_STATS_API: true
-      STATS_API_URL: ${STATS_API_URL}
-      SERVER_PORT: ${ATHENA_NODESIGHT_PORT}
-    labels:
-      traefik-conf.port: ${ATHENA_NODESIGHT_PORT}
-      traefik-conf.name: nodesight.athena
-    runtime: nvidia
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://localhost:${ATHENA_NODESIGHT_PORT} || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      LD_PRELOAD: /usr/lib/x86_64-linux-gnu/nvidia/current/libnvidia-ml.so
+      HOST_PROC: /hostfs/proc
+      HOST_SYS: /hostfs/sys
+      HOST_ETC: /hostfs/etc
+      HOST_MOUNT_PREFIX: /hostfs
+      INFLUX_URL: "http://${ZEPHYR_IP}:${ZEPHYR_INFLUXDB_PORT}"
+      INFLUX_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      INFLUX_BUCKET: ${INFLUXDB_BUCKET}
+volumes:
+  docker-data:
+    external: true
