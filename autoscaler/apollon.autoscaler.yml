@@ -2,7 +2,8 @@ name: autoscaler
 
 services:
   autoscaler:
-    image: mgarnier11/autoscaler:${AUTOSCALER_VERSION}
+    # image: mgarnier11/autoscaler:${AUTOSCALER_VERSION}
+    image: mgarnier11/autoscaler:latest
     restart: unless-stopped
     container_name: autoscaler
     env_file:
@@ -13,6 +14,10 @@ services:
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
       SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+      DOCKER_REGISTRY_URL: ${DOCKER_REGISTRY_URL}
+      DOCKER_REGISTRY_USERNAME: ${DOCKER_REGISTRY_USERNAME}
+      DOCKER_REGISTRY_PASSWORD: ${DOCKER_REGISTRY_PASSWORD}
+      RUNTIME: sysbox-runc
     ports:
       - ${APOLLON_AUTOSCALER_PORT}:3000
     labels:

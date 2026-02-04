@@ -1,4 +1,4 @@
-name: share
+name: utils
 
 services:
   share:
@@ -23,6 +23,37 @@ services:
         volume:
           subpath: pingvin
         target: /opt/app/backend/data
+
+  paste:
+    image: darrenofficial/dpaste:${DPASTE_VERSION}
+    restart: unless-stopped
+    container_name: dpaste
+    ports:
+      - ${APOLLON_DPASTE_PORT}:8000
+    labels:
+      traefik-conf.port: ${APOLLON_DPASTE_PORT}
+    environment:
+      - DATABASE_URL=sqlite:////db/dpaste.db
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: dpaste
+        target: /db
+
+  pdf:
+    image: ghcr.io/alam00000/bentopdf:${BENTO_PDF_VERSION}
+    container_name: bentopdf
+    restart: unless-stopped
+    ports:
+      - ${APOLLON_BENTO_PDF_PORT}:8080
+    labels:
+      traefik-conf.port: ${APOLLON_BENTO_PDF_PORT}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   docker-data:

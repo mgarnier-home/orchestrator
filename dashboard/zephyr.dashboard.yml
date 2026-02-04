@@ -1,23 +1,48 @@
 name: dashboard
 
 services:
-  dashboard:
-    container_name: dashboard
-    restart: unless-stopped
-    image: mgarnier11/dashboard:${DASHBOARD_VERSION}
+  # dashboard:
+  #   container_name: dashboard
+  #   restart: unless-stopped
+  #   image: mgarnier11/dashboard:${DASHBOARD_VERSION}
+  #   environment:
+  #     APP_CONF_PATH: /config/conf.yml
+  #     ICONS_PATH: /config/icons
+  #   volumes:
+  #     - type: volume
+  #       source: docker-data
+  #       volume:
+  #         subpath: monitoring/dashboard
+  #       target: /config
+  #   ports:
+  #     - ${ZEPHYR_DASHBOARD_PORT}:3000
+  #   labels:
+  #     traefik-conf.port: ${ZEPHYR_DASHBOARD_PORT}
+  #     traefik-conf.name: dashboard-old
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:${HOMEPAGE_VERSION}
+    container_name: homepage
     environment:
-      APP_CONF_PATH: /config/conf.yml
-      ICONS_PATH: /config/icons
+      HOMEPAGE_ALLOWED_HOSTS: homepage.${PUBLIC_DOMAIN_NAME}
+      # PUID: 1000 # optional, your user id
+      # PGID: 1000 # optional, your group id
+    ports:
+      - ${ZEPHYR_HOMEPAGE_PORT}:3000
     volumes:
       - type: volume
         source: docker-data
         volume:
-          subpath: dashboard
-        target: /config
-    ports:
-      - ${ZEPHYR_DASHBOARD_PORT}:3000
+          subpath: monitoring/homepage/config
+        target: /app/config
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: monitoring/homepage/images
+        target: /app/images
+    restart: unless-stopped
     labels:
-      traefik-conf.port: ${ZEPHYR_DASHBOARD_PORT}
+      traefik-conf.port: ${ZEPHYR_HOMEPAGE_PORT}
 
   # influxdb:
   #   container_name: influxdb

@@ -18,6 +18,10 @@ services:
         target: /output
     labels:
       traefik-conf.port: ${ATHENA_JDOWNLOADER_PORT}
+      # sablier.enable: true
+      # sablier.group: downloader
+      # sablier.group.strategy: dynamic
+
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
@@ -163,6 +167,9 @@ services:
       - ${ATHENA_DOWNLOADER_PORT}:6595
     labels:
       traefik-conf.port: ${ATHENA_DOWNLOADER_PORT}
+      # sablier.enable: true
+      # sablier.group: downloader
+      # sablier.group.strategy: dynamic
     environment:
       PUID: ${PUID}
       PGID: ${PGID}

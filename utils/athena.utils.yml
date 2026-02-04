@@ -1,0 +1,60 @@
+name: utils
+
+services:
+  # neko:
+  #   image: "ghcr.io/m1k1o/neko/nvidia-firefox:${NEKO_VERSION}"
+  #   container_name: neko
+  #   restart: "unless-stopped"
+  #   shm_size: "2gb"
+  #   ports:
+  #     - "${ATHENA_NEKO_PORT}:8080"
+  #     - "52000-52100:52000-52100/udp"
+  #   environment:
+  #     NEKO_CAPTURE_VIDEO_PIPELINE: |
+  #       ximagesrc display-name={display} show-pointer=true use-damage=false
+  #         ! video/x-raw,framerate=25/1
+  #         ! cudaupload ! cudaconvert ! queue
+  #         ! video/x-raw(memory:CUDAMemory),format=NV12
+  #         ! nvh264enc
+  #           name=encoder
+  #           preset=2
+  #           gop-size=25
+  #           spatial-aq=true
+  #           temporal-aq=true
+  #           bitrate=4096
+  #           vbv-buffer-size=4096
+  #           rc-mode=6
+  #         ! h264parse config-interval=-1
+  #         ! video/x-h264,stream-format=byte-stream
+  #         ! appsink name=appsink
+  #     NEKO_CAPTURE_VIDEO_CODEC: "h264"
+  #     NEKO_DESKTOP_SCREEN: 1920x1080@30
+  #     NEKO_MEMBER_MULTIUSER_USER_PASSWORD: neko
+  #     NEKO_MEMBER_MULTIUSER_ADMIN_PASSWORD: admin
+  #     NEKO_WEBRTC_EPR: 52000-52100
+  #     NEKO_WEBRTC_ICELITE: 0
+  #     NEKO_WEBRTC_NAT1TO1: ${ATHENA_IP}
+  #   labels:
+  #     traefik-conf.port: ${ATHENA_NEKO_PORT}
+  #     sablier.enable: true
+  #     sablier.group: neko
+  #     sablier.group.strategy: dynamic
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+
+  bg:
+    image: withoutbg/app:${WITHOUTBG_VERSION}
+    container_name: withoutbg
+    restart: unless-stopped
+    ports:
+      - ${ATHENA_WITHOUTBG_PORT}:80
+    labels:
+      traefik-conf.port: ${ATHENA_WITHOUTBG_PORT}
+      sablier.enable: true
+      sablier.group: bg
+      sablier.group.strategy: dynamic

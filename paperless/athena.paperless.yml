@@ -13,6 +13,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    labels:
+      sablier.enable: true
+      sablier.group: paperless
 
   db:
     image: mariadb:10.5
@@ -26,7 +29,9 @@ services:
           subpath: paperless/db
         target: /var/lib/mysql
     labels:
-      wud.watch: false
+      sablier.enable: true
+      sablier.group: paperless
+
     networks:
       - paperless-net
     environment:
@@ -58,6 +63,8 @@ services:
       - ${ATHENA_PAPERLESS_PORT}:8000
     labels:
       traefik-conf.port: ${ATHENA_PAPERLESS_PORT}
+      sablier.enable: true
+      sablier.group: paperless
     volumes:
       - type: volume
         source: docker-data
@@ -117,6 +124,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    labels:
+      sablier.enable: true
+      sablier.group: paperless
 
   tika:
     container_name: paperless-tika
@@ -125,7 +135,9 @@ services:
     networks:
       - paperless-net
     labels:
-      wud.tag.include: ^\d+\.\d+\.\d+-minimal$$
+      sablier.enable: true
+      sablier.group: paperless
+      sablier.group.strategy: dynamic
     healthcheck:
       test: timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9998' || exit 1
       interval: 30s

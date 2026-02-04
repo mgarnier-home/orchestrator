@@ -13,6 +13,15 @@ services:
           memory: 1000M #
     labels:
       traefik-conf.port: ${ATHENA_MEALIE_PORT}
+      sablier.enable: true
+      sablier.group: mealie
+      sablier.group.strategy: dynamic
+    healthcheck:
+      test: python -m mealie.scripts.healthcheck || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     volumes:
       - type: volume
         source: docker-data
@@ -30,7 +39,7 @@ services:
       OIDC_SIGNUP_ENABLED: "true"
       OIDC_CONFIGURATION_URL: "https://authelia.${PUBLIC_DOMAIN_NAME}/.well-known/openid-configuration"
       OIDC_CLIENT_ID: "mealie"
-      OIDC_CLIENT_SECRET: "insecure_secret"
+      OIDC_CLIENT_SECRET: "893d5922e782e6f5aed26244d15ecc91"
       OIDC_AUTO_REDIRECT: "false"
       OIDC_ADMIN_GROUP: "mealie-admins"
       OIDC_USER_GROUP: "mealie-users"

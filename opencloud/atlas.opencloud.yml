@@ -1,0 +1,108 @@
+name: opencloud
+
+services:
+  opencloud:
+    image: opencloudeu/opencloud-rolling:${OPENCLOUD_VERSION}
+    container_name: opencloud
+    entrypoint:
+      - /bin/sh
+    # run opencloud init to initialize a configuration file with random secrets
+    # it will fail on subsequent runs, because the config file already exists
+    # therefore we ignore the error and then start the opencloud server
+    command: ["-c", "opencloud init || true; opencloud server"]
+    ports:
+      - ${ATLAS_OPENCLOUD_PORT}:9200
+    labels:
+      traefik-conf.port: ${ATLAS_OPENCLOUD_PORT}
+    environment:
+      # enable services that are not started automatically
+      # OC_ADD_RUN_SERVICES: ${START_ADDITIONAL_SERVICES}
+      OC_URL: https://opencloud.${PUBLIC_DOMAIN_NAME}
+      OC_LOG_LEVEL: ${LOG_LEVEL:-info}
+      OC_LOG_COLOR: "${LOG_PRETTY:-false}"
+      OC_LOG_PRETTY: "${LOG_PRETTY:-false}"
+      # do not use SSL between the reverse proxy and OpenCloud
+      PROXY_TLS: "false"
+      # INSECURE: needed if OpenCloud / reverse proxy is using self generated certificates
+      OC_INSECURE: "false"
+      # basic auth (not recommended, but needed for eg. WebDav clients that do not support OpenID Connect)
+      PROXY_ENABLE_BASIC_AUTH: "${PROXY_ENABLE_BASIC_AUTH:-false}"
+      # demo users
+      # IDM_CREATE_DEMO_USERS: "${DEMO_USERS:-false}"
+      # admin password
+      IDM_ADMIN_PASSWORD: "adminpasswordtest"
+      # email server (if configured)
+      # NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}"
+      # NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}"
+      # NOTIFICATIONS_SMTP_SENDER: "${SMTP_SENDER:-OpenCloud Notifications <notifications@cloud.opencloud.test>}"
+      # NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}"
+      # NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      # NOTIFICATIONS_SMTP_INSECURE: "${SMTP_INSECURE:-false}"
+      # NOTIFICATIONS_SMTP_AUTHENTICATION: "${SMTP_AUTHENTICATION}"
+      # NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION:-none}"
+      FRONTEND_ARCHIVER_MAX_SIZE: "10000000000"
+      FRONTEND_CHECK_FOR_UPDATES: "${CHECK_FOR_UPDATES:-true}"
+      # PROXY_CSP_CONFIG_FILE_LOCATION: /etc/opencloud/csp.yaml
+      # enable to allow using the banned passwords list
+      # OC_PASSWORD_POLICY_BANNED_PASSWORDS_LIST: banned-password-list.txt
+      # control the password enforcement and policy for public shares
+      # OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "${OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD:-true}"
+      # OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "${OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD:-false}"
+      # OC_PASSWORD_POLICY_DISABLED: "${OC_PASSWORD_POLICY_DISABLED:-false}"
+      # OC_PASSWORD_POLICY_MIN_CHARACTERS: "${OC_PASSWORD_POLICY_MIN_CHARACTERS:-8}"
+      # OC_PASSWORD_POLICY_MIN_LOWERCASE_CHARACTERS: "${OC_PASSWORD_POLICY_MIN_LOWERCASE_CHARACTERS:-1}"
+      # OC_PASSWORD_POLICY_MIN_UPPERCASE_CHARACTERS: "${OC_PASSWORD_POLICY_MIN_UPPERCASE_CHARACTERS:-1}"
+      # OC_PASSWORD_POLICY_MIN_DIGITS: "${OC_PASSWORD_POLICY_MIN_DIGITS:-1}"
+      # OC_PASSWORD_POLICY_MIN_SPECIAL_CHARACTERS: "${OC_PASSWORD_POLICY_MIN_SPECIAL_CHARACTERS:-1}"
+      # default language for services/WebUI; defaults to English, language code (ISO 639-1, e.g. de, en, fr)
+      OC_DEFAULT_LANGUAGE: en
+      # OIDC
+      WEB_OIDC_CLIENT_ID: opencloud-web
+      OC_OIDC_ISSUER: "https://authelia.${PUBLIC_DOMAIN_NAME}"
+
+      # Proxy
+      PROXY_OIDC_ACCESS_TOKEN_VERIFY_METHOD: none
+      PROXY_AUTOPROVISION_ACCOUNTS: true
+      PROXY_ROLE_ASSIGNMENT_DRIVER: "default"
+      PROXY_USER_OIDC_CLAIM: "preferred_username"
+      PROXY_USER_CS3_CLAIM: "username"
+
+      # Role Assignment
+      PROXY_ROLE_ASSIGNMENT_OIDC_CLAIM: "groups"
+      WEB_OIDC_SCOPE: openid profile email groups
+      GRAPH_ASSIGN_DEFAULT_USER_ROLE: "true"
+      GRAPH_USERNAME_MATCH: "none"
+      OC_EXCLUDE_RUN_SERVICES: "idp"
+      PROXY_CSP_CONFIG_FILE_LOCATION: /etc/opencloud/csp.yaml
+
+      # Desktop Client
+      PROXY_OIDC_REWRITE_WELLKNOWN: true
+      PROXY_OIDC_NATIVE_CLIENT_ID: OpenCloudDesktop
+      OCIS_OIDC_SCOPE: "openid profile email groups offline_access ocis" # ajout du scope offline_access
+      # PROXY_OIDC_SKIP_VERIFICATION: false
+      # PROXY_OIDC_SKIP_USER_INFO: false
+
+    volumes:
+      # - ./config/opencloud/csp.yaml:/etc/opencloud/csp.yaml
+      # - ./config/opencloud/banned-password-list.txt:/etc/opencloud/banned-password-list.txt
+      # configure the .env file to use own paths instead of docker internal volumes
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: opencloud/data
+        target: /var/lib/opencloud
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: opencloud/config
+        target: /etc/opencloud
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: opencloud/apps
+        target: /var/lib/opencloud/web/assets/apps
+    restart: unless-stopped
+
+volumes:
+  docker-data:
+    external: true

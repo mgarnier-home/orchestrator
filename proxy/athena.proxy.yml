@@ -1,0 +1,26 @@
+name: proxy
+services:
+  sablier:
+    image: ghcr.io/sablierapp/sablier:${SABLIER_VERSION}
+    container_name: sablier
+    restart: unless-stopped
+    command:
+      - start
+      - --provider.name=docker
+      - --sessions.default-duration=1m
+      - --sessions.expiration-interval=10s
+    ports:
+      - "${ATHENA_SABLIER_PORT}:10000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: sablier
+        target: /etc/sablier/themes
+    labels:
+      traefik-conf.port: ${ATHENA_SABLIER_PORT}
+
+volumes:
+  docker-data:
+    external: true

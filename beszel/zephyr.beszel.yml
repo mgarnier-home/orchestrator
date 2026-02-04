@@ -11,7 +11,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: beszel
+          subpath: monitoring/beszel
         target: /beszel_data
     labels:
       traefik-conf.port: ${ZEPHYR_BESZEL_PORT}

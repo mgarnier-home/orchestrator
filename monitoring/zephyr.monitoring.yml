@@ -55,6 +55,7 @@ services:
         target: /etc/grafana
     labels:
       traefik-conf.port: ${ZEPHYR_GRAFANA_PORT}
+      traefik-conf.middlewares: geoblock@file,authelia@file,grafana-headers@file
 
   influxdb:
     container_name: influxdb

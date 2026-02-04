@@ -14,12 +14,12 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/apollon/certs
+          subpath: traefik/certs
         target: /certs
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/apollon/data
+          subpath: traefik/data
         target: /data
     ports:
       - 80:80/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 80
@@ -31,6 +31,7 @@ services:
     env_file:
       - ./traefik.env
     environment:
+      TZ: Europe/Paris
       ZEPHYR_IP: ${ZEPHYR_IP}
       APOLLON_IP: ${APOLLON_IP}
       ATHENA_IP: ${ATHENA_IP}
@@ -47,6 +48,73 @@ services:
       retries: 3
       start_period: 10s
 
+  traefik-log-dashboard-agent:
+    image: hhftechnology/traefik-log-dashboard-agent:${TRAEFIK_LOG_DASHBOARD_AGENT_VERSION}
+    container_name: traefik-log-dashboard-agent
+    restart: unless-stopped
+    networks:
+      traefik-net:
+        ipv4_address: 172.19.0.5
+    depends_on:
+      - traefik
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: traefik/data/logs
+        target: /logs
+        read_only: true
+    environment:
+      TRAEFIK_LOG_DASHBOARD_ACCESS_PATH: /logs/traefik-access.log
+      TRAEFIK_LOG_DASHBOARD_ERROR_PATH: /logs/traefik-access.log
+      TRAEFIK_LOG_DASHBOARD_AUTH_TOKEN: ${TRAEFIK_LOG_TOKEN}
+      TRAEFIK_LOG_DASHBOARD_SYSTEM_MONITORING: true
+      TRAEFIK_LOG_DASHBOARD_LOG_FORMAT: json
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5000/api/logs/status",
+        ]
+      interval: 2m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  traefik-log-dashboard:
+    image: hhftechnology/traefik-log-dashboard:${TRAEFIK_LOG_DASHBOARD_VERSION}
+    container_name: traefik-log-dashboard
+    restart: unless-stopped
+    networks:
+      traefik-net:
+        ipv4_address: 172.19.0.6
+    depends_on:
+      traefik-log-dashboard-agent:
+        condition: service_healthy
+    ports:
+      - ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}:3000
+    environment:
+      AGENT_API_URL: http://traefik-log-dashboard-agent:5000
+      AGENT_API_TOKEN: ${TRAEFIK_LOG_TOKEN}
+      AGENT_NAME: "Traefik Apollon"
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: traefik/dashboard/positions
+        target: /data/positions
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: traefik/dashboard/dashboards
+        target: /data/dashboards
+    labels:
+      traefik-conf.port: ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}
+
   authelia:
     image: authelia/authelia:${AUTHELIA_VERSION}
     container_name: authelia
@@ -55,13 +123,22 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: authelia
+          subpath: authelia/config
         target: /config
       - type: volume
         source: docker-data
         volume:
           subpath: authelia/logs
         target: /logs
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: authelia/secrets
+        target: /secrets
+    command:
+      - authelia
+      - --config=/config/configuration.yml
+      - --config=/config/oidc.yml
     ports:
       - ${APOLLON_AUTHELIA_PORT}:9091/tcp
     labels:
@@ -72,6 +149,7 @@ services:
       traefik-conf.port: ${APOLLON_AUTHELIA_PORT}
     environment:
       TZ: Europe/Paris
+      X_AUTHELIA_CONFIG_FILTERS: template
     networks:
       traefik-net:
         ipv4_address: 172.19.0.4
