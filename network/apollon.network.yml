@@ -1,4 +1,4 @@
-name: traefik
+name: network
 
 services:
   traefik:

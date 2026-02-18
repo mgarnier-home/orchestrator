@@ -13,9 +13,9 @@ services:
           memory: 1000M #
     labels:
       traefik-conf.port: ${ATHENA_MEALIE_PORT}
-      sablier.enable: true
-      sablier.group: mealie
-      sablier.group.strategy: dynamic
+      # sablier.enable: true
+      # sablier.group: mealie
+      # sablier.group.strategy: dynamic
     healthcheck:
       test: python -m mealie.scripts.healthcheck || exit 1
       interval: 30s

@@ -21,7 +21,6 @@ services:
     environment:
       # CRON_SCHEDULE: 15 4 * * *
       CONFIG_FILE_PATH: /config/config-athena.yml
-      # KEEP_ALIVE_URL: https://autosaver.athena.int.mgarnier11.fr
       # LOG_LEVEL: 5
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}

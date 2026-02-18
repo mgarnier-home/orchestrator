@@ -36,6 +36,37 @@ services:
       INFLUX_TOKEN: ${INFLUXDB_TOKEN}
       INFLUX_ORG: ${INFLUXDB_ORG}
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
+
+  dozzle-agent:
+    image: amir20/dozzle:${DOZZLE_VERSION}
+    container_name: dozzle-agent
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    ports:
+      - ${ATHENA_DOZZLE_AGENT_PORT}:7007
+
+  beszel-agent:
+    image: henrygd/beszel-agent:${BESZEL_VERSION}
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      PORT: ${ATHENA_BESZEL_AGENT_PORT}
+      KEY: ${BESZEL_AGENT_KEY}
+    healthcheck:
+      test: ["CMD", "/agent", "health"]
+      start_period: 10s
+
 volumes:
   docker-data:
     external: true

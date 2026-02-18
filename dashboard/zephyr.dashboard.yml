@@ -21,12 +21,18 @@ services:
   #     traefik-conf.name: dashboard-old
 
   homepage:
-    image: ghcr.io/gethomepage/homepage:${HOMEPAGE_VERSION}
+    image: mgarnier11/homepage
     container_name: homepage
     environment:
       HOMEPAGE_ALLOWED_HOSTS: homepage.${PUBLIC_DOMAIN_NAME}
       # PUID: 1000 # optional, your user id
       # PGID: 1000 # optional, your group id
+      APOLLON_IP: ${APOLLON_IP}
+      ATHENA_IP: ${ATHENA_IP}
+      ATLAS_IP: ${ATLAS_IP}
+      ZEPHYR_IP: ${ZEPHYR_IP}
+    env_file:
+      - ../ports.env
     ports:
       - ${ZEPHYR_HOMEPAGE_PORT}:3000
     volumes:

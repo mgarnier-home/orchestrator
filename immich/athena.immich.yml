@@ -21,8 +21,8 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_IMMICH_PORT}
       traefik-conf.name: immich
-      sablier.enable: true
-      sablier.group: immich
+      # sablier.enable: true
+      # sablier.group: immich
     environment:
       TZ: ${TIMEZONE}
       DB_PASSWORD: ${IMMICH_DB_PASSWORD}
@@ -51,9 +51,9 @@ services:
     restart: unless-stopped
     healthcheck:
       disable: false
-    labels:
-      sablier.enable: true
-      sablier.group: immich
+    # labels:
+    #   sablier.enable: true
+    #   sablier.group: immich
 
   redis:
     container_name: immich-redis
@@ -63,9 +63,9 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     restart: unless-stopped
-    labels:
-      sablier.enable: true
-      sablier.group: immich
+    # labels:
+    #   sablier.enable: true
+    #   sablier.group: immich
 
   database:
     container_name: immich-postgres
@@ -85,9 +85,9 @@ services:
           subpath: immich/db
         target: /var/lib/postgresql/data
     shm_size: 128mb
-    labels:
-      sablier.enable: true
-      sablier.group: immich
+    # labels:
+    #   sablier.enable: true
+    #   sablier.group: immich
     # healthcheck:
     #   test: >-
     #     pg_isready --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" || exit 1;

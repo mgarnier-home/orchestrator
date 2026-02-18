@@ -9,7 +9,7 @@ services:
       - --config
       - /config/zephyr.conf
     network_mode: host # required for host-level metrics
-    user: telegraf:992 # required for docker socket access, got from : stat -c '%g' /var/run/docker.sock
+    user: telegraf:985 # required for docker socket access, got from : stat -c '%g' /var/run/docker.sock
     volumes:
       - type: volume
         source: docker-data
@@ -80,6 +80,84 @@ services:
     healthcheck:
       test: influx ping || exit 1
       start_period: 10s
+
+  dozzle-agent:
+    image: amir20/dozzle:${DOZZLE_VERSION}
+    container_name: dozzle-agent
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    ports:
+      - ${ZEPHYR_DOZZLE_AGENT_PORT}:7007
+
+  dozzle:
+    image: amir20/dozzle:${DOZZLE_VERSION}
+    container_name: dozzle
+    restart: unless-stopped
+    environment:
+      DOZZLE_REMOTE_AGENT: >
+        ${ZEPHYR_IP}:${ZEPHYR_DOZZLE_AGENT_PORT},
+        ${ATHENA_IP}:${ATHENA_DOZZLE_AGENT_PORT},
+        ${APOLLON_IP}:${APOLLON_DOZZLE_AGENT_PORT},
+        ${ATLAS_IP}:${ATLAS_DOZZLE_AGENT_PORT}
+    ports:
+      - ${ZEPHYR_DOZZLE_PORT}:8080
+    labels:
+      traefik-conf.port: ${ZEPHYR_DOZZLE_PORT}
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  beszel:
+    image: henrygd/beszel:${BESZEL_VERSION}
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+      - ${ZEPHYR_BESZEL_PORT}:8090
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: monitoring/beszel
+        target: /beszel_data
+    labels:
+      traefik-conf.port: ${ZEPHYR_BESZEL_PORT}
+    healthcheck:
+      # The URL is relative to the container, not the host
+      test:
+        [
+          "CMD",
+          "/beszel",
+          "health",
+          "--url",
+          "http://localhost:${ZEPHYR_BESZEL_PORT}",
+        ]
+      start_period: 10s
+
+  beszel-agent:
+    image: henrygd/beszel-agent:${BESZEL_VERSION}
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      PORT: ${ZEPHYR_BESZEL_AGENT_PORT}
+      KEY: ${BESZEL_AGENT_KEY}
+    healthcheck:
+      test: ["CMD", "/agent", "health"]
+      start_period: 10s
+
 volumes:
   docker-data:
     external: true

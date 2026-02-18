@@ -1,6 +1,16 @@
 name: utils
 
 services:
+  valentine:
+    image: mgarnier11/valentine:latest
+    container_name: valentine
+    restart: unless-stopped
+    ports:
+      - ${APOLLON_VALENTINE_PORT}:80
+    labels:
+      traefik-conf.port: ${APOLLON_VALENTINE_PORT}
+      traefik-conf.name: aurelie
+
   share:
     image: stonith404/pingvin-share:${PINGVIN_SHARE_VERSION}
     restart: unless-stopped
@@ -54,6 +64,61 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  trilium:
+    image: triliumnext/trilium:${TRILIUM_VERSION}
+    container_name: trilium
+    restart: unless-stopped
+    environment:
+      TZ: ${TIMEZONE}
+      # TRILIUM_OAUTH_BASE_URL: "https://trilium.mgarnier11.fr"
+      # TRILIUM_OAUTH_CLIENT_ID: "trilium"
+      # TRILIUM_OAUTH_CLIENT_SECRET: "insecure_secret"
+      # TRILIUM_OAUTH_ISSUER_BASE_URL: "https://authelia.mgarnier11.fr"
+      # TRILIUM_OAUTH_ISSUER_NAME: "Authelia"
+      # TRILIUM_OAUTH_ISSUER_ICON: "https://www.authelia.com/images/branding/logo-cropped.png"
+    ports:
+      - ${APOLLON_TRILIUM_PORT}:8080
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: trilium
+        target: /home/node/trilium-data
+    labels:
+      traefik-conf.port: ${APOLLON_TRILIUM_PORT}
+
+  ntfy:
+    image: binwiederhier/ntfy:${NTFY_VERSION}
+    container_name: ntfy
+    restart: unless-stopped
+    command:
+      - serve
+    environment:
+      TZ: ${TIMEZONE}
+    ports:
+      - ${APOLLON_NTFY_PORT}:80
+    volumes:
+      # - docker-data-ntfy:/etc/ntfy
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: ntfy
+        target: /etc/ntfy
+    labels:
+      traefik-conf.port: ${APOLLON_NTFY_PORT}
+      my-traefik.http.routers.apollon_ntfy.app.rule: Host(`ntfy.${PUBLIC_DOMAIN_NAME}`)
+      my-traefik.http.routers.apollon_ntfy.app.middlewares: geoblock@file,authelia-basic@file
+      my-traefik.http.routers.apollon_ntfy.entrypoints: https
+      my-traefik.http.routers.apollon_ntfy.tls.certResolver: tls-resolver
+      my-traefik.http.routers.apollon_ntfy.service: apollon_ntfy
+
+    healthcheck:
+      test: wget -q --tries=1 http://localhost/v1/health -O - | grep -Eo '\"healthy\":true' || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 volumes:
   docker-data:

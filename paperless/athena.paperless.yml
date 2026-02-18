@@ -13,9 +13,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    labels:
-      sablier.enable: true
-      sablier.group: paperless
+    # labels:
+    #   sablier.enable: true
+    #   sablier.group: paperless
 
   db:
     image: mariadb:10.5
@@ -28,9 +28,9 @@ services:
         volume:
           subpath: paperless/db
         target: /var/lib/mysql
-    labels:
-      sablier.enable: true
-      sablier.group: paperless
+    # labels:
+    #   sablier.enable: true
+    #   sablier.group: paperless
 
     networks:
       - paperless-net
@@ -63,8 +63,8 @@ services:
       - ${ATHENA_PAPERLESS_PORT}:8000
     labels:
       traefik-conf.port: ${ATHENA_PAPERLESS_PORT}
-      sablier.enable: true
-      sablier.group: paperless
+      # sablier.enable: true
+      # sablier.group: paperless
     volumes:
       - type: volume
         source: docker-data
@@ -106,7 +106,7 @@ services:
       PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
       PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
       PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
-      PAPERLESS_LOGOUT_REDIRECT_URL: https://authelia.mgarnier11.fr/logout
+      PAPERLESS_LOGOUT_REDIRECT_URL: https://authelia.${PUBLIC_DOMAIN_NAME}/logout
 
   gotenberg:
     image: docker.io/gotenberg/gotenberg:${PAPERLESS_GOTENBERG_VERSION}
@@ -124,9 +124,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    labels:
-      sablier.enable: true
-      sablier.group: paperless
+    # labels:
+    #   sablier.enable: true
+    #   sablier.group: paperless
 
   tika:
     container_name: paperless-tika
@@ -134,10 +134,10 @@ services:
     restart: unless-stopped
     networks:
       - paperless-net
-    labels:
-      sablier.enable: true
-      sablier.group: paperless
-      sablier.group.strategy: dynamic
+    # labels:
+    #   sablier.enable: true
+    #   sablier.group: paperless
+    #   sablier.group.strategy: dynamic
     healthcheck:
       test: timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9998' || exit 1
       interval: 30s
