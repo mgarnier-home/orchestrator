@@ -10,7 +10,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: autosaver
+          subpath: backup/autosaver
         target: /config
     ports:
       - ${ATLAS_AUTOSAVER_PORT}:8080

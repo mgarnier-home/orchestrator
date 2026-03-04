@@ -11,7 +11,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: jdownloader
+          subpath: media/jdownloader
         target: /config
       - type: volume
         source: atlas-media
@@ -104,7 +104,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: navidrome-music
+          subpath: media/navidrome-music
         target: /data
       - type: volume
         source: atlas-media
@@ -142,7 +142,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: navidrome-sagas
+          subpath: media/navidrome-sagas
         target: /data
       - type: volume
         source: atlas-media
@@ -184,11 +184,58 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: downloader
+          subpath: media/downloader
         target: /config
     healthcheck:
       test: wget -q --spider --timeout=5 --tries=1 http://127.0.0.1:6595 || exit 1
       start_period: 10s
+
+  # handbrake-server:
+  #   image: ghcr.io/thenickoftime/handbrake-web-server:${HANDBRAKE_WEB_VERSION}
+  #   container_name: handbrake-web-server
+  #   user: 1000:1000 # edit to run as user (uuid:guid) with permissions to access your media. 0:0 to run as root (not recommended).
+  #   ports:
+  #     - ${ATHENA_HANDBRAKE_WEB_PORT}:9999
+  #   restart: unless-stopped
+  #   labels:
+  #     traefik-conf.port: ${ATHENA_HANDBRAKE_WEB_PORT}
+  #     traefik-conf.name: handbrake
+  #   volumes:
+  #     - type: volume
+  #       source: docker-data
+  #       volume:
+  #         subpath: media/handbrake
+  #       target: /data
+  #     - type: volume
+  #       source: atlas-media
+  #       target: /video
+
+  # handbrake-worker:
+  #   image: ghcr.io/thenickoftime/handbrake-web-worker:${HANDBRAKE_WEB_VERSION}
+  #   container_name: handbrake-web-worker
+  #   user: 1000:1000 # edit to run as user (uuid:guid) with permissions to access your media. 0:0 to run as root (not recommended).
+  #   restart: unless-stopped
+  #   environment:
+  #     - WORKER_ID=handbrake-worker # give your worker a unique name
+  #     - SERVER_URL=handbrake-web-server
+  #     # - SERVER_URL=https://handbrake.${PUBLIC_DOMAIN_NAME} # change if setting up a standalone worker, prefix with http(s):// if necessary
+  #     - SERVER_PORT=9999 # change if your server is running on a non-default port
+  #   volumes:
+  #     - type: volume
+  #       source: atlas-media
+  #       target: /video
+  #   depends_on:
+  #     - handbrake-server
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities:
+  #               - gpu
+  #               - compute
+  #               - video
 
 volumes:
   docker-data:

@@ -33,7 +33,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: cron-runner
+          subpath: backup/cron-runner
         target: /config
     ports:
       - ${ZEPHYR_CRON_RUNNER_PORT}:3000

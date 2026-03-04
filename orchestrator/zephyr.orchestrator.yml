@@ -8,12 +8,12 @@ services:
     ports:
       - ${ZEPHYR_ORCHESTRATOR_PORT}:3000
     environment:
-      COMPOSE_DIRECTORY: /compose
+      ORCHESTRATOR_COMPOSE_DIRECTORY: /compose
       ATHENA_HOST: ssh://${SSH_USER}@${ATHENA_IP}
       ZEPHYR_HOST: ssh://${SSH_USER}@${ZEPHYR_IP}
       APOLLON_HOST: ssh://${SSH_USER}@${APOLLON_IP}
       ATLAS_HOST: ssh://${SSH_USER}@${ATLAS_IP}
-      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+      ORCHESTRATOR_SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     labels:
       traefik-conf.port: ${ZEPHYR_ORCHESTRATOR_PORT}
     volumes:
