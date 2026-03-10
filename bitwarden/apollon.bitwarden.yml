@@ -15,12 +15,12 @@ services:
         target: /data
     labels:
       traefik-conf.port: ${APOLLON_BITWARDEN_PORT}
-      # my-traefik.http.routers.apollon_bitwarden_cert.rule: Host(`bitwarden.${PUBLIC_DOMAIN_NAME}`)
-      # my-traefik.http.routers.apollon_bitwarden_cert.service: apollon_bitwarden
-      # my-traefik.http.routers.apollon_bitwarden_cert.entrypoints: https
-      # my-traefik.http.routers.apollon_bitwarden_cert.app.middlewares: authelia@file
-      # my-traefik.http.routers.apollon_bitwarden_cert.tls.certResolver: tls-resolver
-      # my-traefik.http.routers.apollon_bitwarden_cert.tls.options: ca-mgarnier11@file
+      # traefik-conf.http.routers.apollon_bitwarden_cert.rule: Host(`bitwarden.${PUBLIC_DOMAIN_NAME}`)
+      # traefik-conf.http.routers.apollon_bitwarden_cert.service: apollon_bitwarden
+      # traefik-conf.http.routers.apollon_bitwarden_cert.entrypoints: https
+      # traefik-conf.http.routers.apollon_bitwarden_cert.app.middlewares: authelia@file
+      # traefik-conf.http.routers.apollon_bitwarden_cert.tls.certResolver: tls-resolver
+      # traefik-conf.http.routers.apollon_bitwarden_cert.tls.options: ca-mgarnier11@file
 
 volumes:
   docker-data:

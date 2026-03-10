@@ -5,7 +5,7 @@ services:
     container_name: traefik
     restart: unless-stopped
     image: traefik:${TRAEFIK_VERSION}
-    # image: mgarnier11/my-traefik
+    # image: mgarnier11/traefik-conf
     networks:
       traefik-net:
         ipv4_address: 172.19.0.2
@@ -14,13 +14,18 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/certs
+          subpath: network/traefik/certs
         target: /certs
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/data
+          subpath: network/traefik/data
         target: /data
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: network/traefik/logs
+        target: /logs
     ports:
       - 80:80/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 80
       - 443:443/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 443
@@ -61,7 +66,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/data/logs
+          subpath: network/traefik/logs
         target: /logs
         read_only: true
     environment:
@@ -105,12 +110,12 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/dashboard/positions
+          subpath: network/traefik-log-dashboard/positions
         target: /data/positions
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/dashboard/dashboards
+          subpath: network/traefik-log-dashboard/dashboards
         target: /data/dashboards
     labels:
       traefik-conf.port: ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}
@@ -123,17 +128,17 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: authelia/config
+          subpath: network/authelia/config
         target: /config
       - type: volume
         source: docker-data
         volume:
-          subpath: authelia/logs
+          subpath: network/authelia/logs
         target: /logs
       - type: volume
         source: docker-data
         volume:
-          subpath: authelia/secrets
+          subpath: network/authelia/secrets
         target: /secrets
     command:
       - authelia
@@ -142,10 +147,10 @@ services:
     ports:
       - ${APOLLON_AUTHELIA_PORT}:9091/tcp
     labels:
-      my-traefik.http.routers.authelia-ext.rule: Host(`authelia.${PUBLIC_DOMAIN_NAME}`)
-      my-traefik.http.routers.authelia-ext.service: apollon_authelia
-      my-traefik.http.routers.authelia-ext.entrypoints: https
-      my-traefik.http.routers.authelia-ext.tls.certResolver: tls-resolver
+      traefik-conf.http.routers.authelia-ext.rule: Host(`authelia.${PUBLIC_DOMAIN_NAME}`)
+      traefik-conf.http.routers.authelia-ext.service: apollon_authelia
+      traefik-conf.http.routers.authelia-ext.entrypoints: https
+      traefik-conf.http.routers.authelia-ext.tls.certResolver: tls-resolver
       traefik-conf.port: ${APOLLON_AUTHELIA_PORT}
     environment:
       TZ: Europe/Paris
@@ -163,7 +168,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: traefik/conf
+          subpath: network/traefik-conf
         target: /traefik-data
     environment:
       DATA_FILE_PATH: /traefik-data/config.yml
@@ -201,7 +206,7 @@ services:
   # - type: volume
   #   source: docker-data
   #   volume:
-  #     subpath: infrared
+  #     subpath: network/infrared
   #   target: /configs
   #   environment:
   #     INFRARED_CONFIG_PATH: "/configs"

@@ -115,11 +115,11 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_MUSIC_PORT}
       traefik-conf.name: music
-      my-traefik.http.routers.athena_music_api.rule: Host(`music.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
-      my-traefik.http.routers.athena_music_api.service: athena_music
-      my-traefik.http.routers.athena_music_api.entrypoints: https
-      my-traefik.http.routers.athena_music_api.app.middlewares: authelia-basic@file
-      my-traefik.http.routers.athena_music_api.tls.certResolver: tls-resolver
+      traefik-conf.http.routers.athena_music_api.rule: Host(`music.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+      traefik-conf.http.routers.athena_music_api.service: athena_music
+      traefik-conf.http.routers.athena_music_api.entrypoints: https
+      traefik-conf.http.routers.athena_music_api.app.middlewares: geoblock@file,authelia-basic@file
+      traefik-conf.http.routers.athena_music_api.tls.certResolver: tls-resolver
 
   navidrome-sagas:
     image: deluan/navidrome:${NAVIDROME_VERSION}
@@ -153,11 +153,11 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_MEDIA_SAGAS_PORT}
       traefik-conf.name: sagas
-      my-traefik.http.routers.athena_sagas_api.rule: Host(`sagas.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
-      my-traefik.http.routers.athena_sagas_api.service: athena_sagas
-      my-traefik.http.routers.athena_sagas_api.entrypoints: https
-      my-traefik.http.routers.athena_sagas_api.app.middlewares: authelia-basic@file
-      my-traefik.http.routers.athena_sagas_api.tls.certResolver: tls-resolver
+      traefik-conf.http.routers.athena_sagas_api.rule: Host(`sagas.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+      traefik-conf.http.routers.athena_sagas_api.service: athena_sagas
+      traefik-conf.http.routers.athena_sagas_api.entrypoints: https
+      traefik-conf.http.routers.athena_sagas_api.app.middlewares: geoblock@file,authelia-basic@file
+      traefik-conf.http.routers.athena_sagas_api.tls.certResolver: tls-resolver
 
   downloader:
     image: registry.gitlab.com/bockiii/deemix-docker

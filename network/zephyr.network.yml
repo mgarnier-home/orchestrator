@@ -9,12 +9,12 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: adguard/conf
+          subpath: network/adguard/conf
         target: /opt/adguardhome/conf
       - type: volume
         source: docker-data
         volume:
-          subpath: adguard/work
+          subpath: network/adguard/work
         target: /opt/adguardhome/work
     ports:
       - 53:53/tcp
@@ -42,7 +42,7 @@ services:
   #     - type: volume
   #       source: docker-data
   #       volume:
-  #         subpath: proxy
+  #         subpath: network/proxy
   #       target: /config
   #   labels:
   #     traefik-conf.port: ${ZEPHYR_PROXY_PORT}

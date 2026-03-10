@@ -16,7 +16,7 @@ services:
       - type: volume
         source: docker-data
         volume:
-          subpath: sablier
+          subpath: network/sablier
         target: /etc/sablier/themes
     labels:
       traefik-conf.port: ${ATHENA_SABLIER_PORT}
