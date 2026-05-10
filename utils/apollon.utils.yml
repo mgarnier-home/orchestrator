@@ -100,8 +100,8 @@ services:
         target: /etc/ntfy
     labels:
       traefik-conf.port: ${APOLLON_NTFY_PORT}
-      traefik-conf.http.routers.apollon_ntfy.app.rule: Host(`ntfy.${PUBLIC_DOMAIN_NAME}`)
-      traefik-conf.http.routers.apollon_ntfy.app.middlewares: geoblock@file,authelia-basic@file
+      traefik-conf.http.routers.apollon_ntfy.rule: Host(`ntfy.${PUBLIC_DOMAIN_NAME}`)
+      traefik-conf.http.routers.apollon_ntfy.middlewares: ip-wl@file,geoblock@file,authelia-basic@file
       traefik-conf.http.routers.apollon_ntfy.entrypoints: https
       traefik-conf.http.routers.apollon_ntfy.tls.certResolver: tls-resolver
       traefik-conf.http.routers.apollon_ntfy.service: apollon_ntfy

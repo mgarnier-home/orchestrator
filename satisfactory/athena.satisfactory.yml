@@ -1,0 +1,38 @@
+services:
+  satisfactory-server:
+    container_name: satisfactory-server
+    image: wolveix/satisfactory-server:${SATISFACTORY_VERSION}
+    ports:
+      - 7777:7777/udp
+      - 7777:7777/tcp
+      - 8888:8888/tcp
+      - 8080:8080/tcp
+      # - ${ATHENA_SATISFACTORY_PORT}:7777/udp
+      # - ${ATHENA_SATISFACTORY_PORT}:7777/tcp
+      # - ${ATHENA_SATISFACTORY_MESSAGING_PORT}:8888/tcp
+    volumes:
+      - type: volume
+        source: docker-data-local
+        volume:
+          subpath: satisfactory
+        target: /config
+    environment:
+      MAXPLAYERS: 4
+      PGID: ${PGID}
+      PUID: ${PUID}
+      ROOTLESS: false
+      STEAMBETA: false
+    restart: unless-stopped
+    healthcheck:
+      test: bash /healthcheck.sh
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+volumes:
+  docker-data-local:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}
+      o: bind

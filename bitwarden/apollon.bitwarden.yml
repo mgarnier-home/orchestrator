@@ -15,6 +15,9 @@ services:
         target: /data
     labels:
       traefik-conf.port: ${APOLLON_BITWARDEN_PORT}
+      homepage.group: Apollon
+      homepage.name: Bitwarden
+      traefik-conf.middlewares: geoblock@file
       # traefik-conf.http.routers.apollon_bitwarden_cert.rule: Host(`bitwarden.${PUBLIC_DOMAIN_NAME}`)
       # traefik-conf.http.routers.apollon_bitwarden_cert.service: apollon_bitwarden
       # traefik-conf.http.routers.apollon_bitwarden_cert.entrypoints: https

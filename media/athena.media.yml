@@ -118,7 +118,7 @@ services:
       traefik-conf.http.routers.athena_music_api.rule: Host(`music.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
       traefik-conf.http.routers.athena_music_api.service: athena_music
       traefik-conf.http.routers.athena_music_api.entrypoints: https
-      traefik-conf.http.routers.athena_music_api.app.middlewares: geoblock@file,authelia-basic@file
+      traefik-conf.http.routers.athena_music_api.middlewares: ip-wl@file,geoblock@file,authelia-basic@file
       traefik-conf.http.routers.athena_music_api.tls.certResolver: tls-resolver
 
   navidrome-sagas:
@@ -156,7 +156,7 @@ services:
       traefik-conf.http.routers.athena_sagas_api.rule: Host(`sagas.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
       traefik-conf.http.routers.athena_sagas_api.service: athena_sagas
       traefik-conf.http.routers.athena_sagas_api.entrypoints: https
-      traefik-conf.http.routers.athena_sagas_api.app.middlewares: geoblock@file,authelia-basic@file
+      traefik-conf.http.routers.athena_sagas_api.middlewares: ip-wl@file,geoblock@file,authelia-basic@file
       traefik-conf.http.routers.athena_sagas_api.tls.certResolver: tls-resolver
 
   downloader:

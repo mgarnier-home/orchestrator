@@ -17,6 +17,8 @@ services:
     labels:
       traefik-conf.port: ${ATLAS_AUTOSAVER_PORT}
       traefik-conf.name: autosaver.atlas
+      homepage.group: Atlas
+      homepage.name: Autosaver
     privileged: true
     environment:
       CONFIG_FILE_PATH: /config/config-atlas.yml
@@ -24,9 +26,6 @@ services:
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
       SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
-    healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://localhost:8080 || exit 1
-      start_period: 10s
 volumes:
   docker-data:
     external: true

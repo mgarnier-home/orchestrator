@@ -106,6 +106,8 @@ services:
       AGENT_API_URL: http://traefik-log-dashboard-agent:5000
       AGENT_API_TOKEN: ${TRAEFIK_LOG_TOKEN}
       AGENT_NAME: "Traefik Apollon"
+      DASHBOARD_MAX_LOGS_DISPLAY: 10000
+      SHOW_DEMO_PAGE: false
     volumes:
       - type: volume
         source: docker-data
@@ -151,6 +153,7 @@ services:
       traefik-conf.http.routers.authelia-ext.service: apollon_authelia
       traefik-conf.http.routers.authelia-ext.entrypoints: https
       traefik-conf.http.routers.authelia-ext.tls.certResolver: tls-resolver
+      traefik-conf.http.services.apollon-ext.middlewares: ip-wl@file,geoblock@file
       traefik-conf.port: ${APOLLON_AUTHELIA_PORT}
     environment:
       TZ: Europe/Paris

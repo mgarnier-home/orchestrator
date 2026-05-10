@@ -26,15 +26,16 @@ services:
       # traefik-conf.http.routers.autoscaler.entrypoints: https
       # traefik-conf.http.routers.autoscaler.tls.certResolver: tls-resolver
       traefik-conf.port: ${APOLLON_AUTOSCALER_PORT}
+      homepage.group: Apollon
+      homepage.name: Autoscaler
+      homepage.href: https://autoscaler.${PUBLIC_DOMAIN_NAME}
+      homepage.siteMonitor: http://${APOLLON_IP}:${APOLLON_AUTOSCALER_PORT}
     volumes:
       - type: volume
         source: docker-data
         volume:
           subpath: autoscaler
         target: /config
-    healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://localhost:${APOLLON_AUTOSCALER_PORT} || exit 1
-      start_period: 10s
 
 volumes:
   docker-data:

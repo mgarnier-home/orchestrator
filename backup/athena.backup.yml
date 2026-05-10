@@ -17,6 +17,8 @@ services:
     labels:
       traefik-conf.port: ${ATHENA_AUTOSAVER_PORT}
       traefik-conf.name: autosaver.athena
+      homepage.group: Athena
+      homepage.name: Autosaver
     privileged: true
     environment:
       # CRON_SCHEDULE: 15 4 * * *
@@ -25,9 +27,6 @@ services:
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
       SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
-    healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://localhost:8080 || exit 1
-      start_period: 10s
 volumes:
   docker-data-local:
     driver: local
