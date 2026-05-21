@@ -28,23 +28,6 @@ services:
           subpath: utils/pingvin
         target: /opt/app/backend/data
 
-  paste:
-    image: darrenofficial/dpaste:${DPASTE_VERSION}
-    restart: unless-stopped
-    container_name: dpaste
-    ports:
-      - ${APOLLON_DPASTE_PORT}:8000
-    labels:
-      traefik-conf.port: ${APOLLON_DPASTE_PORT}
-    environment:
-      - DATABASE_URL=sqlite:////db/dpaste.db
-    volumes:
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: utils/dpaste
-        target: /db
-
   pdf:
     image: ghcr.io/alam00000/bentopdf:${BENTO_PDF_VERSION}
     container_name: bentopdf

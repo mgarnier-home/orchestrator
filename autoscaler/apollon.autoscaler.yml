@@ -2,8 +2,7 @@ name: autoscaler
 
 services:
   autoscaler:
-    # image: mgarnier11/autoscaler:${AUTOSCALER_VERSION}
-    image: mgarnier11/autoscaler:latest
+    image: mgarnier11/autoscaler:${AUTOSCALER_VERSION}
     restart: unless-stopped
     container_name: autoscaler
     env_file:
