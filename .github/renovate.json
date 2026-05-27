@@ -1,14 +1,15 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
   ],
-  "onboarding": false,
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
   "semanticCommitScope": "deps",
   "branchPrefix": "renovate/stack-",
   "commitMessageAction": "update",
   "commitMessageTopic": "{{groupName}}",
+  "separateMajorMinor": false,
   "enabledManagers": [
     "docker-compose"
   ],
@@ -19,6 +20,16 @@
   },
   "packageRules": [
     {
+      "description": "Force semver comparison for Jellyfin",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchPackageNames": [
+        "docker.io/jellyfin/jellyfin"
+      ],
+      "versioning": "semver"
+    },
+    {
       "description": "One PR for autoscaler stack",
       "matchManagers": [
         "docker-compose"
@@ -26,8 +37,7 @@
       "matchFileNames": [
         "autoscaler/**"
       ],
-      "groupName": "autoscaler stack",
-      "separateMajorMinor": false
+      "groupName": "autoscaler stack"
     },
     {
       "description": "One PR for backup stack",
@@ -37,8 +47,7 @@
       "matchFileNames": [
         "backup/**"
       ],
-      "groupName": "backup stack",
-      "separateMajorMinor": false
+      "groupName": "backup stack"
     },
     {
       "description": "One PR for bitwarden stack",
@@ -48,8 +57,7 @@
       "matchFileNames": [
         "bitwarden/**"
       ],
-      "groupName": "bitwarden stack",
-      "separateMajorMinor": false
+      "groupName": "bitwarden stack"
     },
     {
       "description": "One PR for immich stack",
@@ -59,8 +67,7 @@
       "matchFileNames": [
         "immich/**"
       ],
-      "groupName": "immich stack",
-      "separateMajorMinor": false
+      "groupName": "immich stack"
     },
     {
       "description": "One PR for mealie stack",
@@ -70,8 +77,7 @@
       "matchFileNames": [
         "mealie/**"
       ],
-      "groupName": "mealie stack",
-      "separateMajorMinor": false
+      "groupName": "mealie stack"
     },
     {
       "description": "One PR for media stack",
@@ -81,8 +87,7 @@
       "matchFileNames": [
         "media/**"
       ],
-      "groupName": "media stack",
-      "separateMajorMinor": false
+      "groupName": "media stack"
     },
     {
       "description": "One PR for monitoring stack",
@@ -92,8 +97,7 @@
       "matchFileNames": [
         "monitoring/**"
       ],
-      "groupName": "monitoring stack",
-      "separateMajorMinor": false
+      "groupName": "monitoring stack"
     },
     {
       "description": "One PR for network stack",
@@ -103,8 +107,7 @@
       "matchFileNames": [
         "network/**"
       ],
-      "groupName": "network stack",
-      "separateMajorMinor": false
+      "groupName": "network stack"
     },
     {
       "description": "One PR for orchestrator stack",
@@ -114,8 +117,7 @@
       "matchFileNames": [
         "orchestrator/**"
       ],
-      "groupName": "orchestrator stack",
-      "separateMajorMinor": false
+      "groupName": "orchestrator stack"
     },
     {
       "description": "One PR for paperless stack",
@@ -125,8 +127,7 @@
       "matchFileNames": [
         "paperless/**"
       ],
-      "groupName": "paperless stack",
-      "separateMajorMinor": false
+      "groupName": "paperless stack"
     },
     {
       "description": "One PR for satisfactory stack",
@@ -136,8 +137,7 @@
       "matchFileNames": [
         "satisfactory/**"
       ],
-      "groupName": "satisfactory stack",
-      "separateMajorMinor": false
+      "groupName": "satisfactory stack"
     },
     {
       "description": "One PR for storage stack",
@@ -147,8 +147,7 @@
       "matchFileNames": [
         "storage/**"
       ],
-      "groupName": "storage stack",
-      "separateMajorMinor": false
+      "groupName": "storage stack"
     },
     {
       "description": "One PR for utils stack",
@@ -158,8 +157,7 @@
       "matchFileNames": [
         "utils/**"
       ],
-      "groupName": "utils stack",
-      "separateMajorMinor": false
+      "groupName": "utils stack"
     }
   ],
   "prConcurrentLimit": 5,
