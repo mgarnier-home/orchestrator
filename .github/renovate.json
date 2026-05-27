@@ -27,14 +27,11 @@
   },
   "packageRules": [
     {
-      "description": "Force semver comparison for Jellyfin",
-      "matchManagers": [
-        "docker-compose"
+      "description": "Pin docker images to sha256 digests",
+      "matchDatasources": [
+        "docker"
       ],
-      "matchPackageNames": [
-        "docker.io/jellyfin/jellyfin"
-      ],
-      "versioning": "semver"
+      "pinDigests": true
     },
     {
       "description": "One PR for autoscaler stack",
