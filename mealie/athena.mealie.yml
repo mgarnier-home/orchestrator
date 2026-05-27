@@ -1,16 +1,16 @@
 services:
   mealie:
-    image: ghcr.io/mealie-recipes/mealie:v3.9.1 #
+    image: ghcr.io/mealie-recipes/mealie:v3.9.1
 
     container_name: mealie
     restart: unless-stopped
     ports:
-      - "${ATHENA_MEALIE_PORT}:9000" #
+      - "${ATHENA_MEALIE_PORT}:9000"
 
     deploy:
       resources:
         limits:
-          memory: 1000M #
+          memory: 1000M
     labels:
       traefik-conf.port: ${ATHENA_MEALIE_PORT}
       # sablier.enable: true
