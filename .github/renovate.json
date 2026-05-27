@@ -13,9 +13,16 @@
   "enabledManagers": [
     "docker-compose"
   ],
+  "prConcurrentLimit": 20,
+  "branchConcurrentLimit": 20,
+  "prHourlyLimit": 0,
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
   "docker-compose": {
     "managerFilePatterns": [
-      "/(^|/).+\\.ya?ml$/"
+      "/^(autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|orchestrator|paperless|satisfactory|storage|utils)\\/.+\\.ya?ml$/"
     ]
   },
   "packageRules": [
@@ -159,11 +166,5 @@
       ],
       "groupName": "utils stack"
     }
-  ],
-  "prConcurrentLimit": 5,
-  "prHourlyLimit": 2,
-  "labels": [
-    "dependencies",
-    "renovate"
   ]
 }
