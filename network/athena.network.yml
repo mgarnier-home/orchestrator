@@ -1,7 +1,7 @@
 name: network
 services:
   sablier:
-    image: ghcr.io/sablierapp/sablier:${SABLIER_VERSION}
+    image: ghcr.io/sablierapp/sablier:1.11.1
     container_name: sablier
     restart: unless-stopped
     command:

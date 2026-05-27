@@ -2,7 +2,7 @@ name: bitwarden
 
 services:
   bitwarden:
-    image: vaultwarden/server:${BITWARDEN_VERSION}
+    image: docker.io/vaultwarden/server:1.35.2
     container_name: bitwarden
     restart: unless-stopped
     ports:

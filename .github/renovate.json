@@ -1,0 +1,173 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "onboarding": false,
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "prTitle": "chore(deps): update {{groupName}}",
+  "branchPrefix": "renovate/stack-",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{groupName}}",
+  "enabledManagers": [
+    "docker-compose"
+  ],
+  "docker-compose": {
+    "managerFilePatterns": [
+      "/(^|/).+\\.ya?ml$/"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "One PR for autoscaler stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "autoscaler/**"
+      ],
+      "groupName": "autoscaler stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for backup stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "backup/**"
+      ],
+      "groupName": "backup stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for bitwarden stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "bitwarden/**"
+      ],
+      "groupName": "bitwarden stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for immich stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "immich/**"
+      ],
+      "groupName": "immich stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for mealie stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "mealie/**"
+      ],
+      "groupName": "mealie stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for media stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "media/**"
+      ],
+      "groupName": "media stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for monitoring stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "monitoring/**"
+      ],
+      "groupName": "monitoring stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for network stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "network/**"
+      ],
+      "groupName": "network stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for orchestrator stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "orchestrator/**"
+      ],
+      "groupName": "orchestrator stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for paperless stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "paperless/**"
+      ],
+      "groupName": "paperless stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for satisfactory stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "satisfactory/**"
+      ],
+      "groupName": "satisfactory stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for storage stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "storage/**"
+      ],
+      "groupName": "storage stack",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "One PR for utils stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "utils/**"
+      ],
+      "groupName": "utils stack",
+      "separateMajorMinor": false
+    }
+  ],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "labels": [
+    "dependencies",
+    "renovate"
+  ]
+}

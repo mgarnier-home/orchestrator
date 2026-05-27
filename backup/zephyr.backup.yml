@@ -28,7 +28,7 @@ services:
   cron-runner:
     container_name: cron-runner
     restart: unless-stopped
-    image: mgarnier11/cron-runner:${CRON_RUNNER_VERSION}
+    image: docker.io/mgarnier11/cron-runner:1.0.1
     volumes:
       - type: volume
         source: docker-data

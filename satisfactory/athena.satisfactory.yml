@@ -1,7 +1,7 @@
 services:
   satisfactory-server:
     container_name: satisfactory-server
-    image: wolveix/satisfactory-server:${SATISFACTORY_VERSION}
+    image: docker.io/wolveix/satisfactory-server:v1.9.10
     ports:
       - 7777:7777/udp
       - 7777:7777/tcp

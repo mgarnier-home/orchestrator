@@ -2,13 +2,13 @@ name: autoscaler
 
 services:
   autoscaler:
-    image: mgarnier11/autoscaler:${AUTOSCALER_VERSION}
+    image: docker.io/mgarnier11/autoscaler:1.4.0
     restart: unless-stopped
     container_name: autoscaler
     env_file:
       - ./autoscaler.env
     environment:
-      RUNNER_IMAGE: mgarnier11/github-runner:latest
+      RUNNER_IMAGE: docker.io/mgarnier11/github-runner:latest
       SSH_USER: ${SSH_USER}
       NTFY_SERVER: ${NTFY_SERVER}
       NTFY_TOPIC: ${NTFY_TOPIC}
@@ -29,6 +29,7 @@ services:
       homepage.name: Autoscaler
       homepage.href: https://autoscaler.${PUBLIC_DOMAIN_NAME}
       homepage.siteMonitor: http://${APOLLON_IP}:${APOLLON_AUTOSCALER_PORT}
+      traefik-conf.middlewares: github-wl@file
     volumes:
       - type: volume
         source: docker-data

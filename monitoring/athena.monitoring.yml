@@ -2,7 +2,7 @@ name: monitoring
 
 services:
   docker-socket-proxy:
-    image: tecnativa/docker-socket-proxy:${DOCKER_SOCKET_PROXY_VERSION}
+    image: docker.io/tecnativa/docker-socket-proxy:v0.4.2
     container_name: docker-socket-proxy
     restart: unless-stopped
     environment:
@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   telegraf:
-    image: telegraf:${TELEGRAF_VERSION}
+    image: docker.io/telegraf:1.36.2
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/athena.conf"]
@@ -49,7 +49,7 @@ services:
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
 
   dozzle-agent:
-    image: amir20/dozzle:${DOZZLE_VERSION}
+    image: docker.io/amir20/dozzle:v9.0.2
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
@@ -65,7 +65,7 @@ services:
       - ${ATHENA_DOZZLE_AGENT_PORT}:7007
 
   beszel-agent:
-    image: henrygd/beszel-agent:${BESZEL_VERSION}
+    image: docker.io/henrygd/beszel-agent:0.13.2
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host

@@ -4,7 +4,7 @@ services:
   adguard:
     container_name: adguard
     restart: unless-stopped
-    image: adguard/adguardhome:${ADGUARD_VERSION}
+    image: docker.io/adguard/adguardhome:v0.107.69
     volumes:
       - type: volume
         source: docker-data

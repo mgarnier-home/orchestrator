@@ -4,7 +4,7 @@ services:
   orchestrator:
     container_name: orchestrator
     restart: unless-stopped
-    image: mgarnier11/orchestrator:${ORCHESTRATOR_VERSION}
+    image: docker.io/mgarnier11/orchestrator:2.0.0
     ports:
       - ${ZEPHYR_ORCHESTRATOR_PORT}:3000
     environment:
