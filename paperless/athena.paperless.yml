@@ -2,7 +2,7 @@ name: paperless
 
 services:
   broker:
-    image: docker.io/library/redis:8
+    image: docker.io/library/redis:8@sha256:f4104a06888b913545b999840715813e5444fb8717b26d2c84d935ef2c71cd6c
     container_name: paperless-broker
     restart: unless-stopped
     networks:
@@ -18,7 +18,7 @@ services:
     #   sablier.group: paperless
 
   db:
-    image: docker.io/mariadb:10.5
+    image: docker.io/mariadb:12.2@sha256:350261292d0129fd4b24f537dcf05ecd3ebe34d39d5b592af551f38310e7a167
     container_name: paperless-db
     restart: unless-stopped
     user: 1000:1000
@@ -49,7 +49,7 @@ services:
       start_period: 10s
 
   paperless:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.19
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.20@sha256:6c86cad803970ea782683a8e80e7403444c5bf3cf70de63b4d3c8e87500db92f
     container_name: paperless-web
     restart: unless-stopped
     networks:
@@ -109,7 +109,7 @@ services:
       PAPERLESS_LOGOUT_REDIRECT_URL: https://authelia.${PUBLIC_DOMAIN_NAME}/logout
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.24
+    image: docker.io/gotenberg/gotenberg:8.32@sha256:a40c5a46b79d812ce2f5e139278163142a054050bfd1e5f162da36d3d11c7138
     container_name: paperless-gotenberg
     restart: unless-stopped
     networks:
@@ -130,7 +130,7 @@ services:
 
   tika:
     container_name: paperless-tika
-    image: docker.io/apache/tika:3.2.3.0
+    image: docker.io/apache/tika:3.3.1.0@sha256:90b7fa1dc018434075fce9e1d9b88b1e3d0ea6979d0cf86e116c79a8073ae973
     restart: unless-stopped
     networks:
       - paperless-net
