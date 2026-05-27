@@ -28,7 +28,7 @@ services:
   cron-runner:
     container_name: cron-runner
     restart: unless-stopped
-    image: docker.io/mgarnier11/cron-runner:1.0.1
+    image: docker.io/mgarnier11/cron-runner:1.0.1@sha256:cb142cf78bc11d88e098d1381c1879b40624bb73d7008c6e673a21e776e88f55
     volumes:
       - type: volume
         source: docker-data
