@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   redeploy_stack:
@@ -16,29 +17,38 @@ jobs:
       github.event.pull_request.base.ref == 'main'
     runs-on: linux/arm64
     steps:
-      - name: Extract stack from PR title
+      - name: Extract stacks from modified files
         id: parse
         shell: bash
         run: |
           set -euo pipefail
-          title="${{ github.event.pull_request.title }}"
-          stack="$(printf '%s' "$title" | sed -E 's/^chore\(deps\): update (.+) stack$/\1/')"
 
-          if [[ -z "$stack" || "$stack" == "$title" ]]; then
-            echo "Unable to extract stack from PR title: $title"
-            exit 1
+          # Fetch changed files from PR and filter for stack directories
+          stacks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=100" | \
+            jq -r '.[].filename | select(test("^(autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|orchestrator|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
+
+          if [[ -z "$stacks" ]]; then
+            echo "No matching stack files found in PR."
+            exit 0
           fi
 
-          stack_encoded="${stack// /%20}"
-          echo "stack=$stack" >> "$GITHUB_OUTPUT"
-          echo "stack_encoded=$stack_encoded" >> "$GITHUB_OUTPUT"
+          echo "Found stacks: $stacks"
+          echo "stacks=$stacks" >> "$GITHUB_OUTPUT"
 
       - name: Update repository in orchestrator
+        if: ${{ steps.parse.outputs.stacks != '' }}
         run: |
           set -euo pipefail
           curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/update-repo"
 
-      - name: Restart updated stack
+      - name: Restart updated stacks
+        if: ${{ steps.parse.outputs.stacks != '' }}
         run: |
           set -euo pipefail
-          curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/${{ steps.parse.outputs.stack_encoded }}%20restart/exec"
+          for stack in ${{ steps.parse.outputs.stacks }}; do
+            echo "Restarting stack: $stack"
+            stack_encoded="${stack// /%20}"
+            curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/${stack_encoded}%20restart/exec"
+          done
