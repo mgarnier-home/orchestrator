@@ -1,6 +1,6 @@
 services:
   master:
-    image: docker.io/chrislusf/seaweedfs
+    image: docker.io/chrislusf/seaweedfs@sha256:d47c7ee99fcb951351d7194915f4e3a5ea604a8e8871183d713907dec4fb9bf5
     container_name: seaweedfs-master
     restart: unless-stopped
     networks:
@@ -14,7 +14,7 @@ services:
     command: "master -ip=master -ip.bind=0.0.0.0 -metricsPort=9324"
 
   volume:
-    image: docker.io/chrislusf/seaweedfs
+    image: docker.io/chrislusf/seaweedfs@sha256:d47c7ee99fcb951351d7194915f4e3a5ea604a8e8871183d713907dec4fb9bf5
     container_name: seaweedfs-volume
     restart: unless-stopped
     networks:
@@ -29,7 +29,7 @@ services:
     depends_on:
       - master
   filer:
-    image: docker.io/chrislusf/seaweedfs
+    image: docker.io/chrislusf/seaweedfs@sha256:d47c7ee99fcb951351d7194915f4e3a5ea604a8e8871183d713907dec4fb9bf5
     container_name: seaweedfs-filer
     restart: unless-stopped
     networks:
@@ -47,7 +47,7 @@ services:
       - master
       - volume
   s3:
-    image: docker.io/chrislusf/seaweedfs
+    image: docker.io/chrislusf/seaweedfs@sha256:d47c7ee99fcb951351d7194915f4e3a5ea604a8e8871183d713907dec4fb9bf5
     container_name: seaweedfs-s3
     restart: unless-stopped
     networks:
@@ -70,7 +70,7 @@ services:
       - volume
       - filer
   admin:
-    image: docker.io/chrislusf/seaweedfs
+    image: docker.io/chrislusf/seaweedfs@sha256:d47c7ee99fcb951351d7194915f4e3a5ea604a8e8871183d713907dec4fb9bf5
     container_name: seaweedfs-admin
     restart: unless-stopped
     networks:
