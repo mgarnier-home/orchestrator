@@ -2,7 +2,7 @@ name: monitoring
 
 services:
   docker-socket-proxy:
-    image: docker.io/tecnativa/docker-socket-proxy:v0.4.2
+    image: docker.io/tecnativa/docker-socket-proxy:v0.4.2@sha256:1f3a6f303320723d199d2316a3e82b2e2685d86c275d5e3deeaf182573b47476
     container_name: docker-socket-proxy
     restart: unless-stopped
     environment:
@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   telegraf:
-    image: docker.io/telegraf:1.36.2
+    image: docker.io/telegraf:1.38.4@sha256:fb0a95f7a42958b1e7219faf075552795f7e043432a28c54baf070442b6259ee
     container_name: telegraf
     restart: unless-stopped
     command:
@@ -44,7 +44,7 @@ services:
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
 
   dozzle-agent:
-    image: docker.io/amir20/dozzle:v9.0.2
+    image: docker.io/amir20/dozzle:v10.6.2@sha256:dac897ce93cbc0db48d9a6014ba24fb9438edc95c27e283a6fcc9260ea474d6d
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
@@ -60,7 +60,7 @@ services:
       - ${ZEPHYR_DOZZLE_AGENT_PORT}:7007
 
   dozzle:
-    image: docker.io/amir20/dozzle:v9.0.2
+    image: docker.io/amir20/dozzle:v10.6.2@sha256:dac897ce93cbc0db48d9a6014ba24fb9438edc95c27e283a6fcc9260ea474d6d
     container_name: dozzle
     restart: unless-stopped
     environment:
@@ -81,7 +81,7 @@ services:
       start_period: 10s
 
   beszel:
-    image: docker.io/henrygd/beszel:0.13.2
+    image: docker.io/henrygd/beszel:0.18.7@sha256:a849ad80814b6a1a3be665304dcace5d4854b3bed7bde4dd1227e8ce1b82d477
     container_name: beszel
     restart: unless-stopped
     ports:
@@ -107,7 +107,7 @@ services:
       start_period: 10s
 
   beszel-agent:
-    image: docker.io/henrygd/beszel-agent:0.13.2
+    image: docker.io/henrygd/beszel-agent:0.18.7@sha256:8874e2c53f9de5e063a6a80d6b617e20fa593ac5dc4eb4c6ce1f912f510f38f8
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
@@ -140,7 +140,7 @@ services:
   #     traefik-conf.name: dashboard-old
 
   homepage:
-    image: docker.io/mgarnier11/homepage
+    image: docker.io/mgarnier11/homepage@sha256:367c5ad8c66ed7cefec5cc296e0daee96556b407f32496703f0a4ed396c0f83f
     container_name: homepage
     environment:
       HOMEPAGE_ALLOWED_HOSTS: homepage.${PUBLIC_DOMAIN_NAME}
