@@ -27,7 +27,7 @@ jobs:
           stacks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=100" | \
-            jq -r '.[].filename | select(test("^(autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|orchestrator|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
+            jq -r '.[].filename | select(test("^(autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
 
           if [[ -z "$stacks" ]]; then
             echo "No matching stack files found in PR."
