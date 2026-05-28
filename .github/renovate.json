@@ -25,7 +25,7 @@
   ],
   "docker-compose": {
     "managerFilePatterns": [
-      "/^(autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|orchestrator|paperless|satisfactory|storage|utils)\\/.+\\.ya?ml$/"
+      "/^(autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)\\/.+\\.ya?ml$/"
     ]
   },
   "packageRules": [
@@ -115,16 +115,6 @@
         "network/**"
       ],
       "groupName": "network stack"
-    },
-    {
-      "description": "One PR for orchestrator stack",
-      "matchManagers": [
-        "docker-compose"
-      ],
-      "matchFileNames": [
-        "orchestrator/**"
-      ],
-      "groupName": "orchestrator stack"
     },
     {
       "description": "One PR for paperless stack",
