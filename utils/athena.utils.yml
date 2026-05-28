@@ -2,7 +2,7 @@ name: utils
 
 services:
   neko:
-    image: "ghcr.io/m1k1o/neko/nvidia-firefox:3.0.9"
+    image: "ghcr.io/m1k1o/neko/nvidia-firefox:3.1.4@sha256:6bb273994f661cafe934f0f75befc835444a06058990c6e035ed0df20dd10e9a"
     container_name: neko
     restart: "unless-stopped"
     shm_size: "2gb"
@@ -48,7 +48,7 @@ services:
               capabilities: [gpu]
 
   bg:
-    image: docker.io/withoutbg/app:1.2.0
+    image: docker.io/withoutbg/app:1.3.1@sha256:6aae7b11c45f2ad90fc03a57c98f9e9b80d7edf9e97f66d835ce989e1b52e4cf
     container_name: withoutbg
     restart: unless-stopped
     ports:
@@ -62,7 +62,7 @@ services:
   samba:
     container_name: samba
     restart: unless-stopped
-    image: docker.io/dperson/samba
+    image: docker.io/dperson/samba@sha256:66088b78a19810dd1457a8f39340e95e663c728083efa5fe7dc0d40b2478e869
     environment:
       - USERID=0
       - GROUPID=0
