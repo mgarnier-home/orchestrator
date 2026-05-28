@@ -4,7 +4,7 @@ services:
   traefik:
     container_name: traefik
     restart: unless-stopped
-    image: docker.io/traefik:3.5
+    image: docker.io/traefik:v3.7@sha256:6b9cbca6fac42ab0075f5437d8dc1685cfd188626d8d515839ea94f8b6271c42
     # image: mgarnier11/traefik-conf
     networks:
       traefik-net:
@@ -54,7 +54,7 @@ services:
       start_period: 10s
 
   traefik-log-dashboard-agent:
-    image: docker.io/hhftechnology/traefik-log-dashboard-agent:3.0.0
+    image: docker.io/hhftechnology/traefik-log-dashboard-agent:3.1.1@sha256:4c9853d486a0e3108678fd00aeda86ce1b269c0ae1b1c2ab9e5c81760e12d53a
     container_name: traefik-log-dashboard-agent
     restart: unless-stopped
     networks:
@@ -91,7 +91,7 @@ services:
       start_period: 30s
 
   traefik-log-dashboard:
-    image: docker.io/hhftechnology/traefik-log-dashboard:3.0.0
+    image: docker.io/hhftechnology/traefik-log-dashboard:3.1.1@sha256:f982908e6d0665fd361eeef893d50d7743be09e1c95d3a087d4f7d47a651bead
     container_name: traefik-log-dashboard
     restart: unless-stopped
     networks:
@@ -123,7 +123,7 @@ services:
       traefik-conf.port: ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}
 
   authelia:
-    image: docker.io/authelia/authelia:4.39.15
+    image: docker.io/authelia/authelia:4.39.20@sha256:1b363e9279e742397966333f364e0876ae02bf5c876de73e83af6d48c57ff51b
     container_name: authelia
     user: 1000:1000
     volumes:
@@ -166,7 +166,7 @@ services:
   traefik-conf:
     container_name: traefik-conf
     restart: unless-stopped
-    image: docker.io/mgarnier11/traefik-conf:2.5.0
+    image: docker.io/mgarnier11/traefik-conf:2.5.0@sha256:86008310e60321df4b8d2442f51341ab75106abb17d4d68ab955346f9109f819
     volumes:
       - type: volume
         source: docker-data
