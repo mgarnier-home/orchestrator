@@ -4,7 +4,7 @@ services:
   jdownloader:
     container_name: jdownloader
     restart: unless-stopped
-    image: docker.io/jlesage/jdownloader-2:v25.12.3
+    image: docker.io/jlesage/jdownloader-2:v26.03.1@sha256:3d6cb102bd9bacff12ab1ca5136a38cb8f93d6595a7ccf5bce60aac4df138ebd
     ports:
       - ${ATHENA_JDOWNLOADER_PORT}:5800
     volumes:
@@ -35,7 +35,7 @@ services:
   jellyfin:
     container_name: jellyfin
     restart: unless-stopped
-    image: docker.io/jellyfin/jellyfin:10.11.9
+    image: docker.io/jellyfin/jellyfin:10.11.10@sha256:f66273e014b307e4ac46778845ebc1e9ee24b2e57c1fc17d5ec5ac3015649bfa
     ports:
       - ${ATHENA_JELLYFIN_PORT}:8096
     labels:
@@ -83,7 +83,7 @@ services:
               capabilities: [gpu]
 
   navidrome-music:
-    image: docker.io/deluan/navidrome:0.61.2
+    image: docker.io/deluan/navidrome:0.61.2@sha256:9fa40b3d8dec43ceb2213d1fa551da3dcfef6ac6d19c2e534efb92527c2bafd2
     container_name: navidrome-music
     user: 1000:1000 # should be owner of volumes
     ports:
@@ -122,7 +122,7 @@ services:
       traefik-conf.http.routers.athena_music_api.tls.certResolver: tls-resolver
 
   navidrome-sagas:
-    image: docker.io/deluan/navidrome:0.61.2
+    image: docker.io/deluan/navidrome:0.61.2@sha256:9fa40b3d8dec43ceb2213d1fa551da3dcfef6ac6d19c2e534efb92527c2bafd2
     container_name: navidrome-sagas
     user: 1000:1000 # should be owner of volumes
     ports:
@@ -160,7 +160,7 @@ services:
       traefik-conf.http.routers.athena_sagas_api.tls.certResolver: tls-resolver
 
   downloader:
-    image: registry.gitlab.com/bockiii/deemix-docker
+    image: registry.gitlab.com/bockiii/deemix-docker@sha256:d325660d833c30c8bbb5cf0caa75135b42a2f69b82f2269fd5bea91a04c449e6
     container_name: downloader
     restart: unless-stopped
     ports:
