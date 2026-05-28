@@ -2,7 +2,7 @@ name: utils
 
 services:
   postgres:
-    image: postgres:18
+    image: postgres:18@sha256:8ff36f3c66371cba71d20ceedccfc3de9669a68737607888c4ef0af93abe8e39
     container_name: postgres
     restart: unless-stopped
     environment:
@@ -21,7 +21,7 @@ services:
       traefik-conf.port: ${ATLAS_POSTGRES_PORT}
 
   dbeaver:
-    image: dbeaver/cloudbeaver:latest
+    image: dbeaver/cloudbeaver:latest@sha256:33083a988e83c714b98bffc58d45c6c6c15c86816bb446c5f053f1eed66d5247
     container_name: dbeaver
     restart: unless-stopped
     ports:
