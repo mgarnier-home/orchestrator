@@ -1,0 +1,34 @@
+name: utils
+
+services:
+  postgres:
+    image: postgres:18
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: utils/postgres
+        target: /var/lib/postgresql
+    ports:
+      - ${ATLAS_POSTGRES_PORT}:5432
+    labels:
+      traefik-conf.port: ${ATLAS_POSTGRES_PORT}
+
+  dbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: dbeaver
+    restart: unless-stopped
+    ports:
+      - ${ATLAS_DBEAVER_PORT}:8978
+    labels:
+      traefik-conf.port: ${ATLAS_DBEAVER_PORT}
+
+volumes:
+  docker-data:
+    external: true

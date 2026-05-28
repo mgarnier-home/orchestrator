@@ -77,3 +77,7 @@ services:
       - /ssd-1:/share/ssd-1
       - /big-hdd:/share/big-hdd
       - /ssd-1/docker-data:/share/docker-data
+
+volumes:
+  docker-data:
+    external: true

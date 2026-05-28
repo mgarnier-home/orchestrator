@@ -1,0 +1,44 @@
+name: Renovate Merge Redeploy
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: read
+
+jobs:
+  redeploy_stack:
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.title, 'chore(deps)') &&
+      github.event.pull_request.base.ref == 'main'
+    runs-on: arm64
+    steps:
+      - name: Extract stack from PR title
+        id: parse
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="${{ github.event.pull_request.title }}"
+          stack="$(printf '%s' "$title" | sed -E 's/^chore\(deps\): update (.+) stack$/\1/')"
+
+          if [[ -z "$stack" || "$stack" == "$title" ]]; then
+            echo "Unable to extract stack from PR title: $title"
+            exit 1
+          fi
+
+          stack_encoded="${stack// /%20}"
+          echo "stack=$stack" >> "$GITHUB_OUTPUT"
+          echo "stack_encoded=$stack_encoded" >> "$GITHUB_OUTPUT"
+
+      - name: Update repository in orchestrator
+        run: |
+          set -euo pipefail
+          curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/update-repo"
+
+      - name: Restart updated stack
+        run: |
+          set -euo pipefail
+          curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/${{ steps.parse.outputs.stack_encoded }}%20restart/exec"
