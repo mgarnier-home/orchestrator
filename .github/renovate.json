@@ -10,6 +10,9 @@
   "commitMessageAction": "update",
   "commitMessageTopic": "{{groupName}}",
   "separateMajorMinor": false,
+  "major": {
+    "enabled": false
+  },
   "enabledManagers": [
     "docker-compose"
   ],
