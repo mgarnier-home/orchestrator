@@ -1,0 +1,37 @@
+name: automation
+
+services:
+  n8n:
+    container_name: n8n
+    image: docker.io/n8nio/n8n:2.22.6
+    restart: always
+    ports:
+      - ${APOLLON_N8N_PORT}:5678
+    labels:
+      traefik-conf.port: ${APOLLON_N8N_PORT}
+      homepage.group: Apollon
+      homepage.name: n8n
+    environment:
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_HOST=n8n.${PUBLIC_DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://n8n.${PUBLIC_DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=${TIMEZONE}
+      - TZ=${TIMEZONE}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: automation/n8n/files
+        target: /files
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: automation/n8n/config
+        target: /home/node/.n8n
+
+volumes:
+  docker-data:
+    external: true
