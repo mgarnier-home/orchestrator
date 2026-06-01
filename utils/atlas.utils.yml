@@ -1,24 +1,25 @@
 name: utils
 
 services:
-  postgres:
-    image: postgres:18@sha256:8ff36f3c66371cba71d20ceedccfc3de9669a68737607888c4ef0af93abe8e39
-    container_name: postgres
+  mysql:
+    image: mysql:9.7.0
+    container_name: mysql
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - type: volume
         source: docker-data
         volume:
-          subpath: utils/postgres
-        target: /var/lib/postgresql
+          subpath: utils/mysql
+        target: /var/lib/mysql
     ports:
-      - ${ATLAS_POSTGRES_PORT}:5432
-    labels:
-      traefik-conf.port: ${ATLAS_POSTGRES_PORT}
+      - ${ATLAS_MYSQL_PORT}:3306
+    # labels:
+    #   traefik-conf.port: ${ATLAS_MYSQL_PORT}
 
   dbeaver:
     image: dbeaver/cloudbeaver:latest@sha256:33083a988e83c714b98bffc58d45c6c6c15c86816bb446c5f053f1eed66d5247
@@ -28,6 +29,12 @@ services:
       - ${ATLAS_DBEAVER_PORT}:8978
     labels:
       traefik-conf.port: ${ATLAS_DBEAVER_PORT}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: utils/dbeaver
+        target: /opt/cloudbeaver
 
 volumes:
   docker-data:

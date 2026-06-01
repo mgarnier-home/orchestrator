@@ -16,12 +16,12 @@ services:
       # sablier.enable: true
       # sablier.group: mealie
       # sablier.group.strategy: dynamic
-    healthcheck:
-      test: python -m mealie.scripts.healthcheck || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    # healthcheck:
+    #   test: python -m mealie.scripts.healthcheck || exit 1
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
     volumes:
       - type: volume
         source: docker-data

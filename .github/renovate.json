@@ -47,6 +47,16 @@
       "groupName": "autoscaler stack"
     },
     {
+      "description": "One PR for automation stack",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "automation/**"
+      ],
+      "groupName": "automation stack"
+    },
+    {
       "description": "One PR for backup stack",
       "matchManagers": [
         "docker-compose"

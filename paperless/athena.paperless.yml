@@ -118,12 +118,12 @@ services:
       - "gotenberg"
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
-    healthcheck:
-      test: wget -q --tries=1 http://localhost:3000/health -O - | grep -q '^{"status":"up"' || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    # healthcheck:
+    #   test: wget -q --tries=1 http://localhost:3000/health -O - | grep -q '^{"status":"up"' || exit 1
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
     # labels:
     #   sablier.enable: true
     #   sablier.group: paperless
