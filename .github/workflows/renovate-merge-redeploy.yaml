@@ -12,10 +12,10 @@ permissions:
 
 jobs:
   redeploy_stack:
-    if: >-
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.title, 'chore(deps)') &&
-      github.event.pull_request.base.ref == 'main'
+    # if: >-
+    #   github.event.pull_request.merged == true &&
+    #   startsWith(github.event.pull_request.title, 'chore(deps)') &&
+    #   github.event.pull_request.base.ref == 'main'
     runs-on: linux/arm64
     steps:
       - name: Install NFS Client
