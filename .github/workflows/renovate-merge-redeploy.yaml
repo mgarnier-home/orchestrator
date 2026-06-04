@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - closed
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,38 +18,60 @@ jobs:
       github.event.pull_request.base.ref == 'main'
     runs-on: linux/arm64
     steps:
-      - name: Extract stacks from modified files
-        id: parse
-        shell: bash
+      - name: Install NFS Client
         run: |
-          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y nfs-common
 
-          # Fetch changed files from PR and filter for stack directories
-          stacks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=100" | \
-            jq -r '.[].filename | select(test("^(autoscaler|automation|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
+      - name: Create mount point and mount NFS share
+        run: |
+          sudo mkdir -p /mnt/orchestrator
+          sudo mount -t nfs \
+            ${{ secrets.NFS_SERVER }}:${{ secrets.NFS_PATH }} \
+            /mnt/orchestrator
 
-          if [[ -z "$stacks" ]]; then
-            echo "No matching stack files found in PR."
-            exit 0
+      - name: Check if mount is successful
+        run: |
+          if mountpoint -q /mnt/orchestrator; then
+            echo "NFS share mounted successfully."
+            ls -l /mnt/orchestrator
+          else
+            echo "Failed to mount NFS share."
+            exit 1
           fi
 
-          echo "Found stacks: $stacks"
-          echo "stacks=$stacks" >> "$GITHUB_OUTPUT"
+      # - name: Extract stacks from modified files
+      #   id: parse
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
 
-      - name: Update repository in orchestrator
-        if: ${{ steps.parse.outputs.stacks != '' }}
-        run: |
-          set -euo pipefail
-          curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/update-repo"
+      #     # Fetch changed files from PR and filter for stack directories
+      #     stacks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+      #       -H "Accept: application/vnd.github.v3+json" \
+      #       "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=100" | \
+      #       jq -r '.[].filename | select(test("^(autoscaler|automation|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
 
-      - name: Restart updated stacks
-        if: ${{ steps.parse.outputs.stacks != '' }}
-        run: |
-          set -euo pipefail
-          for stack in ${{ steps.parse.outputs.stacks }}; do
-            echo "Restarting stack: $stack"
-            stack_encoded="${stack// /%20}"
-            curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/${stack_encoded}%20restart/exec"
-          done
+      #     if [[ -z "$stacks" ]]; then
+      #       echo "No matching stack files found in PR."
+      #       exit 0
+      #     fi
+
+      #     echo "Found stacks: $stacks"
+      #     echo "stacks=$stacks" >> "$GITHUB_OUTPUT"
+
+      # - name: Update repository in orchestrator
+      #   if: ${{ steps.parse.outputs.stacks != '' }}
+      #   run: |
+      #     set -euo pipefail
+      #     curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/update-repo"
+
+      # - name: Restart updated stacks
+      #   if: ${{ steps.parse.outputs.stacks != '' }}
+      #   run: |
+      #     set -euo pipefail
+      #     for stack in ${{ steps.parse.outputs.stacks }}; do
+      #       echo "Restarting stack: $stack"
+      #       stack_encoded="${stack// /%20}"
+      #       curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/${stack_encoded}%20restart/exec"
+      #     done

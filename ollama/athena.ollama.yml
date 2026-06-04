@@ -1,0 +1,59 @@
+name: ollama
+
+services:
+  ollama:
+    image: docker.io/ollama/ollama:0.30.0
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "${ATHENA_OLLAMA_PORT}:11434"
+    volumes:
+      - type: volume
+        source: docker-data-local
+        volume:
+          subpath: ollama
+        target: /root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_MODELS=/root/.ollama/models
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    labels:
+      traefik-conf.port: ${ATHENA_OLLAMA_PORT}
+      traefik-conf.name: ollama
+      homepage.group: Athena
+      homepage.name: Ollama
+
+  ollama-pull-model:
+    image: docker.io/ollama/ollama:0.30.0
+    container_name: ollama-pull-model
+    restart: "no"
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    entrypoint: /bin/sh
+    command: >
+      -c "echo 'Waiting for Ollama server to start...' &&
+          until ollama list > /dev/null 2>&1; do sleep 3; done &&
+          echo 'Ollama server is active!' &&
+          if ollama list | grep -q "${OLLAMA_MODEL}"; then
+            echo 'Model ${OLLAMA_MODEL} is already installed.';
+          else
+            echo 'Pulling model ${OLLAMA_MODEL}...';
+            ollama pull ${OLLAMA_MODEL};
+          fi"
+
+volumes:
+  docker-data-local:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${ATHENA_DOCKER_DATA}
+      o: bind

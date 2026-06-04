@@ -29,7 +29,7 @@ services:
       homepage.name: Autoscaler
       homepage.href: https://autoscaler.${PUBLIC_DOMAIN_NAME}
       homepage.siteMonitor: http://${APOLLON_IP}:${APOLLON_AUTOSCALER_PORT}
-      traefik-conf.middlewares: github-wl@file
+      traefik-conf.middlewares: github-wl@file,authelia@file
     volumes:
       - type: volume
         source: docker-data

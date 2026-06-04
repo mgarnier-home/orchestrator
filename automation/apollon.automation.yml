@@ -9,6 +9,7 @@ services:
       - ${APOLLON_N8N_PORT}:5678
     labels:
       traefik-conf.port: ${APOLLON_N8N_PORT}
+      traefik-conf.middlewares: github-wl@file,authelia@file
       homepage.group: Apollon
       homepage.name: n8n
     environment:
@@ -16,6 +17,7 @@ services:
       - N8N_HOST=n8n.${PUBLIC_DOMAIN_NAME}
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
+      - N8N_PROXY_HOPS=1
       - NODE_ENV=production
       - WEBHOOK_URL=https://n8n.${PUBLIC_DOMAIN_NAME}/
       - GENERIC_TIMEZONE=${TIMEZONE}
