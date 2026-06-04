@@ -12,10 +12,10 @@ permissions:
 
 jobs:
   redeploy_stack:
-    # if: >-
-    #   github.event.pull_request.merged == true &&
-    #   startsWith(github.event.pull_request.title, 'chore(deps)') &&
-    #   github.event.pull_request.base.ref == 'main'
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.title, 'chore(deps)') &&
+      github.event.pull_request.base.ref == 'main'
     runs-on: linux/arm64
     steps:
       - name: Install NFS Client
@@ -40,38 +40,42 @@ jobs:
             exit 1
           fi
 
-      # - name: Extract stacks from modified files
-      #   id: parse
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
+      - name: Pull latest changes from NFS share
+        run: |
+          cd /mnt/orchestrator
+          git pull origin main
 
-      #     # Fetch changed files from PR and filter for stack directories
-      #     stacks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-      #       -H "Accept: application/vnd.github.v3+json" \
-      #       "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=100" | \
-      #       jq -r '.[].filename | select(test("^(autoscaler|automation|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
+      - name: Download orchestrator CLI
+        run: |
+          curl -L -o orchestrator-cli "https://orchestrator.mgarnier11.fr/cli?arch=arm&os=linux"
+          chmod +x orchestrator-cli
 
-      #     if [[ -z "$stacks" ]]; then
-      #       echo "No matching stack files found in PR."
-      #       exit 0
-      #     fi
+      - name: Extract stacks from modified files
+        id: parse
+        shell: bash
+        run: |
+          set -euo pipefail
 
-      #     echo "Found stacks: $stacks"
-      #     echo "stacks=$stacks" >> "$GITHUB_OUTPUT"
+          # Fetch changed files from PR and filter for stack directories
+          stacks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=100" | \
+            jq -r '.[].filename | select(test("^(autoscaler|automation|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
 
-      # - name: Update repository in orchestrator
-      #   if: ${{ steps.parse.outputs.stacks != '' }}
-      #   run: |
-      #     set -euo pipefail
-      #     curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/update-repo"
+          if [[ -z "$stacks" ]]; then
+            echo "No matching stack files found in PR."
+            exit 0
+          fi
 
-      # - name: Restart updated stacks
-      #   if: ${{ steps.parse.outputs.stacks != '' }}
-      #   run: |
-      #     set -euo pipefail
-      #     for stack in ${{ steps.parse.outputs.stacks }}; do
-      #       echo "Restarting stack: $stack"
-      #       stack_encoded="${stack// /%20}"
-      #       curl --fail --show-error -L "https://orchestrator.mgarnier11.fr/${stack_encoded}%20restart/exec"
-      #     done
+          echo "Found stacks: $stacks"
+          echo "stacks=$stacks" >> "$GITHUB_OUTPUT"
+
+      - name: Restart updated stacks
+        if: ${{ steps.parse.outputs.stacks != '' }}
+        run: |
+          set -euo pipefail
+          export ORCHESTRATOR_COMPOSE_DIRECTORY=/mnt/orchestrator
+          for stack in ${{ steps.parse.outputs.stacks }}; do
+            echo "Restarting stack: $stack"
+            ./orchestrator-cli restart $stack
+          done
