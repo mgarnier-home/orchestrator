@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Install NFS Client
         run: |
+          id -u runner
+          id -g runner
           sudo apt-get update
           sudo apt-get install -y nfs-common
 
