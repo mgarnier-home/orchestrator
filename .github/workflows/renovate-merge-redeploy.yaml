@@ -36,7 +36,7 @@ jobs:
         run: |
           if mountpoint -q /mnt/orchestrator; then
             echo "NFS share mounted successfully."
-            ls -l /mnt/orchestrator
+            ls -al /mnt/orchestrator
           else
             echo "Failed to mount NFS share."
             exit 1
