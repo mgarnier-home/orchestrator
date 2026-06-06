@@ -45,7 +45,7 @@ jobs:
       - name: Pull latest changes from NFS share
         run: |
           cd /mnt/orchestrator
-          sudo -u '#1000' -g '#100' git -c safe.directory=/mnt/orchestrator pull origin main
+          git -c safe.directory=/mnt/orchestrator pull origin main
 
       - name: Download orchestrator CLI
         run: |
