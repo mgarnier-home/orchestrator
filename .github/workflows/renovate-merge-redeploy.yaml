@@ -28,7 +28,7 @@ jobs:
       - name: Create mount point and mount NFS share
         run: |
           sudo mkdir -p /mnt/orchestrator
-          sudo mount -t nfs -o defaults,vers=3,nolock,comment=cloudconfig \
+          sudo mount -t nfs -o defaults,comment=cloudconfig \
             ${{ secrets.NFS_SERVER }}:${{ secrets.NFS_PATH }} \
             /mnt/orchestrator
 
