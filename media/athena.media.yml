@@ -35,7 +35,7 @@ services:
   jellyfin:
     container_name: jellyfin
     restart: unless-stopped
-    image: docker.io/jellyfin/jellyfin:10.11.10@sha256:f66273e014b307e4ac46778845ebc1e9ee24b2e57c1fc17d5ec5ac3015649bfa
+    image: docker.io/jellyfin/jellyfin:10.11.11@sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db
     ports:
       - ${ATHENA_JELLYFIN_PORT}:8096
     labels:
@@ -83,7 +83,7 @@ services:
               capabilities: [gpu]
 
   navidrome-music:
-    image: docker.io/deluan/navidrome:0.61.2@sha256:9fa40b3d8dec43ceb2213d1fa551da3dcfef6ac6d19c2e534efb92527c2bafd2
+    image: docker.io/deluan/navidrome:0.62.0@sha256:c4b5cb36a790b3eb63ca6a68bbe2fe149c2d7fa2e586f7a480e61db630e6664b
     container_name: navidrome-music
     user: 1000:1000 # should be owner of volumes
     ports:
@@ -122,7 +122,7 @@ services:
       traefik-conf.http.routers.athena_music_api.tls.certResolver: tls-resolver
 
   navidrome-sagas:
-    image: docker.io/deluan/navidrome:0.61.2@sha256:9fa40b3d8dec43ceb2213d1fa551da3dcfef6ac6d19c2e534efb92527c2bafd2
+    image: docker.io/deluan/navidrome:0.62.0@sha256:c4b5cb36a790b3eb63ca6a68bbe2fe149c2d7fa2e586f7a480e61db630e6664b
     container_name: navidrome-sagas
     user: 1000:1000 # should be owner of volumes
     ports:
