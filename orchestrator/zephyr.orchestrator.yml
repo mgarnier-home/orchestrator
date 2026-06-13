@@ -4,11 +4,11 @@ services:
   orchestrator:
     container_name: orchestrator
     restart: unless-stopped
-    image: docker.io/mgarnier11/orchestrator:2.1.0
+    image: docker.io/mgarnier11/orchestrator:3.0.0
     ports:
       - ${ZEPHYR_ORCHESTRATOR_PORT}:3000
     environment:
-      ORCHESTRATOR_COMPOSE_DIRECTORY: /compose
+      ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: /compose
       ATHENA_HOST: ssh://${SSH_USER}@${ATHENA_IP}
       ZEPHYR_HOST: ssh://${SSH_USER}@${ZEPHYR_IP}
       APOLLON_HOST: ssh://${SSH_USER}@${APOLLON_IP}

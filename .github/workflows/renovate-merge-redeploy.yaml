@@ -45,7 +45,7 @@ jobs:
       - name: Pull latest changes from NFS share
         run: |
           cd /mnt/orchestrator
-          git -c safe.directory=/mnt/orchestrator pull origin main
+          git -c safe.directory=/mnt/orchestrator pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
 
       - name: Download orchestrator CLI
         run: |
