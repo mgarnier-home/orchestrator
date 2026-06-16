@@ -55,10 +55,10 @@ jobs:
 
       - name: Create ssh_private_key file
         run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          mkdir -p ssh
+          chmod 700 ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh/ssh_private_key
+          chmod 600 ssh/ssh_private_key
 
       - name: Restart updated stacks
         shell: bash
