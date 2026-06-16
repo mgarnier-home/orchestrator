@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   telegraf:
-    image: docker.io/telegraf:1.38.4@sha256:fb0a95f7a42958b1e7219faf075552795f7e043432a28c54baf070442b6259ee
+    image: docker.io/telegraf:1.39.0@sha256:9768f82ebf8bde6da0d61ba220c00161750740c3e322b507a5982b89bbfca99a
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/apollon.conf"]
@@ -41,7 +41,7 @@ services:
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
 
   dozzle-agent:
-    image: docker.io/amir20/dozzle:v10.6.4@sha256:d834b38356027bedcc28ee77542b451a84849b73d2cd90c77be911f4a387c94d
+    image: docker.io/amir20/dozzle:v10.6.6@sha256:2e14180fa14c195b8e86705b7ab2234b87599215bcf06f7f56396cb45f57f963
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
@@ -97,7 +97,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: docker.io/influxdb:2.9.1@sha256:c9acb506f536915c97ff71c971970ad9c2a38b2b8a0d54200ef0ef430f7a37f0
+    image: docker.io/influxdb:2.9.1@sha256:003e028b675205f6148e5f30369fd3e854993b385f1e5e4d2d85bc9f8701bf28
     restart: unless-stopped
     ports:
       - ${APOLLON_INFLUXDB_PORT}:8086
