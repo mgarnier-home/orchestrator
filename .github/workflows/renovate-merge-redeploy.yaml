@@ -54,6 +54,9 @@ jobs:
 
       - name: Restart updated stacks
         shell: bash
+        env:
+          ORCHESTRATOR_MODE: "local"
+          ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: "/mnt/orchestrator"
         run: |
           set -euo pipefail
           # get the stack to restart from the name of the branch, which is expected to be renovate/stack-STACK_NAME
