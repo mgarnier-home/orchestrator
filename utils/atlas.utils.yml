@@ -22,7 +22,7 @@ services:
     #   traefik-conf.port: ${ATLAS_MYSQL_PORT}
 
   dbeaver:
-    image: dbeaver/cloudbeaver:latest@sha256:33083a988e83c714b98bffc58d45c6c6c15c86816bb446c5f053f1eed66d5247
+    image: dbeaver/cloudbeaver:latest@sha256:b4038cd2b652e4ff3e4c424fc0db1761bac3d43d38573feecd96c340f65ddb9b
     container_name: dbeaver
     restart: unless-stopped
     ports:
