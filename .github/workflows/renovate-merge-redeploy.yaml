@@ -57,6 +57,11 @@ jobs:
         env:
           ORCHESTRATOR_MODE: "local"
           ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: "/mnt/orchestrator"
+          ATHENA_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATHENA_IP }}"
+          ZEPHYR_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ZEPHYR_IP }}"
+          APOLLON_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.APOLLON_IP }}"
+          ATLAS_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATLAS_IP }}"
+          ORCHESTRATOR_SSH_PRIVATE_KEY: "${{ secrets.SSH_PRIVATE_KEY }}"
         run: |
           set -euo pipefail
           # get the stack to restart from the name of the branch, which is expected to be renovate/stack-STACK_NAME
