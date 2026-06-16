@@ -37,134 +37,134 @@
       "pinDigests": true
     },
     {
-      "description": "One PR for autoscaler stack",
+      "description": "One PR for autoscaler",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "autoscaler/**"
       ],
-      "groupName": "autoscaler stack"
+      "groupName": "autoscaler"
     },
     {
-      "description": "One PR for automation stack",
+      "description": "One PR for automation",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "automation/**"
       ],
-      "groupName": "automation stack"
+      "groupName": "automation"
     },
     {
-      "description": "One PR for backup stack",
+      "description": "One PR for backup",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "backup/**"
       ],
-      "groupName": "backup stack"
+      "groupName": "backup"
     },
     {
-      "description": "One PR for bitwarden stack",
+      "description": "One PR for bitwarden",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "bitwarden/**"
       ],
-      "groupName": "bitwarden stack"
+      "groupName": "bitwarden"
     },
     {
-      "description": "One PR for immich stack",
+      "description": "One PR for immich",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "immich/**"
       ],
-      "groupName": "immich stack"
+      "groupName": "immich"
     },
     {
-      "description": "One PR for mealie stack",
+      "description": "One PR for mealie",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "mealie/**"
       ],
-      "groupName": "mealie stack"
+      "groupName": "mealie"
     },
     {
-      "description": "One PR for media stack",
+      "description": "One PR for media",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "media/**"
       ],
-      "groupName": "media stack"
+      "groupName": "media"
     },
     {
-      "description": "One PR for monitoring stack",
+      "description": "One PR for monitoring",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "monitoring/**"
       ],
-      "groupName": "monitoring stack"
+      "groupName": "monitoring"
     },
     {
-      "description": "One PR for network stack",
+      "description": "One PR for network",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "network/**"
       ],
-      "groupName": "network stack"
+      "groupName": "network"
     },
     {
-      "description": "One PR for paperless stack",
+      "description": "One PR for paperless",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "paperless/**"
       ],
-      "groupName": "paperless stack"
+      "groupName": "paperless"
     },
     {
-      "description": "One PR for satisfactory stack",
+      "description": "One PR for satisfactory",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "satisfactory/**"
       ],
-      "groupName": "satisfactory stack"
+      "groupName": "satisfactory"
     },
     {
-      "description": "One PR for storage stack",
+      "description": "One PR for storage",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "storage/**"
       ],
-      "groupName": "storage stack"
+      "groupName": "storage"
     },
     {
-      "description": "One PR for utils stack",
+      "description": "One PR for utils",
       "matchManagers": [
         "docker-compose"
       ],
       "matchFileNames": [
         "utils/**"
       ],
-      "groupName": "utils stack"
+      "groupName": "utils"
     }
   ]
 }

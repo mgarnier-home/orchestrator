@@ -52,32 +52,22 @@ jobs:
           curl -L -o orchestrator-cli "https://orchestrator.mgarnier11.fr/cli?arch=arm&os=linux"
           chmod +x orchestrator-cli
 
-      - name: Extract stacks from modified files
-        id: parse
+      - name: Restart updated stacks
         shell: bash
         run: |
           set -euo pipefail
-
-          # Fetch changed files from PR and filter for stack directories
-          stacks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=100" | \
-            jq -r '.[].filename | select(test("^(autoscaler|automation|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)/.+\\.ya?ml$")) | split("/")[0]' | sort -u | tr '\n' ' ' | xargs)
-
-          if [[ -z "$stacks" ]]; then
-            echo "No matching stack files found in PR."
+          # get the stack to restart from the name of the branch, which is expected to be renovate/stack-STACK_NAME
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            branch_name="${{ github.event.pull_request.head.ref }}"
+            if [[ "$branch_name" =~ ^renovate/stack-(.+)$ ]]; then
+              stack_name="${BASH_REMATCH[1]}"
+              echo "Found stack name from branch: $stack_name, restarting stack."
+              ./orchestrator-cli restart $stack_name
+            else
+              echo "Branch name does not match expected pattern 'renovate/stack-STACK_NAME'. No stack to restart."
+              exit 0
+            fi
+          else
+            echo "This workflow is triggered by a pull request event. No stack to restart."
             exit 0
           fi
-
-          echo "Found stacks: $stacks"
-          echo "stacks=$stacks" >> "$GITHUB_OUTPUT"
-
-      - name: Restart updated stacks
-        if: ${{ steps.parse.outputs.stacks != '' }}
-        run: |
-          set -euo pipefail
-          export ORCHESTRATOR_COMPOSE_DIRECTORY=/mnt/orchestrator
-          for stack in ${{ steps.parse.outputs.stacks }}; do
-            echo "Restarting stack: $stack"
-            ./orchestrator-cli restart $stack
-          done
