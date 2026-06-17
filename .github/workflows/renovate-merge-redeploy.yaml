@@ -53,17 +53,6 @@ jobs:
           curl -L -o orchestrator-cli "https://orchestrator.mgarnier11.fr/cli?arch=arm&os=linux"
           chmod +x orchestrator-cli
 
-      - name: Create ssh_private_key file
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          cat << 'EOF' > ~/.ssh/ssh_private_key
-          ${{ secrets.SSH_PRIVATE_KEY }}
-          EOF
-          chmod 600 ~/.ssh/ssh_private_key
-          echo "Host *" > ~/.ssh/config
-          echo "  IdentityFile ~/.ssh/ssh_private_key" >> ~/.ssh/config
-
       - name: Restart updated stacks
         shell: bash
         env:
@@ -75,6 +64,16 @@ jobs:
           ATLAS_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATLAS_IP }}"
         run: |
           set -euo pipefail
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          cat << 'EOF' > ~/.ssh/ssh_private_key
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
+          chmod 600 ~/.ssh/ssh_private_key
+          echo "Host *" > ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/ssh_private_key" >> ~/.ssh/config
+
           # get the stack to restart from the name of the branch, which is expected to be renovate/stack-STACK_NAME
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             branch_name="${{ github.event.pull_request.head.ref }}"
