@@ -57,27 +57,12 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          cat > ~/.ssh/ssh_private_key <<EOF
+          cat << 'EOF' > ~/.ssh/ssh_private_key
           ${{ secrets.SSH_PRIVATE_KEY }}
           EOF
           chmod 600 ~/.ssh/ssh_private_key
           echo "Host *" > ~/.ssh/config
           echo "  IdentityFile ~/.ssh/ssh_private_key" >> ~/.ssh/config
-
-      - name: Restart updated stacks
-        shell: bash
-        env:
-          ORCHESTRATOR_MODE: "local"
-          ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: "/mnt/orchestrator"
-          ATHENA_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATHENA_IP }}"
-          ZEPHYR_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ZEPHYR_IP }}"
-          APOLLON_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.APOLLON_IP }}"
-          ATLAS_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATLAS_IP }}"
-        run: |
-          set -euo pipefail
-          ssh -i ~/.ssh/ssh_private_key -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.ATHENA_IP }} echo "Restarting backup stack on Athena..."
-
-          ./orchestrator-cli restart backup athena
 
       - name: Restart updated stacks
         shell: bash
