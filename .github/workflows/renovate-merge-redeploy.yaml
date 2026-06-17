@@ -73,7 +73,8 @@ jobs:
           ATLAS_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATLAS_IP }}"
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/ssh_private_key -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.ATHENA_IP }}
+          ssh -i ~/.ssh/ssh_private_key -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.ATHENA_IP }} echo "Restarting backup stack on Athena..."
+
           ./orchestrator-cli restart backup athena
 
       - name: Restart updated stacks
