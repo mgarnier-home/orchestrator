@@ -41,13 +41,14 @@ services:
     entrypoint: /bin/sh
     command: >
       -c "echo 'Waiting for Ollama server to start...' &&
+          ollama_model='qwen3.5:9b' &&
           until ollama list > /dev/null 2>&1; do sleep 3; done &&
           echo 'Ollama server is active!' &&
-          if ollama list | grep -q "${OLLAMA_MODEL}"; then
-            echo 'Model ${OLLAMA_MODEL} is already installed.';
+          if ollama list | grep -q "$ollama_model"; then
+            echo "Model $ollama_model is already installed.";
           else
-            echo 'Pulling model ${OLLAMA_MODEL}...';
-            ollama pull ${OLLAMA_MODEL};
+            echo "Pulling model $ollama_model...";
+            ollama pull $ollama_model;
           fi"
 
 volumes:

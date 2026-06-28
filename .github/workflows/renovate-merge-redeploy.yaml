@@ -19,34 +19,8 @@ jobs:
     #   github.event.pull_request.base.ref == 'main'
     runs-on: linux/arm64
     steps:
-      - name: Install NFS Client
-        run: |
-          id -u runner
-          id -g runner
-          sudo apt-get update
-          sudo apt-get install -y nfs-common
-
-      - name: Create mount point and mount NFS share
-        run: |
-          sudo mkdir -p /mnt/orchestrator
-          sudo mount -t nfs -o defaults,comment=cloudconfig \
-            ${{ secrets.NFS_SERVER }}:${{ secrets.NFS_PATH }} \
-            /mnt/orchestrator
-
-      - name: Check if mount is successful
-        run: |
-          if mountpoint -q /mnt/orchestrator; then
-            echo "NFS share mounted successfully."
-            ls -al /mnt/orchestrator
-          else
-            echo "Failed to mount NFS share."
-            exit 1
-          fi
-
-      - name: Pull latest changes from NFS share
-        run: |
-          cd /mnt/orchestrator
-          git -c safe.directory=/mnt/orchestrator pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Download orchestrator CLI
         run: |
@@ -58,6 +32,10 @@ jobs:
         env:
           ORCHESTRATOR_MODE: "local"
           ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: "/mnt/orchestrator"
+          ORCHESTRATOR_S3_ENDPOINT: "https://s3.mgarnier11.fr"
+          ORCHESTRATOR_S3_BUCKET: "environment-bucket"
+          ORCHESTRATOR_S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          ORCHESTRATOR_S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
           ATHENA_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATHENA_IP }}"
           ZEPHYR_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ZEPHYR_IP }}"
           APOLLON_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.APOLLON_IP }}"
@@ -71,9 +49,11 @@ jobs:
           ${{ secrets.SSH_PRIVATE_KEY }}
           EOF
           chmod 600 ~/.ssh/ssh_private_key
-          echo "Host *" > ~/.ssh/config
-          echo "  IdentityFile ~/.ssh/ssh_private_key" >> ~/.ssh/config
-          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+          cat << 'EOF' > ~/.ssh/config
+          Host *
+            IdentityFile ~/.ssh/ssh_private_key
+            StrictHostKeyChecking no
+          EOF
 
           # get the stack to restart from the name of the branch, which is expected to be renovate/stack-STACK_NAME
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
