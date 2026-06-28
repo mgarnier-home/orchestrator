@@ -4,7 +4,7 @@ services:
   orchestrator:
     container_name: orchestrator
     restart: unless-stopped
-    image: docker.io/mgarnier11/orchestrator:3.0.2
+    image: docker.io/mgarnier11/orchestrator:3.1.0
     ports:
       - ${ZEPHYR_ORCHESTRATOR_PORT}:3000
     environment:
@@ -14,6 +14,10 @@ services:
       APOLLON_HOST: ssh://${SSH_USER}@${APOLLON_IP}
       ATLAS_HOST: ssh://${SSH_USER}@${ATLAS_IP}
       ORCHESTRATOR_SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+      ORCHESTRATOR_S3_ENDPOINT: ${S3_ENDPOINT}
+      ORCHESTRATOR_S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      ORCHESTRATOR_S3_SECRET_KEY: ${S3_SECRET_KEY}
+      ORCHESTRATOR_S3_BUCKET: environment-bucket
     labels:
       traefik-conf.port: ${ZEPHYR_ORCHESTRATOR_PORT}
     volumes:
