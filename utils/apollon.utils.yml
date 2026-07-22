@@ -29,7 +29,7 @@ services:
         target: /opt/app/backend/data
 
   pdf:
-    image: ghcr.io/alam00000/bentopdf:2.8.5@sha256:2d867aacb8ab5b196d00ee86944b1899d09d72df355384c5e15cf974737963a0
+    image: ghcr.io/alam00000/bentopdf:2.8.6@sha256:eaeea1e447205a79cb61d7efdc6966f37311dc1bc9c36a3a5c897bf79107c2c3
     container_name: bentopdf
     restart: unless-stopped
     ports:
@@ -43,7 +43,7 @@ services:
       retries: 3
 
   trilium:
-    image: docker.io/triliumnext/trilium:v0.103.0@sha256:8e6bc939a6d5dbeed42d1b5b155bc790b1c28ca3ac414382d04d626903c62081
+    image: docker.io/triliumnext/trilium:v0.104.0@sha256:8e053aa58a90c1690106a324a4692690ba0491c21ae40485b4051e2911df9489
     container_name: trilium
     restart: unless-stopped
     environment:
@@ -66,7 +66,7 @@ services:
       traefik-conf.port: ${APOLLON_TRILIUM_PORT}
 
   ntfy:
-    image: docker.io/binwiederhier/ntfy:v2.24.0@sha256:f8a9b104313b87cc24ae4f775f39e6328205b57dff6ede3eaf098a91e5d79f59
+    image: docker.io/binwiederhier/ntfy:v2.26.3@sha256:081b53dbb20674fcfe05fdb4eb8af9036a2645ef979543d16f7f80803af467b1
     container_name: ntfy
     restart: unless-stopped
     command:
