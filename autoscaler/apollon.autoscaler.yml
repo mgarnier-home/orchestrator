@@ -16,7 +16,7 @@ services:
       SCALE_SET_NAME: "apollon"
       MAX_RUNNERS: "10"
       MIN_RUNNERS: "0"
-      LABELS: "linux/amd64"
+      LABELS: "linux/amd64,test-1,test-2"
       RUNNER_GROUP: "default"
       DOCKER_HOSTS: "unix:///var/run/docker.sock"
       RUNTIME: "sysbox-runc"

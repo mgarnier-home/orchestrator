@@ -31,7 +31,7 @@ jobs:
         shell: bash
         env:
           ORCHESTRATOR_MODE: "local"
-          ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: "/mnt/orchestrator"
+          ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: ${{ github.workspace }}
           ORCHESTRATOR_S3_ENDPOINT: "https://s3.mgarnier11.fr"
           ORCHESTRATOR_S3_BUCKET: "environment-bucket"
           ORCHESTRATOR_S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}

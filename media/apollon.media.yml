@@ -1,0 +1,35 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - WEBUI_PORT=8080
+    labels:
+      traefik-conf.port: ${APOLLON_QBITTORRENT_PORT}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: media/qbittorrent
+        target: /config
+      - type: volume
+        source: atlas-media
+        target: /downloads
+    ports:
+      - ${APOLLON_QBITTORRENT_PORT}:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+
+volumes:
+  docker-data:
+    external: true
+  atlas-media:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=100.64.98.98,rw
+      device: :/export/media

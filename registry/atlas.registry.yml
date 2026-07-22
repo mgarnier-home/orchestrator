@@ -1,0 +1,18 @@
+services:
+  registry:
+    container_name: registry
+    image: registry:2
+    labels:
+      traefik-conf.port: ${ATLAS_REGISTRY_PORT}
+    ports:
+      - "${ATLAS_REGISTRY_PORT}:5000"
+
+  registry-proxy:
+    container_name: registry-proxy
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://registry-1.docker.io
+    image: registry:2
+    labels:
+      traefik-conf.port: ${ATLAS_REGISTRY_PROXY_PORT}
+    ports:
+      - "${ATLAS_REGISTRY_PROXY_PORT}:5000"
