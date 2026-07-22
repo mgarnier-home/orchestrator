@@ -4,7 +4,7 @@ services:
   jdownloader:
     container_name: jdownloader
     restart: unless-stopped
-    image: docker.io/jlesage/jdownloader-2:v26.03.1@sha256:3d6cb102bd9bacff12ab1ca5136a38cb8f93d6595a7ccf5bce60aac4df138ebd
+    image: docker.io/jlesage/jdownloader-2:v26.07.2@sha256:47ee6c64917ca5326516ebe868714709c6bdd2e08ca0e33f6e80a943ef2019d2
     ports:
       - ${ATHENA_JDOWNLOADER_PORT}:5800
     volumes:
@@ -83,7 +83,7 @@ services:
               capabilities: [gpu]
 
   navidrome-music:
-    image: docker.io/deluan/navidrome:0.62.0@sha256:c4b5cb36a790b3eb63ca6a68bbe2fe149c2d7fa2e586f7a480e61db630e6664b
+    image: docker.io/deluan/navidrome:0.63.2@sha256:9012939114fbb1bb641b81cf96dec5ded15f0aafefe8d47a511d7cb919658e40
     container_name: navidrome-music
     user: 1000:1000 # should be owner of volumes
     ports:
@@ -122,7 +122,7 @@ services:
       traefik-conf.http.routers.athena_music_api.tls.certResolver: tls-resolver
 
   navidrome-sagas:
-    image: docker.io/deluan/navidrome:0.62.0@sha256:c4b5cb36a790b3eb63ca6a68bbe2fe149c2d7fa2e586f7a480e61db630e6664b
+    image: docker.io/deluan/navidrome:0.63.2@sha256:9012939114fbb1bb641b81cf96dec5ded15f0aafefe8d47a511d7cb919658e40
     container_name: navidrome-sagas
     user: 1000:1000 # should be owner of volumes
     ports:
