@@ -24,8 +24,8 @@ jobs:
 
       - name: Download orchestrator CLI
         run: |
-          curl -L -o orchestrator-cli "https://orchestrator.mgarnier11.fr/cli?arch=arm&os=linux"
-          chmod +x orchestrator-cli
+          curl -L -o orchestrator "https://orchestrator.mgarnier11.fr/cli?arch=arm&os=linux"
+          chmod +x orchestrator
 
       - name: Restart updated stacks
         shell: bash
@@ -61,7 +61,7 @@ jobs:
             if [[ "$branch_name" =~ ^renovate/stack-(.+)$ ]]; then
               stack_name="${BASH_REMATCH[1]}"
               echo "Found stack name from branch: $stack_name, restarting stack."
-              ./orchestrator-cli restart $stack_name
+              ./orchestrator restart $stack_name
             else
               echo "Branch name does not match expected pattern 'renovate/stack-STACK_NAME'. No stack to restart."
               exit 0
