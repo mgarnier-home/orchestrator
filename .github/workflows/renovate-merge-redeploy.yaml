@@ -24,7 +24,7 @@ jobs:
 
       - name: Download orchestrator CLI
         run: |
-          curl -L -o ~/orchestrator "https://orchestrator.mgarnier11.fr/cli?arch=arm&os=linux"
+          curl -L -o ~/orchestrator "https://orchestrator.mgarnier11.fr/cli?arch=arm64&os=linux"
           chmod +x ~/orchestrator
 
       - name: Restart updated stacks
