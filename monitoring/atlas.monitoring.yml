@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   telegraf:
-    image: docker.io/telegraf:1.39.0@sha256:9768f82ebf8bde6da0d61ba220c00161750740c3e322b507a5982b89bbfca99a
+    image: docker.io/telegraf:1.39.2@sha256:49899960eccad39415b91cf654324f0bb7efddaef8f1aa3ec24e2d8c6e19618e
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/atlas.conf"]
@@ -40,7 +40,7 @@ services:
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
 
   dozzle-agent:
-    image: docker.io/amir20/dozzle:v10.6.6@sha256:2e14180fa14c195b8e86705b7ab2234b87599215bcf06f7f56396cb45f57f963
+    image: docker.io/amir20/dozzle:v10.6.11@sha256:bc1ee4ba8d66c7fc0d03823a78486165fb219809f79eaf54cecf3114d647ab14
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
