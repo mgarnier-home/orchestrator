@@ -41,7 +41,7 @@ jobs:
           APOLLON_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.APOLLON_IP }}"
           ATLAS_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATLAS_IP }}"
         run: |
-          set -euo pipefail
+          set -euxo pipefail
 
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
@@ -68,5 +68,6 @@ jobs:
             fi
           else
             echo "This workflow is triggered by a pull request event. No stack to restart."
+            ~/orchestrator restart automation
             exit 0
           fi
