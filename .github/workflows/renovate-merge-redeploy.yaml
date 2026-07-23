@@ -5,7 +5,8 @@ on:
   pull_request:
     types:
       - closed
-  workflow_dispatch:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -13,10 +14,10 @@ permissions:
 
 jobs:
   redeploy_stack:
-    # if: >-
-    #   github.event.pull_request.merged == true &&
-    #   startsWith(github.event.pull_request.title, 'chore(deps)') &&
-    #   github.event.pull_request.base.ref == 'main'
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.title, 'chore(deps)') &&
+      !contains(github.event.pull_request.title, 'autoscaler')
     runs-on: linux/arm64
     steps:
       - name: Checkout repository
@@ -55,19 +56,13 @@ jobs:
             StrictHostKeyChecking no
           EOF
 
-          # get the stack to restart from the name of the branch, which is expected to be renovate/stack-STACK_NAME
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            branch_name="${{ github.event.pull_request.head.ref }}"
-            if [[ "$branch_name" =~ ^renovate/stack-(.+)$ ]]; then
-              stack_name="${BASH_REMATCH[1]}"
-              echo "Found stack name from branch: $stack_name, restarting stack."
-              ~/orchestrator restart $stack_name
-            else
-              echo "Branch name does not match expected pattern 'renovate/stack-STACK_NAME'. No stack to restart."
-              exit 0
-            fi
+          # get the stack to restart from the branch name, expected as renovate/stack-STACK_NAME
+          branch_name="${{ github.event.pull_request.head.ref }}"
+          if [[ "$branch_name" =~ ^renovate/stack-(.+)$ ]]; then
+            stack_name="${BASH_REMATCH[1]}"
+            echo "Found stack name from branch: $stack_name, restarting stack."
+            ~/orchestrator restart $stack_name
           else
-            echo "This workflow is triggered by a pull request event. No stack to restart."
-            ~/orchestrator restart automation
+            echo "Branch name does not match expected pattern 'renovate/stack-STACK_NAME'. No stack to restart."
             exit 0
           fi
