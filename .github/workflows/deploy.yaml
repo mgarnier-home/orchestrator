@@ -38,7 +38,7 @@ jobs:
             echo "Stack names provided via workflow_dispatch: ${{ github.event.inputs.stacks_names }}"
             stacks_names="${{ github.event.inputs.stacks_names }}"
           else
-            files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
+            files=$(git diff --name-only --diff-filter=ACMR "${{ github.event.before }}" "${{ github.sha }}")
 
             stacks_names=$(
               echo "$files" \

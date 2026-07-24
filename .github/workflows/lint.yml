@@ -1,0 +1,40 @@
+name: Deploy stacks
+run-name: Deploy stacks ${{ github.event.inputs.stacks_names || 'on push' }}
+
+on:
+  push:
+    paths-ignore:
+      - "autoscaler/**"
+      - ".github/**"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  redeploy_stack:
+    runs-on: linux/arm64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Download orchestrator CLI
+        run: |
+          curl -fL -o ~/orchestrator "https://orchestrator.mgarnier11.fr/cli?arch=arm64&os=linux"
+          chmod +x ~/orchestrator
+
+      - name: Lint docker-compose files
+        env:
+          ORCHESTRATOR_MODE: "local"
+          ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: ${{ github.workspace }}
+          ORCHESTRATOR_S3_ENDPOINT: "https://s3.mgarnier11.fr"
+          ORCHESTRATOR_S3_BUCKET: "environment-bucket"
+          ORCHESTRATOR_S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          ORCHESTRATOR_S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          ATHENA_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATHENA_IP }}"
+          ZEPHYR_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ZEPHYR_IP }}"
+          APOLLON_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.APOLLON_IP }}"
+          ATLAS_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATLAS_IP }}"
+        run: ~/orchestrator lint
