@@ -40,9 +40,11 @@ jobs:
           else
             files=$(git diff --name-only --diff-filter=ACMR "${{ github.event.before }}" "${{ github.sha }}")
 
+            # Ignore .github directory
             stacks_names=$(
               echo "$files" \
                 | grep '/' \
+                | grep -v '^.github/' \
                 | cut -d/ -f1 \
                 | sort -u \
                 | paste -sd,

@@ -150,8 +150,8 @@ services:
       ATHENA_IP: ${ATHENA_IP}
       ATLAS_IP: ${ATLAS_IP}
       ZEPHYR_IP: ${ZEPHYR_IP}
-    env_file:
-      - ../ports.env
+    # env_file:
+    #   - ../ports.env
     ports:
       - ${ZEPHYR_HOMEPAGE_PORT}:3000
     volumes:
