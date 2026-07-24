@@ -1,5 +1,5 @@
-name: Deploy stacks
-run-name: Deploy stacks ${{ github.event.inputs.stacks_names || 'on push' }}
+name: Lint
+run-name: Lint docker-compose files
 
 on:
   push:
