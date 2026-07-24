@@ -33,14 +33,16 @@ services:
     labels:
       traefik-conf.port: ${APOLLON_TRAEFIK_PORT}
       # traefik-conf.name: traefik.apollon
-    env_file:
-      - ./traefik.env
     environment:
       TZ: Europe/Paris
       ZEPHYR_IP: ${ZEPHYR_IP}
       APOLLON_IP: ${APOLLON_IP}
       ATHENA_IP: ${ATHENA_IP}
       ATLAS_IP: ${ATLAS_IP}
+      OVH_ENDPOINT: ${OVH_ENDPOINT}
+      OVH_APPLICATION_KEY: ${OVH_APPLICATION_KEY}
+      OVH_APPLICATION_SECRET: ${OVH_APPLICATION_SECRET}
+      OVH_CONSUMER_KEY: ${OVH_CONSUMER_KEY}
     depends_on:
       - traefik-conf
     command:
