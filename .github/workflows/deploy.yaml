@@ -2,11 +2,18 @@ name: Renovate Merge Redeploy
 run-name: Restart ${{ github.event.pull_request.head.ref }} after merge
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - main
+    paths-ignore:
+      - "autoscaler"
+      - ".github"
+
+  workflow_dispatch:
+    inputs:
+      stack_name:
+        description: "Stack to restart"
+        required: true
 
 permissions:
   contents: read
@@ -14,14 +21,39 @@ permissions:
 
 jobs:
   redeploy_stack:
-    if: >-
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.title, 'chore(deps)') &&
-      !contains(github.event.pull_request.title, 'autoscaler')
     runs-on: linux/arm64
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Get stacks to restart from modified files
+        id: get_stacks
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "Stack name provided via workflow_dispatch: ${{ github.event.inputs.stack_name }}"
+            echo "STACKS_NAMES=${{ github.event.inputs.stack_name }}" >> $GITHUB_OUTPUT
+          else
+            files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
+
+            stack_names=$(
+              echo "$files" \
+                | grep '/' \
+                | cut -d/ -f1 \
+                | sort -u \
+                | paste -sd,
+            )
+
+            if [ -z "$stack_names" ]; then
+              echo "No stack names found from modified files. Exiting."
+              exit 0
+            fi
+
+            echo "Found stack names: $stack_names"
+            echo "STACKS_NAMES=$stack_names" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Download orchestrator CLI
         run: |
@@ -29,7 +61,6 @@ jobs:
           chmod +x ~/orchestrator
 
       - name: Restart updated stacks
-        shell: bash
         env:
           ORCHESTRATOR_MODE: "local"
           ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: ${{ github.workspace }}
@@ -42,7 +73,7 @@ jobs:
           APOLLON_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.APOLLON_IP }}"
           ATLAS_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.ATLAS_IP }}"
         run: |
-          set -euxo pipefail
+          set -euo pipefail
 
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
@@ -56,13 +87,9 @@ jobs:
             StrictHostKeyChecking no
           EOF
 
-          # get the stack to restart from the branch name, expected as renovate/stack-STACK_NAME
-          branch_name="${{ github.event.pull_request.head.ref }}"
-          if [[ "$branch_name" =~ ^renovate/stack-(.+)$ ]]; then
-            stack_name="${BASH_REMATCH[1]}"
-            echo "Found stack name from branch: $stack_name, restarting stack."
-            ~/orchestrator restart $stack_name
-          else
-            echo "Branch name does not match expected pattern 'renovate/stack-STACK_NAME'. No stack to restart."
-            exit 0
-          fi
+          # get the stacks to restart from the variable set in the previous step
+          IFS=',' read -r -a stacks <<< "${{ steps.get_stacks.outputs.STACKS_NAMES }}"
+          for stack in "${stacks[@]}"; do
+            echo "Restarting stack: $stack"
+            ~/orchestrator restart "$stack"
+          done
