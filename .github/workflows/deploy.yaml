@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths-ignore:
-      - "autoscaler"
-      - ".github"
+      - "autoscaler/**"
+      - ".github/**"
 
   workflow_dispatch:
     inputs:
@@ -32,28 +32,30 @@ jobs:
         id: get_stacks
         run: |
           set -euo pipefail
+          stacks_names=""
+
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "Stack names provided via workflow_dispatch: ${{ github.event.inputs.stacks_names }}"
-            echo "STACKS_NAMES=${{ github.event.inputs.stacks_names }}" >> $GITHUB_OUTPUT
+            stacks_names="${{ github.event.inputs.stacks_names }}"
           else
             files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
 
-            stack_names=$(
+            stacks_names=$(
               echo "$files" \
                 | grep '/' \
                 | cut -d/ -f1 \
                 | sort -u \
                 | paste -sd,
             )
-
-            if [ -z "$stack_names" ]; then
-              echo "No stack names found from modified files. Exiting."
-              exit 0
-            fi
-
-            echo "Found stack names: $stack_names"
-            echo "STACKS_NAMES=$stack_names" >> "$GITHUB_OUTPUT"
           fi
+
+          if [ -z "$stacks_names" ]; then
+            echo "No stacks to restart."
+            exit 1
+          fi
+
+          echo "Stacks to restart: $stacks_names"
+          echo "STACKS_NAMES=$stacks_names" >> "$GITHUB_OUTPUT"
 
       - name: Download orchestrator CLI
         run: |
