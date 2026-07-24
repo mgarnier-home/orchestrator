@@ -1,5 +1,5 @@
-name: Renovate Merge Redeploy
-run-name: Restart ${{ github.event.pull_request.head.ref }} after merge
+name: Deploy stacks
+run-name: Deploy stacks ${{ github.event.inputs.stacks_names || 'on push' }}
 
 on:
   push:
@@ -11,8 +11,8 @@ on:
 
   workflow_dispatch:
     inputs:
-      stack_name:
-        description: "Stack to restart"
+      stacks_names:
+        description: "Stacks to restart"
         required: true
 
 permissions:
@@ -33,8 +33,8 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "Stack name provided via workflow_dispatch: ${{ github.event.inputs.stack_name }}"
-            echo "STACKS_NAMES=${{ github.event.inputs.stack_name }}" >> $GITHUB_OUTPUT
+            echo "Stack names provided via workflow_dispatch: ${{ github.event.inputs.stacks_names }}"
+            echo "STACKS_NAMES=${{ github.event.inputs.stacks_names }}" >> $GITHUB_OUTPUT
           else
             files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
 
