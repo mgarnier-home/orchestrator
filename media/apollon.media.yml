@@ -11,11 +11,6 @@ services:
       traefik-conf.port: ${APOLLON_QBITTORRENT_PORT}
     volumes:
       - type: volume
-        source: docker-data
-        volume:
-          subpath: media/qbittorrent
-        target: /config
-      - type: volume
         source: atlas-media
         target: /downloads
     ports:

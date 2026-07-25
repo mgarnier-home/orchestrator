@@ -14,7 +14,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  redeploy_stack:
+  lint:
     runs-on: linux/arm64
     steps:
       - name: Checkout repository

@@ -7,6 +7,9 @@ services:
     restart: always
     ports:
       - ${APOLLON_N8N_PORT}:5678
+    depends_on:
+      postgres:
+        condition: service_healthy
     labels:
       traefik-conf.port: ${APOLLON_N8N_PORT}
       traefik-conf.middlewares: github-wl@file,authelia@file
@@ -22,6 +25,18 @@ services:
       - WEBHOOK_URL=https://n8n.${PUBLIC_DOMAIN_NAME}/
       - GENERIC_TIMEZONE=${TIMEZONE}
       - TZ=${TIMEZONE}
+
+      # Database
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${N8N_DB_NAME}
+      - DB_POSTGRESDB_USER=${N8N_DB_USER}
+      - DB_POSTGRESDB_PASSWORD=${N8N_DB_PASSWORD}
+
+      # IMPORTANT:
+      # Keep the same encryption key from your current installation
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
     volumes:
       - type: volume
         source: docker-data
@@ -33,6 +48,27 @@ services:
         volume:
           subpath: automation/n8n/config
         target: /home/node/.n8n
+
+  postgres:
+    container_name: n8n-postgres
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${N8N_DB_USER}
+      POSTGRES_PASSWORD: ${N8N_DB_PASSWORD}
+      POSTGRES_DB: ${N8N_DB_NAME}
+      TZ: ${TIMEZONE}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: automation/postgres
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${N8N_DB_USER} -d ${N8N_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   docker-data:
