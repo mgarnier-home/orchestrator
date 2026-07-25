@@ -16,6 +16,9 @@
   "enabledManagers": [
     "docker-compose"
   ],
+  "automerge": true,
+  "platformAutomerge": true,
+  "automergeType": "pr",
   "prConcurrentLimit": 20,
   "branchConcurrentLimit": 20,
   "prHourlyLimit": 0,
@@ -124,9 +127,7 @@
       "matchFileNames": [
         "network/**"
       ],
-      "groupName": "network",
-      "platformAutomerge": true,
-      "automergeType": "pr"
+      "groupName": "network"
     },
     {
       "description": "One PR for paperless",
