@@ -11,6 +11,7 @@
   "commitMessageTopic": "{{groupName}}",
   "separateMajorMinor": false,
   "platformAutomerge": true,
+  "automergeType": "pr",
   "minimumReleaseAge": "1 day",
   "major": {
     "enabled": false
