@@ -10,6 +10,8 @@
   "commitMessageAction": "update",
   "commitMessageTopic": "{{groupName}}",
   "separateMajorMinor": false,
+  "platformAutomerge": true,
+  "minimumReleaseAge": "1 day",
   "major": {
     "enabled": false
   },
