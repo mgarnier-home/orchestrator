@@ -2,7 +2,7 @@ name: Lint
 run-name: Lint docker-compose files
 
 on:
-  push:
+  pull_request:
     paths-ignore:
       - "autoscaler/**"
       - ".github/**"
