@@ -29,7 +29,7 @@ services:
         target: /opt/app/backend/data
 
   pdf:
-    image: ghcr.io/alam00000/bentopdf:2.8.6@sha256:eaeea1e447205a79cb61d7efdc6966f37311dc1bc9c36a3a5c897bf79107c2c3
+    image: ghcr.io/alam00000/bentopdf:2.8.7@sha256:165113f4579cc61ea353ad0597ed510cc2101ef879ec5e91875a3df0c0b219a0
     container_name: bentopdf
     restart: unless-stopped
     ports:
@@ -43,7 +43,7 @@ services:
       retries: 3
 
   trilium:
-    image: docker.io/triliumnext/trilium:v0.104.0@sha256:8e053aa58a90c1690106a324a4692690ba0491c21ae40485b4051e2911df9489
+    image: docker.io/triliumnext/trilium:v0.104.1@sha256:3332fa03198f0b3ecddf11fcf37f3aace352a664728d669a1ffa7a5594a6f2d6
     container_name: trilium
     restart: unless-stopped
     environment:
