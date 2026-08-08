@@ -2,7 +2,7 @@ name: utils
 
 services:
   neko:
-    image: "ghcr.io/m1k1o/neko/nvidia-firefox:3.1.4@sha256:6bb273994f661cafe934f0f75befc835444a06058990c6e035ed0df20dd10e9a"
+    image: "ghcr.io/m1k1o/neko/nvidia-firefox:3.1.5@sha256:bdc4e906a80f27d927bd6d07011e2c3304c0707d45c47eda48b41a1366a74ff2"
     container_name: neko
     restart: "unless-stopped"
     shm_size: "2gb"
