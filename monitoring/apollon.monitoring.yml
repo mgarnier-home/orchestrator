@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   telegraf:
-    image: docker.io/telegraf:1.39.2@sha256:49899960eccad39415b91cf654324f0bb7efddaef8f1aa3ec24e2d8c6e19618e
+    image: docker.io/telegraf:1.39.2@sha256:386b2d4fdd4265d9e5b6a20131dbfe2b6bc277a4d53972962e5a4a3d16f180ef
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/apollon.conf"]
@@ -41,7 +41,7 @@ services:
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
 
   dozzle-agent:
-    image: docker.io/amir20/dozzle:v10.6.14@sha256:1c1060cfb5402093c4e0f03f3534d7deaffeb0a6f6dd034e7c5f244603f35fb3
+    image: docker.io/amir20/dozzle:v10.6.15@sha256:5bb13e26b62f9bc4bd390e3e0c9423263b7df86e3a4167b718cc6e352f96b54f
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
@@ -72,7 +72,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: docker.io/grafana/grafana:13.1.1@sha256:7cb8c64c4d57a57e734073f3cc94620adb24a0acb929bd80ba9f14017e3a975b
+    image: docker.io/grafana/grafana:13.1.3@sha256:ab5cb380e3ff3172d6c8bd2e7cfd31cce977d2881b260e1f5bc089bf0b759b43
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
@@ -97,7 +97,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: docker.io/influxdb:2.9.1@sha256:9f29465df7a15d427e046681cfc7b3da9753e75825c6864f8d3cf5b3aa3cca3d
+    image: docker.io/influxdb:2.9.1@sha256:270145207873eb426e15a211063532fc6f966f4ffb6edf4114ffac83ac4696eb
     restart: unless-stopped
     ports:
       - ${APOLLON_INFLUXDB_PORT}:8086
