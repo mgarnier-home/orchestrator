@@ -21,11 +21,6 @@ services:
         volume:
           subpath: network/traefik/data
         target: /data
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: network/traefik/logs
-        target: /logs
     ports:
       - 80:80/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 80
       - 443:443/tcp # Exposé à l'extérieur via : sudo ufw route allow proto tcp to 172.19.0.2 port 443
