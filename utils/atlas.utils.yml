@@ -1,26 +1,6 @@
 name: utils
 
 services:
-  mysql:
-    image: mysql:9.7.1@sha256:cbade841779f1661300e705721f9d2ff159865cc7a8a291affbff43ac6ec7f1d
-    container_name: mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: utils/mysql
-        target: /var/lib/mysql
-    ports:
-      - ${ATLAS_MYSQL_PORT}:3306
-    # labels:
-    #   traefik-conf.port: ${ATLAS_MYSQL_PORT}
-
   dbeaver:
     image: dbeaver/cloudbeaver:latest@sha256:c0975db279e488c6f770e4a5a74e7f8d388d5bc53c75bce82647e82cb6358a3f
     container_name: dbeaver

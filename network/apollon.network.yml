@@ -55,74 +55,74 @@ services:
       retries: 3
       start_period: 10s
 
-  traefik-log-dashboard-agent:
-    image: docker.io/hhftechnology/traefik-log-dashboard-agent:3.1.1@sha256:4c9853d486a0e3108678fd00aeda86ce1b269c0ae1b1c2ab9e5c81760e12d53a
-    container_name: traefik-log-dashboard-agent
-    restart: unless-stopped
-    networks:
-      traefik-net:
-        ipv4_address: 172.19.0.5
-    depends_on:
-      - traefik
-    volumes:
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: network/traefik/logs
-        target: /logs
-        read_only: true
-    environment:
-      TRAEFIK_LOG_DASHBOARD_ACCESS_PATH: /logs/traefik-access.log
-      TRAEFIK_LOG_DASHBOARD_ERROR_PATH: /logs/traefik-access.log
-      TRAEFIK_LOG_DASHBOARD_AUTH_TOKEN: ${TRAEFIK_LOG_TOKEN}
-      TRAEFIK_LOG_DASHBOARD_SYSTEM_MONITORING: true
-      TRAEFIK_LOG_DASHBOARD_LOG_FORMAT: json
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:5000/api/logs/status",
-        ]
-      interval: 2m
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+  # traefik-log-dashboard-agent:
+  #   image: docker.io/hhftechnology/traefik-log-dashboard-agent:3.1.1@sha256:4c9853d486a0e3108678fd00aeda86ce1b269c0ae1b1c2ab9e5c81760e12d53a
+  #   container_name: traefik-log-dashboard-agent
+  #   restart: unless-stopped
+  #   networks:
+  #     traefik-net:
+  #       ipv4_address: 172.19.0.5
+  #   depends_on:
+  #     - traefik
+  #   volumes:
+  #     - type: volume
+  #       source: docker-data
+  #       volume:
+  #         subpath: network/traefik/logs
+  #       target: /logs
+  #       read_only: true
+  #   environment:
+  #     TRAEFIK_LOG_DASHBOARD_ACCESS_PATH: /logs/traefik-access.log
+  #     TRAEFIK_LOG_DASHBOARD_ERROR_PATH: /logs/traefik-access.log
+  #     TRAEFIK_LOG_DASHBOARD_AUTH_TOKEN: ${TRAEFIK_LOG_TOKEN}
+  #     TRAEFIK_LOG_DASHBOARD_SYSTEM_MONITORING: true
+  #     TRAEFIK_LOG_DASHBOARD_LOG_FORMAT: json
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "wget",
+  #         "--no-verbose",
+  #         "--tries=1",
+  #         "--spider",
+  #         "http://localhost:5000/api/logs/status",
+  #       ]
+  #     interval: 2m
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 30s
 
-  traefik-log-dashboard:
-    image: docker.io/hhftechnology/traefik-log-dashboard:3.1.1@sha256:f982908e6d0665fd361eeef893d50d7743be09e1c95d3a087d4f7d47a651bead
-    container_name: traefik-log-dashboard
-    restart: unless-stopped
-    networks:
-      traefik-net:
-        ipv4_address: 172.19.0.6
-    depends_on:
-      traefik-log-dashboard-agent:
-        condition: service_healthy
-    ports:
-      - ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}:3000
-    environment:
-      AGENT_API_URL: http://traefik-log-dashboard-agent:5000
-      AGENT_API_TOKEN: ${TRAEFIK_LOG_TOKEN}
-      AGENT_NAME: "Traefik Apollon"
-      DASHBOARD_MAX_LOGS_DISPLAY: 10000
-      SHOW_DEMO_PAGE: false
-    volumes:
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: network/traefik-log-dashboard/positions
-        target: /data/positions
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: network/traefik-log-dashboard/dashboards
-        target: /data/dashboards
-    labels:
-      traefik-conf.port: ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}
+  # traefik-log-dashboard:
+  #   image: docker.io/hhftechnology/traefik-log-dashboard:3.1.1@sha256:f982908e6d0665fd361eeef893d50d7743be09e1c95d3a087d4f7d47a651bead
+  #   container_name: traefik-log-dashboard
+  #   restart: unless-stopped
+  #   networks:
+  #     traefik-net:
+  #       ipv4_address: 172.19.0.6
+  #   depends_on:
+  #     traefik-log-dashboard-agent:
+  #       condition: service_healthy
+  #   ports:
+  #     - ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}:3000
+  #   environment:
+  #     AGENT_API_URL: http://traefik-log-dashboard-agent:5000
+  #     AGENT_API_TOKEN: ${TRAEFIK_LOG_TOKEN}
+  #     AGENT_NAME: "Traefik Apollon"
+  #     DASHBOARD_MAX_LOGS_DISPLAY: 10000
+  #     SHOW_DEMO_PAGE: false
+  #   volumes:
+  #     - type: volume
+  #       source: docker-data
+  #       volume:
+  #         subpath: network/traefik-log-dashboard/positions
+  #       target: /data/positions
+  #     - type: volume
+  #       source: docker-data
+  #       volume:
+  #         subpath: network/traefik-log-dashboard/dashboards
+  #       target: /data/dashboards
+  #   labels:
+  #     traefik-conf.port: ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}
 
   authelia:
     image: docker.io/authelia/authelia:4.39.20@sha256:1b363e9279e742397966333f364e0876ae02bf5c876de73e83af6d48c57ff51b

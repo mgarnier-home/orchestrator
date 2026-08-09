@@ -1,0 +1,26 @@
+name: observability
+
+services:
+  vector:
+    image: docker.io/timberio/vector:0.42.0-debian
+    container_name: vector
+    restart: unless-stopped
+    user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
+    command: ["--config", "/config/vector.toml"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: observability/vector
+        target: /config
+    environment:
+      HOST_NAME: ${ZEPHYR_HOSTNAME}
+      OPENOBSERVE_HOST: ${ATLAS_IP}
+      OPENOBSERVE_PORT: ${ATLAS_OPENOBSERVE_PORT}
+      OPENOBSERVE_ROOT_EMAIL: ${OPENOBSERVE_ROOT_EMAIL}
+      OPENOBSERVE_ROOT_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD}
+
+volumes:
+  docker-data:
+    external: true

@@ -43,7 +43,7 @@ services:
       HOST_SYS: /hostfs/sys
       HOST_ETC: /hostfs/etc
       HOST_MOUNT_PREFIX: /hostfs
-      INFLUX_URL: "http://${APOLLON_IP}:${APOLLON_INFLUXDB_PORT}"
+      INFLUX_URL: "http://${ATLAS_IP}:${ATLAS_INFLUXDB_PORT}"
       INFLUX_TOKEN: ${INFLUXDB_TOKEN}
       INFLUX_ORG: ${INFLUXDB_ORG}
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
@@ -63,20 +63,6 @@ services:
       start_period: 10s
     ports:
       - ${ATHENA_DOZZLE_AGENT_PORT}:7007
-
-  beszel-agent:
-    image: docker.io/henrygd/beszel-agent:0.18.7@sha256:8874e2c53f9de5e063a6a80d6b617e20fa593ac5dc4eb4c6ce1f912f510f38f8
-    container_name: beszel-agent
-    restart: unless-stopped
-    network_mode: host
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      PORT: ${ATHENA_BESZEL_AGENT_PORT}
-      KEY: ${BESZEL_AGENT_KEY}
-    healthcheck:
-      test: ["CMD", "/agent", "health"]
-      start_period: 10s
 
 volumes:
   docker-data:
