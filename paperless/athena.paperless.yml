@@ -2,7 +2,7 @@ name: paperless
 
 services:
   broker:
-    image: docker.io/library/redis:8@sha256:a7efd4ed5037dcfe1543c0e50b9f06293d3e88827005544bf37f381eea5f01cf
+    image: docker.io/library/redis:8@sha256:344e3945a0b431c8ff1eecd58c5573538126bd756f02fc7e218ddf1fc2546366
     container_name: paperless-broker
     restart: unless-stopped
     networks:
@@ -109,7 +109,7 @@ services:
       PAPERLESS_LOGOUT_REDIRECT_URL: https://authelia.${PUBLIC_DOMAIN_NAME}/logout
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.34@sha256:67097317623a503ba2a6a7e9ae8db6929a1f7e1bbd88077bacf2d325fbdab923
+    image: docker.io/gotenberg/gotenberg:8.36@sha256:87c16b9f364279d321bc9772d31fa58aa6abe036423c270698bd636c3a8e9466
     container_name: paperless-gotenberg
     restart: unless-stopped
     networks:
