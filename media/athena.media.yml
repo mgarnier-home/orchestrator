@@ -35,7 +35,7 @@ services:
   jellyfin:
     container_name: jellyfin
     restart: unless-stopped
-    image: docker.io/jellyfin/jellyfin:10.11.11@sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db
+    image: docker.io/jellyfin/jellyfin:10.11.10
     ports:
       - ${ATHENA_JELLYFIN_PORT}:8096
     labels:
@@ -120,6 +120,11 @@ services:
       traefik-conf.http.routers.athena_music_api.entrypoints: https
       traefik-conf.http.routers.athena_music_api.middlewares: ip-wl@file,geoblock@file,authelia-basic@file
       traefik-conf.http.routers.athena_music_api.tls.certResolver: tls-resolver
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:4533/ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   navidrome-sagas:
     image: docker.io/deluan/navidrome:0.63.2@sha256:9012939114fbb1bb641b81cf96dec5ded15f0aafefe8d47a511d7cb919658e40
@@ -158,6 +163,11 @@ services:
       traefik-conf.http.routers.athena_sagas_api.entrypoints: https
       traefik-conf.http.routers.athena_sagas_api.middlewares: ip-wl@file,geoblock@file,authelia-basic@file
       traefik-conf.http.routers.athena_sagas_api.tls.certResolver: tls-resolver
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:4533/ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   downloader:
     image: registry.gitlab.com/bockiii/deemix-docker@sha256:d325660d833c30c8bbb5cf0caa75135b42a2f69b82f2269fd5bea91a04c449e6

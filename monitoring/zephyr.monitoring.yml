@@ -11,6 +11,11 @@ services:
       - ${ZEPHYR_DOCKER_SOCKET_PROXY_PORT}:2375
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:2375/_ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   telegraf:
     image: docker.io/telegraf:1.39.3@sha256:b5b8291d62bf7ccc222bdacfd7229b6cc7227f1d07574ca4eb0a872e5a8f83cd
@@ -42,6 +47,11 @@ services:
       INFLUX_TOKEN: ${INFLUXDB_TOKEN}
       INFLUX_ORG: ${INFLUXDB_ORG}
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:8080 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   dozzle-agent:
     image: docker.io/amir20/dozzle:v10.7.2@sha256:01f9018ffdaa0ec523f9a91dea3eff65b25cdb5f0566ac6d5a2cb4cf591e35e9
@@ -128,6 +138,35 @@ services:
     restart: unless-stopped
     labels:
       traefik-conf.port: ${ZEPHYR_HOMEPAGE_PORT}
+
+  vector:
+    image: docker.io/timberio/vector:0.42.0-debian
+    container_name: vector
+    restart: unless-stopped
+    user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
+    command: ["--config", "/config/vector.toml"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: monitoring/vector
+        target: /config
+    environment:
+      HOST_NAME: ${ZEPHYR_HOSTNAME}
+      OPENOBSERVE_HOST: ${ATLAS_IP}
+      OPENOBSERVE_PORT: ${ATLAS_OPENOBSERVE_PORT}
+      OPENOBSERVE_ROOT_EMAIL: ${OPENOBSERVE_ROOT_EMAIL}
+      OPENOBSERVE_ROOT_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD}
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - >
+          bash -c 'exec 3<>/dev/tcp/localhost/8686 &&
+          echo -e "GET /health HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3 &&
+          head -n 1 <&3 | grep -q "200"' || exit 1      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   docker-data:

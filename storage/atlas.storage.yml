@@ -12,6 +12,13 @@ services:
           subpath: seaweedfs/master
         target: /data
     command: "master -ip=master -ip.bind=0.0.0.0 -metricsPort=9324"
+    healthcheck:
+      test:
+        ["CMD", "curl", "-f", "http://localhost:9333/cluster/status?pretty=y"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
   volume:
     image: docker.io/chrislusf/seaweedfs:4.42@sha256:f7cbc8bdbbf60a1aaba7d61784a3bdff3ec1e0657f6ad0b26d5b6ab2cd9d0dc6
@@ -28,6 +35,13 @@ services:
     command: 'volume -ip=volume -mserver="master:9333" -ip.bind=0.0.0.0 -port=8080 -metricsPort=9325'
     depends_on:
       - master
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
   filer:
     image: docker.io/chrislusf/seaweedfs:4.42@sha256:f7cbc8bdbbf60a1aaba7d61784a3bdff3ec1e0657f6ad0b26d5b6ab2cd9d0dc6
     container_name: seaweedfs-filer
@@ -46,6 +60,13 @@ services:
     depends_on:
       - master
       - volume
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
   s3:
     image: docker.io/chrislusf/seaweedfs:4.42@sha256:f7cbc8bdbbf60a1aaba7d61784a3bdff3ec1e0657f6ad0b26d5b6ab2cd9d0dc6
     container_name: seaweedfs-s3
@@ -69,6 +90,20 @@ services:
       - master
       - volume
       - filer
+    healthcheck:
+      # No dedicated /healthz on the S3 gateway (it treats the path as a bucket name and 404s),
+      # so we just confirm the HTTP server itself is answering (any non-5xx response, e.g. a 403
+      # from a missing signature, still proves it's up).
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -o /dev/null -w '%{http_code}' http://localhost:8333/ | grep -qE '^[234]'",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
   admin:
     image: docker.io/chrislusf/seaweedfs:4.42@sha256:f7cbc8bdbbf60a1aaba7d61784a3bdff3ec1e0657f6ad0b26d5b6ab2cd9d0dc6
     container_name: seaweedfs-admin
@@ -83,6 +118,18 @@ services:
       traefik-conf.name: s3-admin
     depends_on:
       - master
+    healthcheck:
+      # Admin UI sits behind a login page, so we just confirm the server answers rather than
+      # expecting a clean 200 (which would require valid credentials).
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -o /dev/null -w '%{http_code}' http://localhost:23646/ | grep -qE '^[234]'",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
 networks:
   seaweedfs-net:
