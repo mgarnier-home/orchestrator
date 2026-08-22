@@ -54,7 +54,7 @@ services:
       retries: 3
 
   dozzle-agent:
-    image: docker.io/amir20/dozzle:v10.7.2@sha256:01f9018ffdaa0ec523f9a91dea3eff65b25cdb5f0566ac6d5a2cb4cf591e35e9
+    image: docker.io/amir20/dozzle:v10.7.3@sha256:c32ca7a443796de62a07afd621b17b6c6c073320cd8431493bb1fd84e3a1eff8
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
@@ -70,7 +70,7 @@ services:
       - ${ZEPHYR_DOZZLE_AGENT_PORT}:7007
 
   dozzle:
-    image: docker.io/amir20/dozzle:v10.7.2@sha256:01f9018ffdaa0ec523f9a91dea3eff65b25cdb5f0566ac6d5a2cb4cf591e35e9
+    image: docker.io/amir20/dozzle:v10.7.3@sha256:c32ca7a443796de62a07afd621b17b6c6c073320cd8431493bb1fd84e3a1eff8
     container_name: dozzle
     restart: unless-stopped
     environment:
@@ -140,7 +140,7 @@ services:
       traefik-conf.port: ${ZEPHYR_HOMEPAGE_PORT}
 
   vector:
-    image: docker.io/timberio/vector:0.42.0-debian
+    image: docker.io/timberio/vector:0.57.0-debian@sha256:ed2134fa8f9844c1ca6405260903c2c2c52f94af9e16bc8fa9de9655134e0b39
     container_name: vector
     restart: unless-stopped
     user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
