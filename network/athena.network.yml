@@ -1,7 +1,7 @@
 name: network
 services:
   sablier:
-    image: ghcr.io/sablierapp/sablier:1.16.2@sha256:73a68ff57f4a4fa17c6e56d92ff145a03f0293285d1260512578b33629fa9a3f
+    image: ghcr.io/sablierapp/sablier:1.18.0@sha256:c00c8a01c8c809dd258a8b362ad8ba9a9227753fc9857ae7506fd427175e038c
     container_name: sablier
     restart: unless-stopped
     command:
