@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.39.3@sha256:b5b8291d62bf7ccc222bdacfd7229b6cc7227f1d07574ca4eb0a872e5a8f83cd
+    image: docker.io/telegraf:1.39.3@sha256:ac66e6482c0644765c12904ce2f42ce3f3702f72e905b1894120b51b12ae30c9
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/atlas.conf"]
@@ -50,7 +50,7 @@ services:
       retries: 3
 
   dozzle-agent:
-    image: docker.io/amir20/dozzle:v10.7.3@sha256:c32ca7a443796de62a07afd621b17b6c6c073320cd8431493bb1fd84e3a1eff8
+    image: docker.io/amir20/dozzle:v10.9.0@sha256:7f01a2504f89788b60ad0efddd94472fd66f9a225c708356cdb815d9d8abd184
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
@@ -67,7 +67,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: docker.io/grafana/grafana:13.2.0@sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b
+    image: docker.io/grafana/grafana:13.2.1@sha256:f772d434e8fab0049deb2b1b30abd43342bcfca1537614aa8d36080232cf4283
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
@@ -97,7 +97,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: docker.io/influxdb:2.9.1@sha256:270145207873eb426e15a211063532fc6f966f4ffb6edf4114ffac83ac4696eb
+    image: docker.io/influxdb:2.9.1@sha256:f75e48af0598e8aec7986e991a848d19a119101a7d563a2e5db1dfaac9c45daa
     restart: unless-stopped
     ports:
       - ${ATLAS_INFLUXDB_PORT}:8086
@@ -142,7 +142,7 @@ services:
       traefik-conf.port: ${ATLAS_OPENOBSERVE_PORT}
 
   vector:
-    image: docker.io/timberio/vector:0.57.0-debian@sha256:ed2134fa8f9844c1ca6405260903c2c2c52f94af9e16bc8fa9de9655134e0b39
+    image: docker.io/timberio/vector:0.58.0-debian@sha256:1c1ea358c617ea0b23003d5af87f7a678b30f8f7096437e680380c47fc13d2d9
     container_name: vector
     restart: unless-stopped
     user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
