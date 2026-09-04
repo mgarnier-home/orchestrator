@@ -1,6 +1,6 @@
 services:
   master:
-    image: docker.io/chrislusf/seaweedfs:4.44@sha256:e67e8c385484120b78bff47ba5f4debbca47fbd27ed1a39f016f47e8baea615b
+    image: docker.io/chrislusf/seaweedfs:4.45@sha256:fc9f76fa993ad69966ffeb2f65d0318fcae39c6f8e20cf68ef7b3a5cb97769e5
     container_name: seaweedfs-master
     restart: unless-stopped
     networks:
@@ -21,7 +21,7 @@ services:
       start_period: 15s
 
   volume:
-    image: docker.io/chrislusf/seaweedfs:4.44@sha256:e67e8c385484120b78bff47ba5f4debbca47fbd27ed1a39f016f47e8baea615b
+    image: docker.io/chrislusf/seaweedfs:4.45@sha256:fc9f76fa993ad69966ffeb2f65d0318fcae39c6f8e20cf68ef7b3a5cb97769e5
     container_name: seaweedfs-volume
     restart: unless-stopped
     networks:
@@ -43,7 +43,7 @@ services:
       start_period: 15s
 
   filer:
-    image: docker.io/chrislusf/seaweedfs:4.44@sha256:e67e8c385484120b78bff47ba5f4debbca47fbd27ed1a39f016f47e8baea615b
+    image: docker.io/chrislusf/seaweedfs:4.45@sha256:fc9f76fa993ad69966ffeb2f65d0318fcae39c6f8e20cf68ef7b3a5cb97769e5
     container_name: seaweedfs-filer
     restart: unless-stopped
     networks:
@@ -68,7 +68,7 @@ services:
       start_period: 15s
 
   s3:
-    image: docker.io/chrislusf/seaweedfs:4.44@sha256:e67e8c385484120b78bff47ba5f4debbca47fbd27ed1a39f016f47e8baea615b
+    image: docker.io/chrislusf/seaweedfs:4.45@sha256:fc9f76fa993ad69966ffeb2f65d0318fcae39c6f8e20cf68ef7b3a5cb97769e5
     container_name: seaweedfs-s3
     restart: unless-stopped
     networks:
@@ -105,7 +105,7 @@ services:
       start_period: 15s
 
   admin:
-    image: docker.io/chrislusf/seaweedfs:4.44@sha256:e67e8c385484120b78bff47ba5f4debbca47fbd27ed1a39f016f47e8baea615b
+    image: docker.io/chrislusf/seaweedfs:4.45@sha256:fc9f76fa993ad69966ffeb2f65d0318fcae39c6f8e20cf68ef7b3a5cb97769e5
     container_name: seaweedfs-admin
     restart: unless-stopped
     networks:
