@@ -29,7 +29,7 @@ services:
         target: /opt/app/backend/data
 
   pdf:
-    image: ghcr.io/alam00000/bentopdf:2.8.7@sha256:165113f4579cc61ea353ad0597ed510cc2101ef879ec5e91875a3df0c0b219a0
+    image: ghcr.io/alam00000/bentopdf:2.8.8@sha256:6ef493c8e3bdbaa26c9bfcec330377ae95116fa00660ca0342769063197b1952
     container_name: bentopdf
     restart: unless-stopped
     ports:
@@ -66,7 +66,7 @@ services:
       traefik-conf.port: ${APOLLON_TRILIUM_PORT}
 
   ntfy:
-    image: docker.io/binwiederhier/ntfy:v2.27.0@sha256:f2419f405127afa868f10985c1a41449e673477cee1eb19994339a5ae8b592e7
+    image: docker.io/binwiederhier/ntfy:v2.28.0@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da
     container_name: ntfy
     restart: unless-stopped
     command:
