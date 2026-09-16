@@ -2,7 +2,7 @@ name: autoscaler
 
 services:
   autoscaler:
-    image: docker.io/mgarnier11/autoscaler:latest@sha256:00920036ba8dab70cf29a2766297f2782c14f0db596d7838d86473408af699c0
+    image: docker.io/mgarnier11/autoscaler:latest@sha256:274f39ceae2c36dd8a705cd4d529b817031d96bcf2a0ca6b8a9e4855b8fa6a45
     restart: unless-stopped
     container_name: autoscaler
     environment:
