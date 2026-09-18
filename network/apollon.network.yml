@@ -4,7 +4,7 @@ services:
   traefik:
     container_name: traefik
     restart: unless-stopped
-    image: docker.io/traefik:v3.7@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259
+    image: docker.io/traefik:v3.7@sha256:1c32e7c368204fd72812152ebdd2ac0425993df6fd982317deb02e48f2d5423c
     # image: mgarnier11/traefik-conf
     networks:
       traefik-net:
@@ -120,7 +120,7 @@ services:
   #     traefik-conf.port: ${APOLLON_TRAEFIK_LOG_DASHBOARD_PORT}
 
   authelia:
-    image: docker.io/authelia/authelia:4.39.27@sha256:40005803cd4e2eaeea4418517e9e9c7f515b55b31071a02829341ca2e50ca7c0
+    image: docker.io/authelia/authelia:4.39.28@sha256:bd97cff4fcbf715b5ff1f9ae286afbe6033afce385302520b0368122d43a6f54
     container_name: authelia
     user: 1000:1000
     volumes:
