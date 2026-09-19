@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.40.0@sha256:c25bff1bb4bf09a40cfc727811265f5446d23a3e6d5102b38874b0559d6a0620
+    image: docker.io/telegraf:1.40.0@sha256:5b78b72324155ad1c3b0d62f15b57500ab3b6905558003887916bee3ed6b18cc
     container_name: telegraf
     restart: unless-stopped
     command:
