@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.40.0@sha256:c25bff1bb4bf09a40cfc727811265f5446d23a3e6d5102b38874b0559d6a0620
+    image: docker.io/telegraf:1.40.0@sha256:5b78b72324155ad1c3b0d62f15b57500ab3b6905558003887916bee3ed6b18cc
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/atlas.conf"]
@@ -97,7 +97,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: docker.io/influxdb:2.9.1@sha256:f75e48af0598e8aec7986e991a848d19a119101a7d563a2e5db1dfaac9c45daa
+    image: docker.io/influxdb:2.9.1@sha256:05d6fb735bc22449c401094d42846123a24e3325d3a6e092242a45bfd68fff21
     restart: unless-stopped
     ports:
       - ${ATLAS_INFLUXDB_PORT}:8086
