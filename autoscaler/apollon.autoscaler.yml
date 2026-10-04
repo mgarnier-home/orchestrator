@@ -2,21 +2,20 @@ name: autoscaler
 
 services:
   autoscaler:
-    image: docker.io/mgarnier11/autoscaler:latest@sha256:274f39ceae2c36dd8a705cd4d529b817031d96bcf2a0ca6b8a9e4855b8fa6a45
+    image: docker.io/mgarnier11/autoscaler:amd64
     restart: unless-stopped
     container_name: autoscaler
     environment:
       REGISTRATION_URL: "${REGISTRATION_URL}"
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
-      RUNNER_IMAGE: "mgarnier11/runner:amd64"
+      RUNNER_IMAGE: "docker.io/mgarnier11/runner:amd64"
       DOCKER_REGISTRY_URL: "${DOCKER_REGISTRY_URL}"
       DOCKER_REGISTRY_USERNAME: "${DOCKER_REGISTRY_USERNAME}"
       DOCKER_REGISTRY_PASSWORD: "${DOCKER_REGISTRY_PASSWORD}"
-      ARTIFACTORY_TOKEN: "test"
       SCALE_SET_NAME: "apollon"
       MAX_RUNNERS: "10"
-      MIN_RUNNERS: "0"
-      LABELS: "linux/amd64,test-1,test-2"
+      MIN_RUNNERS: "2"
+      LABELS: "linux/amd64"
       RUNNER_GROUP: "default"
       DOCKER_HOSTS: "unix:///var/run/docker.sock"
       RUNTIME: "sysbox-runc"
