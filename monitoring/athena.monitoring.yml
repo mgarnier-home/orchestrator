@@ -93,6 +93,7 @@ services:
       OPENOBSERVE_PORT: ${ATLAS_OPENOBSERVE_PORT}
       OPENOBSERVE_ROOT_EMAIL: ${OPENOBSERVE_ROOT_EMAIL}
       OPENOBSERVE_ROOT_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD}
+      VECTOR_DANGEROUSLY_ALLOW_ENV_VAR_INTERPOLATION: "true" # vector >= 0.57 no longer interpolates ${VAR} in config by default
     healthcheck:
       test:
         - "CMD-SHELL"
