@@ -11,6 +11,19 @@ services:
       traefik-conf.port: ${APOLLON_VALENTINE_PORT}
       traefik-conf.name: aurelie
 
+  potixx:
+    image: docker.io/mgarnier11/potixx:0.0.2
+    container_name: potixx
+    restart: unless-stopped
+    ports:
+      - ${APOLLON_POTIXX_PORT}:8080
+    labels:
+      traefik-conf.port: ${APOLLON_POTIXX_PORT}
+      traefik-conf.http.routers.apollon_potixx_public.rule: Host(`les-potixx.fr`)
+      traefik-conf.http.routers.apollon_potixx_public.service: apollon_potixx
+      traefik-conf.http.routers.apollon_potixx_public.entrypoints: https
+      traefik-conf.http.routers.apollon_potixx_public.tls.certResolver: tls-resolver
+
   share:
     image: docker.io/stonith404/pingvin-share:v1.13.0@sha256:6bf2bcd3043ee68cb61264f0857511ccf7f212fdb984382b7f2d491635184ad6
     restart: unless-stopped
@@ -64,6 +77,21 @@ services:
         target: /home/node/trilium-data
     labels:
       traefik-conf.port: ${APOLLON_TRILIUM_PORT}
+
+  memos:
+    image: docker.io/neosmemo/memos:0.31.0
+    container_name: memos
+    restart: unless-stopped
+    ports:
+      - ${APOLLON_MEMOS_PORT}:5230
+    labels:
+      traefik-conf.port: ${APOLLON_MEMOS_PORT}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: utils/memos
+        target: /var/opt/memos
 
   ntfy:
     image: docker.io/binwiederhier/ntfy:v2.28.0@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da
