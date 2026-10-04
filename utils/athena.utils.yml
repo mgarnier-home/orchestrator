@@ -55,9 +55,9 @@ services:
       - ${ATHENA_WITHOUTBG_PORT}:80
     labels:
       traefik-conf.port: ${ATHENA_WITHOUTBG_PORT}
-      sablier.enable: true
-      sablier.group: bg
-      sablier.group.strategy: dynamic
+      # sablier.enable: true
+      # sablier.group: bg
+      # sablier.group.strategy: dynamic
 
   samba:
     container_name: samba
