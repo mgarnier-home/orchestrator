@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.40.1@sha256:90da3a5b81426230ed677f00823de0d55ce198ad7b5c2e099afc417ebc744642
+    image: docker.io/telegraf:1.40.1@sha256:e91237482edcb054c81571923c6b7cf64f06ed6087a2f9cf0bd3bc2cd8c0ed61
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/atlas.conf"]
@@ -97,7 +97,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: docker.io/influxdb:2.9.1@sha256:db0bdab1e5ad5ee899c127b8c13d9c986a3ced78cd9200dd80a1064bf1533b6e
+    image: docker.io/influxdb:2.9.1@sha256:cdd3dbdea45c2f43513abd06ee9644b6e05d2354a2b93ca829c9f07d716eaaac
     restart: unless-stopped
     ports:
       - ${ATLAS_INFLUXDB_PORT}:8086
@@ -142,7 +142,7 @@ services:
       traefik-conf.port: ${ATLAS_OPENOBSERVE_PORT}
 
   vector:
-    image: docker.io/timberio/vector:0.58.0-debian@sha256:1c1ea358c617ea0b23003d5af87f7a678b30f8f7096437e680380c47fc13d2d9
+    image: docker.io/timberio/vector:0.59.0-debian@sha256:98e7b4dfe50750e61470697bbd2fbeca643d12bea97f351005038ef506eab630
     container_name: vector
     restart: unless-stopped
     user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
