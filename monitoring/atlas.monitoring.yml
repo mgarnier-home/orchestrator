@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.40.1@sha256:90da3a5b81426230ed677f00823de0d55ce198ad7b5c2e099afc417ebc744642
+    image: docker.io/telegraf:1.40.2@sha256:aedc74ac64c623b6e6760545a8ff56a63b99a798bba3d361279a2887642798cf
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/atlas.conf"]
@@ -67,7 +67,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: docker.io/grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572
+    image: docker.io/grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
@@ -97,7 +97,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: docker.io/influxdb:2.9.1@sha256:db0bdab1e5ad5ee899c127b8c13d9c986a3ced78cd9200dd80a1064bf1533b6e
+    image: docker.io/influxdb:2.9.1@sha256:cdd3dbdea45c2f43513abd06ee9644b6e05d2354a2b93ca829c9f07d716eaaac
     restart: unless-stopped
     ports:
       - ${ATLAS_INFLUXDB_PORT}:8086
@@ -142,7 +142,7 @@ services:
       traefik-conf.port: ${ATLAS_OPENOBSERVE_PORT}
 
   vector:
-    image: docker.io/timberio/vector:0.58.0-debian@sha256:1c1ea358c617ea0b23003d5af87f7a678b30f8f7096437e680380c47fc13d2d9
+    image: docker.io/timberio/vector:0.59.0-debian@sha256:98e7b4dfe50750e61470697bbd2fbeca643d12bea97f351005038ef506eab630
     container_name: vector
     restart: unless-stopped
     user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
