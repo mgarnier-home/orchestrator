@@ -64,6 +64,13 @@ jobs:
           curl -fL -o ~/orchestrator "https://orchestrator.mgarnier11.fr/cli?arch=arm64&os=linux"
           chmod +x ~/orchestrator
 
+      # Le pull passe par le client docker du runner : il doit être connecté aux registres privés.
+      - name: Login to GitLab registry
+        env:
+          GITLAB_REGISTRY_USER: ${{ secrets.GITLAB_REGISTRY_USER }}
+          GITLAB_REGISTRY_TOKEN: ${{ secrets.GITLAB_REGISTRY_TOKEN }}
+        run: echo "$GITLAB_REGISTRY_TOKEN" | docker login registry.gitlab.com -u "$GITLAB_REGISTRY_USER" --password-stdin
+
       - name: Restart updated stacks
         env:
           ORCHESTRATOR_MODE: "local"

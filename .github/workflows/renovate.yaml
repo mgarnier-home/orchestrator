@@ -33,3 +33,8 @@ jobs:
         env:
           LOG_LEVEL: info
           RENOVATE_REPOSITORIES: ${{ github.repository }}
+          # Accès au registre GitLab privé (images epsilon-cms) pour lire tags et digests.
+          RENOVATE_HOST_RULES: >-
+            [{"matchHost": "registry.gitlab.com", "hostType": "docker",
+            "username": "${{ secrets.GITLAB_USERNAME }}",
+            "password": "${{ secrets.GITLAB_TOKEN }}"}]

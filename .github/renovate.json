@@ -28,7 +28,7 @@
   ],
   "docker-compose": {
     "managerFilePatterns": [
-      "/^(autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|paperless|satisfactory|storage|utils)\\/.+\\.ya?ml$/"
+      "/^(automation|autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|ollama|orchestrator|paperless|registry|satisfactory|storage|utils)\\/.+\\.ya?ml$/"
     ]
   },
   "packageRules": [
@@ -130,6 +130,26 @@
       "groupName": "network"
     },
     {
+      "description": "One PR for ollama",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "ollama/**"
+      ],
+      "groupName": "ollama"
+    },
+    {
+      "description": "One PR for orchestrator",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "orchestrator/**"
+      ],
+      "groupName": "orchestrator"
+    },
+    {
       "description": "One PR for paperless",
       "matchManagers": [
         "docker-compose"
@@ -138,6 +158,16 @@
         "paperless/**"
       ],
       "groupName": "paperless"
+    },
+    {
+      "description": "One PR for registry",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "registry/**"
+      ],
+      "groupName": "registry"
     },
     {
       "description": "One PR for satisfactory",
