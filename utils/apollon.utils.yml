@@ -24,6 +24,30 @@ services:
       traefik-conf.http.routers.apollon_potixx_public.entrypoints: https
       traefik-conf.http.routers.apollon_potixx_public.tls.certResolver: tls-resolver
 
+  epsilon:
+    image: registry.gitlab.com/lgarnier11/epsilon-cms:v0.0.0@sha256:802ec96bc2c26cdf8caacfaa61e310da7ae7b18389a341b99c44212368287ec3
+    container_name: epsilon
+    restart: unless-stopped
+    environment:
+      SESSION_SECRET: ${EPSILON_SESSION_SECRET}
+      TRUST_PROXY: "1" # Traefik est le seul proxy devant le conteneur
+      COOKIE_SECURE: "true"
+    ports:
+      - ${APOLLON_EPSILON_PORT}:3001
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: utils/epsilon/data
+        target: /app/data
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: utils/epsilon/uploads
+        target: /app/uploads
+    labels:
+      traefik-conf.port: ${APOLLON_EPSILON_PORT}
+
   share:
     image: docker.io/stonith404/pingvin-share:v1.13.0@sha256:6bf2bcd3043ee68cb61264f0857511ccf7f212fdb984382b7f2d491635184ad6
     restart: unless-stopped
