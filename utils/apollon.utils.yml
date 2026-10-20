@@ -47,6 +47,10 @@ services:
         target: /app/uploads
     labels:
       traefik-conf.port: ${APOLLON_EPSILON_PORT}
+      traefik-conf.http.routers.apollon_epsilon_public.rule: Host(`epsilon44.fr`)
+      traefik-conf.http.routers.apollon_epsilon_public.service: apollon_epsilon
+      traefik-conf.http.routers.apollon_epsilon_public.entrypoints: https
+      traefik-conf.http.routers.apollon_epsilon_public.tls.certResolver: tls-resolver
 
   share:
     image: docker.io/stonith404/pingvin-share:v1.13.0@sha256:6bf2bcd3043ee68cb61264f0857511ccf7f212fdb984382b7f2d491635184ad6
