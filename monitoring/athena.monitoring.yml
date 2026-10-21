@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.40.2@sha256:aedc74ac64c623b6e6760545a8ff56a63b99a798bba3d361279a2887642798cf
+    image: docker.io/telegraf:1.40.2@sha256:074419740e5b702f2f358262c1e3036ec1e9c09e0d0eef388dff7ed838dea202
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/athena.conf"]
@@ -75,7 +75,7 @@ services:
       - ${ATHENA_DOZZLE_AGENT_PORT}:7007
 
   vector:
-    image: docker.io/timberio/vector:0.59.0-debian@sha256:98e7b4dfe50750e61470697bbd2fbeca643d12bea97f351005038ef506eab630
+    image: docker.io/timberio/vector:0.60.0-debian@sha256:3ccb4bbd36e38734394e158db1411e91a69d076ed25013f8de385046a382d36a
     container_name: vector
     restart: unless-stopped
     user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
