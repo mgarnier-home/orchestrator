@@ -20,7 +20,7 @@ Usage : pr-notify.sh [options] <status> <pr.json>
   pr.json   PR telle que renvoyée par GET /repos/{repo}/pulls/{n}
 
 Options :
-  --server <hôte>   serveur ntfy, avec ou sans schéma (http:// par défaut)
+  --server <hôte>   serveur ntfy, avec ou sans schéma (https:// par défaut)
   --topic <topic>   topic ntfy
   --token <pat>     PAT GitHub (Pull requests: write), requis quand status=success
   --dry-run         affiche la requête au lieu de l'envoyer (jeton masqué)
@@ -65,8 +65,13 @@ if [ "$dry_run" = "1" ]; then
 fi
 [ -n "$server" ] && [ -n "$topic" ] || { echo "--server et --topic sont requis" >&2; usage; }
 
+# Les logs vont sur stderr : en --dry-run, stdout ne contient que la requête.
+log() { echo "[pr-notify] $*" >&2; }
+
+# Sans schéma, https : en http, Traefik répond par une redirection 301 que curl ne suit pas,
+# et la notification n'arrive jamais.
 ntfy_url="${server%/}"
-[[ "$ntfy_url" == *://* ]] || ntfy_url="http://$ntfy_url"
+[[ "$ntfy_url" == *://* ]] || ntfy_url="https://$ntfy_url"
 
 pr() { jq -r "$1" "$pr_json"; }
 
@@ -74,18 +79,30 @@ repo=$(pr '.base.repo.full_name')
 number=$(pr '.number')
 sequence_id="${repo##*/}-pr-${number}"
 
+log "PR $repo#$number, statut demandé : $status, sequence_id : $sequence_id"
+log "ntfy : $ntfy_url, topic : $topic, dry-run : $dry_run, token : $([ -n "$token" ] && echo fourni || echo absent)"
+
 send() {
   local method=$1 url=$2 body=${3:-}
   if [ "$dry_run" = "1" ]; then
+    log "dry-run : $method $url non envoyé"
     echo "$method $url"
     [ -n "$body" ] && jq '(.actions[]? | select(.headers.Authorization) | .headers.Authorization) = "Bearer ***"' <<<"$body"
     return 0
   fi
+
+  local response code
+  response=$(mktemp)
+  log "envoi : $method $url"
   if [ -n "$body" ]; then
-    curl -fsS -X "$method" -H "Content-Type: application/json" --data "$body" "$url" >/dev/null
+    code=$(curl -sS -o "$response" -w '%{http_code}' -X "$method" -H "Content-Type: application/json" --data "$body" "$url")
   else
-    curl -fsS -X "$method" "$url" >/dev/null
+    code=$(curl -sS -o "$response" -w '%{http_code}' -X "$method" "$url")
   fi
+  # Seuls l'identifiant et l'événement sont journalisés : la réponse reprend les boutons, donc le token.
+  log "réponse ntfy : HTTP $code $(jq -c '{id, event, topic, sequence_id}' "$response" 2>/dev/null || head -c 300 "$response")"
+  rm -f "$response"
+  [[ "$code" == 2* ]] || { log "échec : ntfy n'a pas accepté la requête"; exit 1; }
 }
 
 if [ "$status" = "closed" ]; then
@@ -96,12 +113,17 @@ fi
 base=$(git merge-base "$(pr '.base.sha')" "$(pr '.head.sha')")
 head=$(pr '.head.sha')
 mapfile -t changed_files < <(git diff --name-only "$base" "$head")
+log "comparaison $base..$head : ${#changed_files[@]} fichier(s) modifié(s)"
+for file in "${changed_files[@]}"; do log "  $file"; done
 
 # Lint ne tourne pas sur une PR qui ne touche que ces chemins (paths-ignore de lint.yml) :
 # aucune CI à attendre, la PR est prête.
 if [ "$status" = "pending" ]; then
   linted=$(printf '%s\n' "${changed_files[@]}" | grep -cvE '^(autoscaler|\.github)/' || true)
-  [ "$linted" -gt 0 ] || status=success
+  if [ "$linted" -eq 0 ]; then
+    log "aucun fichier vérifié par Lint : statut pending -> success"
+    status=success
+  fi
 fi
 
 # Images par service d'un fichier compose à un commit donné ({} si le fichier n'existe pas).
@@ -133,7 +155,11 @@ for file in "${changed_files[@]}"; do
       | ($old[.key] // "") as $before
       | .value as $after
       | "| \(.key) : \(if $before == "" then "none" else ($before | show($after)) end) > \($after | show($before))"')
-  [ -n "$lines" ] || continue
+  if [ -z "$lines" ]; then
+    log "$file ($host) : aucune image modifiée"
+    continue
+  fi
+  log "$file ($host) : $(grep -c . <<<"$lines") image(s) modifiée(s)"
   summary+="${summary:+$'\n\n'}$host"$'\n'"$lines"
 done
 
@@ -156,7 +182,7 @@ esac
 url=$(pr '.html_url')
 actions=$(jq -n --arg url "$url" '[{action: "view", label: "🌐 View PR", url: $url}]')
 if [ "$status" = "success" ]; then
-  [ -n "$token" ] || { echo "--token est requis pour le bouton Accept PR" >&2; exit 1; }
+  [ -n "$token" ] || { log "--token est requis pour le bouton Accept PR"; exit 1; }
   actions=$(jq \
     --arg url "https://api.github.com/repos/$repo/pulls/$number/reviews" \
     --arg token "$token" '
@@ -186,4 +212,5 @@ body=$(jq -n \
   '{topic: $topic, sequence_id: $sequence_id, title: $title, message: $message,
     tags: [$tag], click: $click, actions: $actions}')
 
+log "notification : « $title », tag $tag, boutons : $(jq -r 'map(.label) | join(", ")' <<<"$actions")"
 send POST "$ntfy_url/" "$body"

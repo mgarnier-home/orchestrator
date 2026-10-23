@@ -68,6 +68,7 @@ jobs:
           RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: |
           set -euo pipefail
+          echo "Événement : $EVENT_NAME ${PR_ACTION}, PR : ${PR_NUMBER:-aucune}, Lint : ${RUN_CONCLUSION:-n/a} sur ${RUN_HEAD_SHA:-n/a}"
           if [ -z "$PR_NUMBER" ]; then
             echo "Aucune PR associée, rien à notifier."
             exit 0
