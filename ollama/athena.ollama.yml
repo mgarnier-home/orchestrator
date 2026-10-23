@@ -2,7 +2,7 @@ name: ollama
 
 services:
   ollama:
-    image: docker.io/ollama/ollama:0.30.0
+    image: docker.io/ollama/ollama:0.40.9@sha256:5c6707fcf2e1a30cffe2ecb7e315584fc87747c389327e4bc711c4959aa1eecc
     container_name: ollama
     restart: unless-stopped
     ports:
@@ -31,7 +31,7 @@ services:
       homepage.name: Ollama
 
   ollama-pull-model:
-    image: docker.io/ollama/ollama:0.30.0
+    image: docker.io/ollama/ollama:0.40.9@sha256:5c6707fcf2e1a30cffe2ecb7e315584fc87747c389327e4bc711c4959aa1eecc
     container_name: ollama-pull-model
     restart: "no"
     depends_on:
