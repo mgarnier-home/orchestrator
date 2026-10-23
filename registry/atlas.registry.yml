@@ -1,7 +1,7 @@
 services:
   registry:
     container_name: registry
-    image: registry:2
+    image: registry:2@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
     labels:
       traefik-conf.port: ${ATLAS_REGISTRY_PORT}
     ports:
@@ -11,7 +11,7 @@ services:
     container_name: registry-proxy
     environment:
       - REGISTRY_PROXY_REMOTEURL=https://registry-1.docker.io
-    image: registry:2
+    image: registry:2@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
     labels:
       traefik-conf.port: ${ATLAS_REGISTRY_PROXY_PORT}
     ports:
