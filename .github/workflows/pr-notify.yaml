@@ -1,0 +1,107 @@
+name: PR notify
+run-name: Notify PR state on ntfy
+
+# Une notification ntfy par PR, remplacée à chaque changement d'état :
+# ⏳ à l'ouverture et à chaque push, ✅ ou ❌ à la fin de Lint, supprimée à la fermeture.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+  # workflow_run n'utilise que la version de ce fichier présente sur main.
+  workflow_run:
+    workflows: [Lint]
+    types: [completed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-notify-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number }}
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: github.event_name == 'pull_request' || github.event.workflow_run.event == 'pull_request'
+    runs-on: linux/arm64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # Version fixée dans .tool-versions.
+      - name: Install yq
+        run: |
+          asdf plugin add yq
+          asdf install yq
+
+      # NTFY_SERVER et NTFY_TOPIC viennent du même env.env que celui utilisé par orchestrator-cli.
+      - name: Load ntfy configuration
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          env_file="$RUNNER_TEMP/env.env"
+          curl -fsS --aws-sigv4 "aws:amz:us-east-1:s3" --user "$S3_ACCESS_KEY:$S3_SECRET_KEY" \
+            -o "$env_file" "https://s3.mgarnier11.fr/environment-bucket/env.env"
+          for name in NTFY_SERVER NTFY_TOPIC; do
+            value=$(grep -E "^$name=" "$env_file" | tail -1 | cut -d= -f2- | sed -E 's/^"(.*)"$/\1/')
+            if [ -z "$value" ]; then
+              echo "$name absent de env.env" >&2
+              exit 1
+            fi
+            echo "::add-mask::$value"
+            echo "$name=$value" >> "$GITHUB_ENV"
+          done
+          rm -f "$env_file"
+
+      - name: Resolve PR and status
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_ACTION: ${{ github.event.action }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number }}
+          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          set -euo pipefail
+          echo "Événement : $EVENT_NAME ${PR_ACTION}, PR : ${PR_NUMBER:-aucune}, Lint : ${RUN_CONCLUSION:-n/a} sur ${RUN_HEAD_SHA:-n/a}"
+          if [ -z "$PR_NUMBER" ]; then
+            echo "Aucune PR associée, rien à notifier."
+            exit 0
+          fi
+
+          pr_json="$RUNNER_TEMP/pr.json"
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$pr_json"
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            [ "$PR_ACTION" = "closed" ] && status=closed || status=pending
+          else
+            # Un Lint terminé sur un ancien commit, ou sur une PR déjà fermée, ne dit plus rien
+            # de l'état actuel de la PR.
+            if [ "$(jq -r .state "$pr_json")" != "open" ] || [ "$(jq -r .head.sha "$pr_json")" != "$RUN_HEAD_SHA" ]; then
+              echo "Lint terminé sur un état dépassé de la PR #$PR_NUMBER, rien à notifier."
+              exit 0
+            fi
+            [ "$RUN_CONCLUSION" = "success" ] && status=success || status=failure
+          fi
+
+          echo "PR #$PR_NUMBER : $status"
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "pr_json=$pr_json" >> "$GITHUB_OUTPUT"
+
+      - name: Notify ntfy
+        if: steps.resolve.outputs.status != ''
+        env:
+          STATUS: ${{ steps.resolve.outputs.status }}
+          PR_JSON: ${{ steps.resolve.outputs.pr_json }}
+          NTFY_PR_APPROVE_TOKEN: ${{ secrets.NTFY_PR_APPROVE_TOKEN }}
+        run: |
+          .github/scripts/pr-notify.sh \
+            --server "$NTFY_SERVER" \
+            --topic "$NTFY_TOPIC" \
+            --token "$NTFY_PR_APPROVE_TOKEN" \
+            "$STATUS" "$PR_JSON"
