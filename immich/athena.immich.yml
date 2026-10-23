@@ -56,7 +56,7 @@ services:
 
   redis:
     container_name: immich-redis
-    image: docker.io/redis:6.2-alpine@sha256:b362b5dff9d14d961dc3352db4776aba6a8c53ca2661d7c74ad2c121f82cdaea
+    image: docker.io/redis:6.2-alpine@sha256:592b215e9287182f11ba9d7c229dc0ba312bb900a016ea65ae378b0127567319
     networks:
       - immich-net
     healthcheck:
