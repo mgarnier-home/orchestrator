@@ -164,7 +164,10 @@ for file in "${changed_files[@]}"; do
 done
 
 branch=$(pr '.head.ref')
-if [[ "$branch" == renovate/stack-* ]]; then
+# Les majeures d'une stack ont leur propre branche, préfixée par Renovate : renovate/stack-major-<stack>.
+if [[ "$branch" == renovate/stack-major-* ]]; then
+  title="Major update to ${branch#renovate/stack-major-}"
+elif [[ "$branch" == renovate/stack-* ]]; then
   title="Update to ${branch#renovate/stack-}"
 else
   # « chore(deps): update x » -> « Update x »

@@ -9,9 +9,10 @@
   "branchPrefix": "renovate/stack-",
   "commitMessageAction": "update",
   "commitMessageTopic": "{{groupName}}",
-  "separateMajorMinor": false,
+  "separateMajorMinor": true,
   "major": {
-    "enabled": false
+    "dependencyDashboardApproval": true,
+    "automerge": false
   },
   "enabledManagers": [
     "docker-compose"

@@ -8,7 +8,9 @@ fichier décrit cette stack sur un hôte.
 - Un push sur `main` lance `.github/workflows/deploy.yaml`, qui redémarre chaque stack dont un
   fichier a changé. **Pousser, c'est déployer.**
 - Renovate ouvre une PR par stack. Le ruleset exige une approbation, après quoi l'auto-merge de
-  GitHub la fusionne, donc la déploie. `.github/workflows/pr-notify.yaml` envoie l'état de chaque
+  GitHub la fusionne, donc la déploie. Les mises à jour majeures ne sont proposées que dans le
+  Dependency Dashboard (issue #88) : une PR `renovate/stack-major-<stack>` n'est ouverte qu'après
+  validation de sa case, et n'est jamais fusionnée automatiquement. `.github/workflows/pr-notify.yaml` envoie l'état de chaque
   PR sur ntfy, avec un bouton « Accept PR » qui dépose cette approbation quand Lint est vert.
 - Tu ne déploies jamais toi-même sans demande explicite, ni par `git push`, ni par
   `orchestrator-cli`.
