@@ -210,10 +210,9 @@ body=$(jq -n \
   --arg title "$title" \
   --arg message "$message" \
   --arg tag "$tag" \
-  --arg click "$url" \
   --argjson actions "$actions" \
   '{topic: $topic, sequence_id: $sequence_id, title: $title, message: $message,
-    tags: [$tag], click: $click, actions: $actions}')
+    tags: [$tag], actions: $actions}')
 
 log "notification : « $title », tag $tag, boutons : $(jq -r 'map(.label) | join(", ")' <<<"$actions")"
 send POST "$ntfy_url/" "$body"

@@ -22,7 +22,7 @@ Usage : deploy-notify.sh [options] <status> <results-dir>
 Options :
   --server <hôte>   serveur ntfy, avec ou sans schéma (https:// par défaut)
   --topic <topic>   topic ntfy
-  --run-url <url>   lien vers le run GitHub Actions (bouton et clic)
+  --run-url <url>   lien vers le run GitHub Actions (bouton View run)
   --commit <sha>    commit déployé (HEAD par défaut)
   --dry-run         affiche la requête au lieu de l'envoyer
 EOF
@@ -127,10 +127,8 @@ body=$(jq -n \
   --arg title "$title" \
   --arg message "$message" \
   --arg tag "$tag" \
-  --arg click "$run_url" \
   --argjson actions "$actions" \
-  '{topic: $topic, title: $title, message: $message, tags: [$tag], actions: $actions}
-    + if $click != "" then {click: $click} else {} end')
+  '{topic: $topic, title: $title, message: $message, tags: [$tag], actions: $actions}')
 
 log "notification : « $title », tag $tag"
 
