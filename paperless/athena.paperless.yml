@@ -18,7 +18,7 @@ services:
     #   sablier.group: paperless
 
   db:
-    image: docker.io/mariadb:10.5@sha256:a530aeeefd82f4fa5150f391b6c75462140904780338766f6b03acecb1cca3ce
+    image: docker.io/mariadb:10.11@sha256:0d0945c57f75b3a3b9ebe71aedaaad005fa5305054e8fca3d2e42a8c92b43b5e
     container_name: paperless-db
     restart: unless-stopped
     user: 1000:1000
