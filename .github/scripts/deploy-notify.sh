@@ -90,8 +90,10 @@ if [ -f "$results_dir/results" ]; then
       failed=1
       lines+=("❌ $stack")
       if [ -s "$results_dir/$stack.log" ]; then
-        # Couleurs ANSI retirées : ntfy affiche le texte brut.
-        lines+=("$(tail -n 10 "$results_dir/$stack.log" | sed -E 's/\x1b\[[0-9;]*[A-Za-z]//g')" "")
+        # En cas d'erreur, cobra affiche l'aide de la commande après le message : on coupe au
+        # « Usage: » pour garder l'erreur elle-même. Couleurs ANSI retirées : ntfy affiche le
+        # texte brut.
+        lines+=("$(sed -E -e '/^Usage:/,$d' -e 's/\x1b\[[0-9;]*[A-Za-z]//g' "$results_dir/$stack.log" | tail -n 10)" "")
       fi
     fi
   done <"$results_dir/results"
