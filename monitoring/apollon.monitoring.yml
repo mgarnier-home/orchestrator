@@ -51,7 +51,7 @@ services:
       INFLUX_BUCKET: ${INFLUXDB_BUCKET}
 
   dozzle-agent:
-    image: docker.io/amir20/dozzle:v10.9.0@sha256:7f01a2504f89788b60ad0efddd94472fd66f9a225c708356cdb815d9d8abd184
+    image: docker.io/amir20/dozzle:v10.10.0@sha256:2875e3c1f31f2244ee99d6067b53852b30666b3e2fb293d179bc8be94b1da5eb
     container_name: dozzle-agent
     restart: unless-stopped
     command: agent
