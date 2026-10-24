@@ -1,0 +1,36 @@
+name: Load ntfy configuration
+description: >-
+  Exporte NTFY_SERVER et NTFY_TOPIC (masqués dans les logs) depuis le même env.env que celui
+  utilisé par orchestrator-cli, dans le bucket S3.
+
+inputs:
+  s3-access-key:
+    description: Clé d'accès S3
+    required: true
+  s3-secret-key:
+    description: Clé secrète S3
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Load ntfy configuration
+      shell: bash
+      env:
+        S3_ACCESS_KEY: ${{ inputs.s3-access-key }}
+        S3_SECRET_KEY: ${{ inputs.s3-secret-key }}
+      run: |
+        set -euo pipefail
+        env_file="$RUNNER_TEMP/env.env"
+        curl -fsS --aws-sigv4 "aws:amz:us-east-1:s3" --user "$S3_ACCESS_KEY:$S3_SECRET_KEY" \
+          -o "$env_file" "https://s3.mgarnier11.fr/environment-bucket/env.env"
+        for name in NTFY_SERVER NTFY_TOPIC; do
+          value=$(grep -E "^$name=" "$env_file" | tail -1 | cut -d= -f2- | sed -E 's/^"(.*)"$/\1/')
+          if [ -z "$value" ]; then
+            echo "$name absent de env.env" >&2
+            exit 1
+          fi
+          echo "::add-mask::$value"
+          echo "$name=$value" >> "$GITHUB_ENV"
+        done
+        rm -f "$env_file"

@@ -28,6 +28,15 @@ jobs:
         with:
           fetch-depth: 2
 
+      # Sans configuration ntfy, le déploiement a lieu quand même, seule la notification est sautée.
+      - name: Load ntfy configuration
+        id: ntfy
+        continue-on-error: true
+        uses: ./.github/actions/ntfy-config
+        with:
+          s3-access-key: ${{ secrets.S3_ACCESS_KEY }}
+          s3-secret-key: ${{ secrets.S3_SECRET_KEY }}
+
       - name: Get stacks to restart from modified files
         id: get_stacks
         run: |
@@ -51,28 +60,33 @@ jobs:
             )
           fi
 
+          # Un push qui ne touche aucune stack n'a rien à déployer : ce n'est pas un échec.
           if [ -z "$stacks_names" ]; then
             echo "No stacks to restart."
-            exit 1
+            exit 0
           fi
 
           echo "Stacks to restart: $stacks_names"
           echo "STACKS_NAMES=$stacks_names" >> "$GITHUB_OUTPUT"
 
       - name: Download orchestrator CLI
+        if: steps.get_stacks.outputs.STACKS_NAMES != ''
         run: |
           curl -fL -o ~/orchestrator "https://orchestrator.mgarnier11.fr/cli?arch=arm64&os=linux"
           chmod +x ~/orchestrator
 
       # Le pull passe par le client docker du runner : il doit être connecté aux registres privés.
       - name: Login to GitLab registry
+        if: steps.get_stacks.outputs.STACKS_NAMES != ''
         env:
           GITLAB_REGISTRY_USER: ${{ secrets.GITLAB_REGISTRY_USER }}
           GITLAB_REGISTRY_TOKEN: ${{ secrets.GITLAB_REGISTRY_TOKEN }}
         run: echo "$GITLAB_REGISTRY_TOKEN" | docker login registry.gitlab.com -u "$GITLAB_REGISTRY_USER" --password-stdin
 
       - name: Restart updated stacks
+        if: steps.get_stacks.outputs.STACKS_NAMES != ''
         env:
+          RESULTS_DIR: ${{ runner.temp }}/deploy-results
           ORCHESTRATOR_MODE: "local"
           ORCHESTRATOR_COMPOSE_DIRECTORY_PATH: ${{ github.workspace }}
           ORCHESTRATOR_S3_ENDPOINT: "https://s3.mgarnier11.fr"
@@ -99,8 +113,33 @@ jobs:
           EOF
 
           # get the stacks to restart from the variable set in the previous step
+          # Une stack en échec n'empêche pas de redéployer les suivantes ; le résultat de chacune
+          # est noté pour la notification, et l'étape échoue à la fin s'il y a eu une erreur.
+          mkdir -p "$RESULTS_DIR"
+          failed=0
           IFS=',' read -r -a stacks <<< "${{ steps.get_stacks.outputs.STACKS_NAMES }}"
           for stack in "${stacks[@]}"; do
             echo "Restarting stack: $stack"
-            ~/orchestrator restart "$stack"
+            if ~/orchestrator restart "$stack" 2>&1 | tee "$RESULTS_DIR/$stack.log"; then
+              echo "$stack success" >> "$RESULTS_DIR/results"
+            else
+              echo "$stack failure" >> "$RESULTS_DIR/results"
+              failed=1
+            fi
           done
+          exit "$failed"
+
+      # Une notification à la fin du workflow, y compris s'il a échoué avant le redéploiement.
+      - name: Notify ntfy
+        if: always() && steps.ntfy.outcome == 'success' && (steps.get_stacks.outputs.STACKS_NAMES != '' || failure() || cancelled())
+        env:
+          RESULTS_DIR: ${{ runner.temp }}/deploy-results
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          .github/scripts/deploy-notify.sh \
+            --server "$NTFY_SERVER" \
+            --topic "$NTFY_TOPIC" \
+            --run-url "$RUN_URL" \
+            --commit "$GITHUB_SHA" \
+            "$JOB_STATUS" "$RESULTS_DIR"

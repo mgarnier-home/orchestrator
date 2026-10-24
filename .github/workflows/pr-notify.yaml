@@ -36,26 +36,11 @@ jobs:
           asdf plugin add yq
           asdf install yq
 
-      # NTFY_SERVER et NTFY_TOPIC viennent du même env.env que celui utilisé par orchestrator-cli.
       - name: Load ntfy configuration
-        env:
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-        run: |
-          set -euo pipefail
-          env_file="$RUNNER_TEMP/env.env"
-          curl -fsS --aws-sigv4 "aws:amz:us-east-1:s3" --user "$S3_ACCESS_KEY:$S3_SECRET_KEY" \
-            -o "$env_file" "https://s3.mgarnier11.fr/environment-bucket/env.env"
-          for name in NTFY_SERVER NTFY_TOPIC; do
-            value=$(grep -E "^$name=" "$env_file" | tail -1 | cut -d= -f2- | sed -E 's/^"(.*)"$/\1/')
-            if [ -z "$value" ]; then
-              echo "$name absent de env.env" >&2
-              exit 1
-            fi
-            echo "::add-mask::$value"
-            echo "$name=$value" >> "$GITHUB_ENV"
-          done
-          rm -f "$env_file"
+        uses: ./.github/actions/ntfy-config
+        with:
+          s3-access-key: ${{ secrets.S3_ACCESS_KEY }}
+          s3-secret-key: ${{ secrets.S3_SECRET_KEY }}
 
       - name: Resolve PR and status
         id: resolve
