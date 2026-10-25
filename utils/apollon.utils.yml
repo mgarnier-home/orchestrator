@@ -47,7 +47,7 @@ services:
         target: /app/uploads
     labels:
       traefik-conf.port: ${APOLLON_EPSILON_PORT}
-      traefik-conf.http.routers.apollon_epsilon_public.rule: Host(`epsilon44.fr`)
+      traefik-conf.http.routers.apollon_epsilon_public.rule: Host(`epsilon44.fr`) || Host(`www.epsilon44.fr`)
       traefik-conf.http.routers.apollon_epsilon_public.service: apollon_epsilon
       traefik-conf.http.routers.apollon_epsilon_public.entrypoints: https
       traefik-conf.http.routers.apollon_epsilon_public.tls.certResolver: tls-resolver
