@@ -36,5 +36,5 @@ jobs:
           # Accès au registre GitLab privé (images epsilon-cms) pour lire tags et digests.
           RENOVATE_HOST_RULES: >-
             [{"matchHost": "registry.gitlab.com", "hostType": "docker",
-            "username": "${{ secrets.GITLAB_REGISTRY_USERNAME }}",
-            "password": "${{ secrets.GITLAB_REGISTRY_PASSWORD }}"}]
+            "username": "${{ secrets.GITLAB_REGISTRY_USER }}",
+            "password": "${{ secrets.GITLAB_REGISTRY_TOKEN }}"}]
