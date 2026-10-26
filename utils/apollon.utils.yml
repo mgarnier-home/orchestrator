@@ -1,6 +1,15 @@
 name: utils
 
 services:
+  visite:
+    image: docker.io/mgarnier11/visite:0.0.2
+    container_name: visite
+    restart: unless-stopped
+    ports:
+      - ${APOLLON_VISITE_PORT}:3001
+    labels:
+      traefik-conf.port: ${APOLLON_VISITE_PORT}
+
   valentine:
     image: docker.io/mgarnier11/valentine:latest@sha256:edca091554ab6f67319317de6df1c44f84b47b1e75187caf9b26f1bdcecff11b
     container_name: valentine
@@ -25,7 +34,7 @@ services:
       traefik-conf.http.routers.apollon_potixx_public.tls.certResolver: tls-resolver
 
   epsilon:
-    image: registry.gitlab.com/lgarnier11/epsilon-cms:v0.0.1
+    image: registry.gitlab.com/lgarnier11/epsilon-cms:v1.1.2
     container_name: epsilon
     restart: unless-stopped
     environment:
