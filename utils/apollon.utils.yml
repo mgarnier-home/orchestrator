@@ -2,7 +2,7 @@ name: utils
 
 services:
   visite:
-    image: docker.io/mgarnier11/visite:0.0.2
+    image: docker.io/mgarnier11/visite:0.0.3@sha256:7dc801e06eeb5af1a2eee4406fce7f193b5838e579436eada887d20a6d557428
     container_name: visite
     restart: unless-stopped
     ports:
@@ -34,7 +34,7 @@ services:
       traefik-conf.http.routers.apollon_potixx_public.tls.certResolver: tls-resolver
 
   epsilon:
-    image: registry.gitlab.com/lgarnier11/epsilon-cms:v1.1.2
+    image: registry.gitlab.com/lgarnier11/epsilon-cms:v1.1.2@sha256:35307460fe9de85ca52405cdfe5d8ad28d603bb653fb07c0c7e67598d1e796fd
     container_name: epsilon
     restart: unless-stopped
     environment:
