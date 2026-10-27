@@ -87,6 +87,7 @@ services:
           subpath: monitoring/grafana/conf
         target: /etc/grafana
     labels:
+      homepage.service: Grafana
       traefik-conf.port: ${ATLAS_GRAFANA_PORT}
       traefik-conf.middlewares: ip-wl@file,geoblock@file,authelia@file,grafana-headers@file
     healthcheck:
@@ -114,6 +115,7 @@ services:
       DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
     labels:
+      homepage.service: InfluxDB
       traefik-conf.port: ${ATLAS_INFLUXDB_PORT}
     healthcheck:
       test: influx ping || exit 1
@@ -139,6 +141,7 @@ services:
           subpath: monitoring/openobserve
         target: /data
     labels:
+      homepage.service: OpenObserve
       traefik-conf.port: ${ATLAS_OPENOBSERVE_PORT}
 
   vector:

@@ -19,6 +19,7 @@ services:
           subpath: network/sablier
         target: /etc/sablier/themes
     labels:
+      homepage.service: Sablier
       traefik-conf.port: ${ATHENA_SABLIER_PORT}
 
 volumes:

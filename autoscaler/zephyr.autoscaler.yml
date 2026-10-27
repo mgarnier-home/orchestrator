@@ -5,6 +5,8 @@ services:
     image: docker.io/mgarnier11/autoscaler:arm64
     restart: unless-stopped
     container_name: autoscaler
+    labels:
+      homepage.service: Autoscaler
     environment:
       REGISTRATION_URL: "${REGISTRATION_URL}"
       GITHUB_TOKEN: "${GITHUB_TOKEN}"

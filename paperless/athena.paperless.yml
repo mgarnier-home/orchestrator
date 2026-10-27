@@ -4,6 +4,8 @@ services:
   broker:
     image: docker.io/library/redis:8@sha256:0a014ae5c04f55c82aaad2314de411c7a203de1c4312c3e526939226a0185dd9
     container_name: paperless-broker
+    labels:
+      homepage.service: Paperless
     restart: unless-stopped
     networks:
       - paperless-net
@@ -20,6 +22,8 @@ services:
   db:
     image: docker.io/mariadb:10.11@sha256:0d0945c57f75b3a3b9ebe71aedaaad005fa5305054e8fca3d2e42a8c92b43b5e
     container_name: paperless-db
+    labels:
+      homepage.service: Paperless
     restart: unless-stopped
     user: 1000:1000
     volumes:
@@ -61,6 +65,7 @@ services:
     ports:
       - ${ATHENA_PAPERLESS_PORT}:8000
     labels:
+      homepage.service: Paperless
       traefik-conf.port: ${ATHENA_PAPERLESS_PORT}
       # sablier.enable: true
       # sablier.group: paperless
@@ -110,6 +115,8 @@ services:
   gotenberg:
     image: docker.io/gotenberg/gotenberg:8.38@sha256:aa552cc115db488e0f0bcb07446aac13071ad51505b642c84bb894500907b42b
     container_name: paperless-gotenberg
+    labels:
+      homepage.service: Paperless
     restart: unless-stopped
     networks:
       - paperless-net
@@ -128,6 +135,8 @@ services:
 
   tika:
     container_name: paperless-tika
+    labels:
+      homepage.service: Paperless
     image: docker.io/apache/tika:3.3.3.0@sha256:326b238b37904c94ff61fed87afe0af72e6a29fa715933b10af97b7d56f1d4cb
     restart: unless-stopped
     networks:

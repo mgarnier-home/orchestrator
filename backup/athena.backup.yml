@@ -15,10 +15,9 @@ services:
     ports:
       - ${ATHENA_AUTOSAVER_PORT}:8080
     labels:
+      homepage.service: Autosaver
       traefik-conf.port: ${ATHENA_AUTOSAVER_PORT}
       traefik-conf.name: autosaver.athena
-      homepage.group: Athena
-      homepage.name: Autosaver
     privileged: true
     environment:
       # CRON_SCHEDULE: 15 4 * * *

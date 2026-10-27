@@ -82,6 +82,7 @@ services:
     ports:
       - ${ZEPHYR_DOZZLE_PORT}:8080
     labels:
+      homepage.service: Dozzle
       traefik-conf.port: ${ZEPHYR_DOZZLE_PORT}
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
@@ -137,6 +138,7 @@ services:
         target: /app/images
     restart: unless-stopped
     labels:
+      homepage.service: Homepage
       traefik-conf.port: ${ZEPHYR_HOMEPAGE_PORT}
 
   vector:

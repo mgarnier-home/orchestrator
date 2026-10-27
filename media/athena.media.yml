@@ -17,6 +17,7 @@ services:
         source: atlas-media
         target: /output
     labels:
+      homepage.service: JDownloader
       traefik-conf.port: ${ATHENA_JDOWNLOADER_PORT}
       # sablier.enable: true
       # sablier.group: downloader
@@ -39,6 +40,7 @@ services:
     ports:
       - ${ATHENA_JELLYFIN_PORT}:8096
     labels:
+      homepage.service: Jellyfin
       traefik-conf.port: ${ATHENA_JELLYFIN_PORT}
     environment:
       PUID: ${PUID}
@@ -113,6 +115,7 @@ services:
         target: /music
         read_only: true
     labels:
+      homepage.service: Navidrome Music
       traefik-conf.port: ${ATHENA_MEDIA_MUSIC_PORT}
       traefik-conf.name: music
       traefik-conf.http.routers.athena_music_api.rule: Host(`music.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
@@ -156,6 +159,7 @@ services:
         target: /music
         read_only: true
     labels:
+      homepage.service: Navidrome Sagas
       traefik-conf.port: ${ATHENA_MEDIA_SAGAS_PORT}
       traefik-conf.name: sagas
       traefik-conf.http.routers.athena_sagas_api.rule: Host(`sagas.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
@@ -176,6 +180,7 @@ services:
     ports:
       - ${ATHENA_DOWNLOADER_PORT}:6595
     labels:
+      homepage.service: Downloader
       traefik-conf.port: ${ATHENA_DOWNLOADER_PORT}
       # sablier.enable: true
       # sablier.group: downloader

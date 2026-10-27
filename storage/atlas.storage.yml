@@ -2,6 +2,8 @@ services:
   master:
     image: docker.io/chrislusf/seaweedfs:4.51@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8
     container_name: seaweedfs-master
+    labels:
+      homepage.service: SeaweedFS
     restart: unless-stopped
     networks:
       - seaweedfs-net
@@ -23,6 +25,8 @@ services:
   volume:
     image: docker.io/chrislusf/seaweedfs:4.51@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8
     container_name: seaweedfs-volume
+    labels:
+      homepage.service: SeaweedFS
     restart: unless-stopped
     networks:
       - seaweedfs-net
@@ -45,6 +49,8 @@ services:
   filer:
     image: docker.io/chrislusf/seaweedfs:4.51@sha256:f7a49e3f3972ebed5be2ed4befa4a0c68eb7bdddba6e692d42729ceb545134b8
     container_name: seaweedfs-filer
+    labels:
+      homepage.service: SeaweedFS
     restart: unless-stopped
     networks:
       - seaweedfs-net
@@ -76,6 +82,7 @@ services:
     ports:
       - ${ATLAS_S3_PORT}:8333
     labels:
+      homepage.service: SeaweedFS
       traefik-conf.port: ${ATLAS_S3_PORT}
       traefik-conf.name: s3
     volumes:
@@ -114,6 +121,7 @@ services:
     ports:
       - ${ATLAS_S3_ADMIN_PORT}:23646
     labels:
+      homepage.service: SeaweedFS
       traefik-conf.port: ${ATLAS_S3_ADMIN_PORT}
       traefik-conf.name: s3-admin
     depends_on:

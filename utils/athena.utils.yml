@@ -35,6 +35,7 @@ services:
       NEKO_WEBRTC_ICELITE: 0
       NEKO_WEBRTC_NAT1TO1: ${ATHENA_IP}
     labels:
+      homepage.service: Neko
       traefik-conf.port: ${ATHENA_NEKO_PORT}
       sablier.enable: true
       sablier.group: neko
@@ -54,6 +55,7 @@ services:
     ports:
       - ${ATHENA_WITHOUTBG_PORT}:80
     labels:
+      homepage.service: WithoutBG
       traefik-conf.port: ${ATHENA_WITHOUTBG_PORT}
       # sablier.enable: true
       # sablier.group: bg
@@ -61,6 +63,8 @@ services:
 
   samba:
     container_name: samba
+    labels:
+      homepage.service: Samba
     restart: unless-stopped
     image: docker.io/dperson/samba@sha256:66088b78a19810dd1457a8f39340e95e663c728083efa5fe7dc0d40b2478e869
     environment:

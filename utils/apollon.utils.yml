@@ -8,6 +8,7 @@ services:
     ports:
       - ${APOLLON_VISITE_PORT}:3001
     labels:
+      homepage.service: Visite
       traefik-conf.port: ${APOLLON_VISITE_PORT}
 
   valentine:
@@ -17,6 +18,7 @@ services:
     ports:
       - ${APOLLON_VALENTINE_PORT}:80
     labels:
+      homepage.service: Valentine
       traefik-conf.port: ${APOLLON_VALENTINE_PORT}
       traefik-conf.name: aurelie
 
@@ -27,6 +29,7 @@ services:
     ports:
       - ${APOLLON_POTIXX_PORT}:8080
     labels:
+      homepage.service: Potixx
       traefik-conf.port: ${APOLLON_POTIXX_PORT}
       traefik-conf.http.routers.apollon_potixx_public.rule: Host(`les-potixx.fr`)
       traefik-conf.http.routers.apollon_potixx_public.service: apollon_potixx
@@ -55,6 +58,7 @@ services:
           subpath: utils/epsilon/uploads
         target: /app/uploads
     labels:
+      homepage.service: Epsilon
       traefik-conf.port: ${APOLLON_EPSILON_PORT}
       traefik-conf.http.routers.apollon_epsilon_public.rule: Host(`epsilon44.fr`) || Host(`www.epsilon44.fr`)
       traefik-conf.http.routers.apollon_epsilon_public.service: apollon_epsilon
@@ -68,6 +72,7 @@ services:
     ports:
       - ${APOLLON_SHARE_PORT}:3000
     labels:
+      homepage.service: Share
       traefik-conf.port: ${APOLLON_SHARE_PORT}
     environment:
       - TRUST_PROXY=true # Set to true if a reverse proxy is in front of the container
@@ -85,35 +90,13 @@ services:
     ports:
       - ${APOLLON_BENTO_PDF_PORT}:8080
     labels:
+      homepage.service: BentoPDF
       traefik-conf.port: ${APOLLON_BENTO_PDF_PORT}
     healthcheck:
       test: wget -q --spider --timeout=5 --tries=1 http://localhost:8080 || exit 1
       interval: 30s
       timeout: 10s
       retries: 3
-
-  trilium:
-    image: docker.io/triliumnext/trilium:v0.106.1@sha256:d87d810fdcb549db65710a40933acaa16bc75c9426a9164c547f7ba95592941b
-    container_name: trilium
-    restart: unless-stopped
-    environment:
-      TZ: ${TIMEZONE}
-      # TRILIUM_OAUTH_BASE_URL: "https://trilium.mgarnier11.fr"
-      # TRILIUM_OAUTH_CLIENT_ID: "trilium"
-      # TRILIUM_OAUTH_CLIENT_SECRET: "insecure_secret"
-      # TRILIUM_OAUTH_ISSUER_BASE_URL: "https://authelia.mgarnier11.fr"
-      # TRILIUM_OAUTH_ISSUER_NAME: "Authelia"
-      # TRILIUM_OAUTH_ISSUER_ICON: "https://www.authelia.com/images/branding/logo-cropped.png"
-    ports:
-      - ${APOLLON_TRILIUM_PORT}:8080
-    volumes:
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: utils/trilium
-        target: /home/node/trilium-data
-    labels:
-      traefik-conf.port: ${APOLLON_TRILIUM_PORT}
 
   memos:
     image: docker.io/neosmemo/memos:0.31.0@sha256:24c2707ddd8fbd2ceaa7a61ecab86a53cdcde640b24ce572b73da14b00b5785f
@@ -122,6 +105,7 @@ services:
     ports:
       - ${APOLLON_MEMOS_PORT}:5230
     labels:
+      homepage.service: Memos
       traefik-conf.port: ${APOLLON_MEMOS_PORT}
     volumes:
       - type: volume
@@ -147,6 +131,7 @@ services:
           subpath: utils/ntfy
         target: /etc/ntfy
     labels:
+      homepage.service: Ntfy
       traefik-conf.port: ${APOLLON_NTFY_PORT}
       traefik-conf.http.routers.apollon_ntfy.rule: Host(`ntfy.${PUBLIC_DOMAIN_NAME}`)
       traefik-conf.http.routers.apollon_ntfy.middlewares: ip-wl@file,geoblock@file,authelia-basic@file

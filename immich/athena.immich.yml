@@ -19,6 +19,7 @@ services:
     ports:
       - ${ATHENA_IMMICH_PORT}:2283
     labels:
+      homepage.service: Immich
       traefik-conf.port: ${ATHENA_IMMICH_PORT}
       traefik-conf.name: immich
       # sablier.enable: true
@@ -38,6 +39,8 @@ services:
 
   immich-machine-learning:
     container_name: immich-machine-learning
+    labels:
+      homepage.service: Immich
     # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
     image: ghcr.io/immich-app/immich-machine-learning:v2.7.5@sha256:a2501141440f10516d329fdfba2c68082e19eb9ba6016c061ac80d23beadf7f3
     networks:
@@ -61,6 +64,8 @@ services:
       - immich-net
     healthcheck:
       test: redis-cli ping || exit 1
+    labels:
+      homepage.service: Immich
     restart: unless-stopped
     # labels:
     #   sablier.enable: true
@@ -68,6 +73,8 @@ services:
 
   database:
     container_name: immich-postgres
+    labels:
+      homepage.service: Immich
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
     environment:
       POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD}

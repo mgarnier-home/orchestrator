@@ -21,6 +21,7 @@ services:
       - 53:53/udp
       - ${ZEPHYR_ADGUARD_PORT}:3000/tcp
     labels:
+      homepage.service: AdGuard
       traefik-conf.port: ${ZEPHYR_ADGUARD_PORT}
     healthcheck:
       test: wget -q --spider --timeout=5 --tries=1 http://localhost:3000 || exit 1

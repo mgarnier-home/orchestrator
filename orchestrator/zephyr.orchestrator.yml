@@ -20,4 +20,5 @@ services:
       ORCHESTRATOR_GIT_TOKEN: ${ORCHESTRATOR_GIT_TOKEN}
       ORCHESTRATOR_GIT_REPO: https://github.com/mgarnier-home/orchestrator.git
     labels:
+      homepage.service: Orchestrator
       traefik-conf.port: ${ZEPHYR_ORCHESTRATOR_PORT}

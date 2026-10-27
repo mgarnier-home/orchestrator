@@ -15,10 +15,9 @@ services:
     ports:
       - ${ATLAS_AUTOSAVER_PORT}:8080
     labels:
+      homepage.service: Autosaver
       traefik-conf.port: ${ATLAS_AUTOSAVER_PORT}
       traefik-conf.name: autosaver.atlas
-      homepage.group: Atlas
-      homepage.name: Autosaver
     privileged: true
     environment:
       CONFIG_FILE_PATH: /config/config-atlas.yml

@@ -8,6 +8,7 @@ services:
     ports:
       - ${ATLAS_DBEAVER_PORT}:8978
     labels:
+      homepage.service: DBeaver
       traefik-conf.port: ${ATLAS_DBEAVER_PORT}
     volumes:
       - type: volume
