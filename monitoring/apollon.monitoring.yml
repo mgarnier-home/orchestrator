@@ -97,6 +97,24 @@ services:
       timeout: 10s
       retries: 3
 
+  # Page d'accueil du homelab (repo mgarnier-home/homepage). Image distroless, sans shell ni curl :
+  # pas de healthcheck possible.
+  dashboard:
+    image: docker.io/mgarnier11/homepage:1.0.0@sha256:45ec148a309e27a23a04ca1a81e4e1a82134e615e44bbbafb077013585ecb374
+    container_name: dashboard
+    restart: unless-stopped
+    ports:
+      - ${APOLLON_DASHBOARD_PORT}:8080
+    environment:
+      HOMEPAGE_DOCKER_HOSTS: apollon=http://${APOLLON_IP}:${APOLLON_DOCKER_SOCKET_PROXY_PORT},atlas=http://${ATLAS_IP}:${ATLAS_DOCKER_SOCKET_PROXY_PORT},zephyr=http://${ZEPHYR_IP}:${ZEPHYR_DOCKER_SOCKET_PROXY_PORT},athena=http://${ATHENA_IP}:${ATHENA_DOCKER_SOCKET_PROXY_PORT}
+      INFLUX_URL: http://${ATLAS_IP}:${ATLAS_INFLUXDB_PORT}
+      INFLUX_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      INFLUX_BUCKET: ${INFLUXDB_BUCKET}
+    labels:
+      traefik-conf.port: ${APOLLON_DASHBOARD_PORT}
+      homepage.service: Dashboard
+
 volumes:
   docker-data:
     external: true
