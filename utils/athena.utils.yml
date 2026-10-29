@@ -1,53 +1,6 @@
 name: utils
 
 services:
-  neko:
-    image: "ghcr.io/m1k1o/neko/nvidia-firefox:3.2.0@sha256:80e31250852384d9a4b5e4815fe58eee6163a14b8d99c7c1a34e80fb8ad42125"
-    container_name: neko
-    restart: "unless-stopped"
-    shm_size: "2gb"
-    ports:
-      - "${ATHENA_NEKO_PORT}:8080"
-      - "52000-52100:52000-52100/udp"
-    environment:
-      NEKO_CAPTURE_VIDEO_PIPELINE: |
-        ximagesrc display-name={display} show-pointer=true use-damage=false
-          ! video/x-raw,framerate=25/1
-          ! cudaupload ! cudaconvert ! queue
-          ! video/x-raw(memory:CUDAMemory),format=NV12
-          ! nvh264enc
-            name=encoder
-            preset=2
-            gop-size=25
-            spatial-aq=true
-            temporal-aq=true
-            bitrate=4096
-            vbv-buffer-size=4096
-            rc-mode=6
-          ! h264parse config-interval=-1
-          ! video/x-h264,stream-format=byte-stream
-          ! appsink name=appsink
-      NEKO_CAPTURE_VIDEO_CODEC: "h264"
-      NEKO_DESKTOP_SCREEN: 1920x1080@30
-      NEKO_MEMBER_MULTIUSER_USER_PASSWORD: neko
-      NEKO_MEMBER_MULTIUSER_ADMIN_PASSWORD: admin
-      NEKO_WEBRTC_EPR: 52000-52100
-      NEKO_WEBRTC_ICELITE: 0
-      NEKO_WEBRTC_NAT1TO1: ${ATHENA_IP}
-    labels:
-      homepage.service: Neko
-      traefik-conf.port: ${ATHENA_NEKO_PORT}
-      sablier.enable: true
-      sablier.group: neko
-      sablier.group.strategy: dynamic
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-
   bg:
     image: docker.io/withoutbg/app:1.3.1@sha256:6aae7b11c45f2ad90fc03a57c98f9e9b80d7edf9e97f66d835ce989e1b52e4cf
     container_name: withoutbg
@@ -57,9 +10,9 @@ services:
     labels:
       homepage.service: WithoutBG
       traefik-conf.port: ${ATHENA_WITHOUTBG_PORT}
-      # sablier.enable: true
-      # sablier.group: bg
-      # sablier.group.strategy: dynamic
+      sablier.enable: true
+      sablier.group: bg
+      sablier.group.strategy: dynamic
 
   samba:
     container_name: samba

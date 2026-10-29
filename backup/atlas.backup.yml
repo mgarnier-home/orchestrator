@@ -16,6 +16,7 @@ services:
       - ${ATLAS_AUTOSAVER_PORT}:8080
     labels:
       homepage.service: Autosaver
+      homepage.stats: autosaver
       traefik-conf.port: ${ATLAS_AUTOSAVER_PORT}
       traefik-conf.name: autosaver.atlas
     privileged: true

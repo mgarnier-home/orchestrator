@@ -66,6 +66,7 @@ services:
       - ${ATHENA_PAPERLESS_PORT}:8000
     labels:
       homepage.service: Paperless
+      homepage.stats: paperless
       traefik-conf.port: ${ATHENA_PAPERLESS_PORT}
       # sablier.enable: true
       # sablier.group: paperless

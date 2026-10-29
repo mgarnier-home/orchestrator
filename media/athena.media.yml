@@ -41,6 +41,7 @@ services:
       - ${ATHENA_JELLYFIN_PORT}:8096
     labels:
       homepage.service: Jellyfin
+      homepage.stats: jellyfin
       traefik-conf.port: ${ATHENA_JELLYFIN_PORT}
     environment:
       PUID: ${PUID}
@@ -116,6 +117,7 @@ services:
         read_only: true
     labels:
       homepage.service: Navidrome Music
+      homepage.stats: navidrome
       traefik-conf.port: ${ATHENA_MEDIA_MUSIC_PORT}
       traefik-conf.name: music
       traefik-conf.http.routers.athena_music_api.rule: Host(`music.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
@@ -160,6 +162,7 @@ services:
         read_only: true
     labels:
       homepage.service: Navidrome Sagas
+      homepage.stats: navidrome
       traefik-conf.port: ${ATHENA_MEDIA_SAGAS_PORT}
       traefik-conf.name: sagas
       traefik-conf.http.routers.athena_sagas_api.rule: Host(`sagas.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)

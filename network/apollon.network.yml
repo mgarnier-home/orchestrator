@@ -27,6 +27,7 @@ services:
       - ${APOLLON_TRAEFIK_PORT}:8080/tcp
     labels:
       homepage.service: Traefik
+      homepage.stats: traefik
       traefik-conf.port: ${APOLLON_TRAEFIK_PORT}
       # traefik-conf.name: traefik.apollon
     environment:

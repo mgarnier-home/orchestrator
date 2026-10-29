@@ -9,6 +9,7 @@ services:
       - WEBUI_PORT=8080
     labels:
       homepage.service: qBittorrent
+      homepage.stats: qbittorrent
       traefik-conf.port: ${APOLLON_QBITTORRENT_PORT}
     volumes:
       - type: volume

@@ -13,6 +13,7 @@ services:
           memory: 1000M
     labels:
       homepage.service: Mealie
+      homepage.stats: mealie
       traefik-conf.port: ${ATHENA_MEALIE_PORT}
       # sablier.enable: true
       # sablier.group: mealie

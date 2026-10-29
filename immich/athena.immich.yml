@@ -20,6 +20,7 @@ services:
       - ${ATHENA_IMMICH_PORT}:2283
     labels:
       homepage.service: Immich
+      homepage.stats: immich
       traefik-conf.port: ${ATHENA_IMMICH_PORT}
       traefik-conf.name: immich
       # sablier.enable: true
