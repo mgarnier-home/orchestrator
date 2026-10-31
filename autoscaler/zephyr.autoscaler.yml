@@ -2,7 +2,7 @@ name: autoscaler
 
 services:
   autoscaler:
-    image: docker.io/mgarnier11/autoscaler:arm64
+    image: docker.io/mgarnier11/autoscaler:arm64@sha256:abf1064e8074dbb7170c392792ceca40c40114ce5c35460b0eed6e311927ea92
     restart: unless-stopped
     container_name: autoscaler
     labels:
