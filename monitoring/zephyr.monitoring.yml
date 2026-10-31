@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.40.2@sha256:074419740e5b702f2f358262c1e3036ec1e9c09e0d0eef388dff7ed838dea202
+    image: docker.io/telegraf:1.40.2@sha256:3992a56245a9477dfad5b98d9354d3ea7c1bced0aab6630ba49f23ac9a4d269e
     container_name: telegraf
     restart: unless-stopped
     command:
@@ -92,7 +92,7 @@ services:
       start_period: 10s
 
   vector:
-    image: docker.io/timberio/vector:0.60.0-debian@sha256:3ccb4bbd36e38734394e158db1411e91a69d076ed25013f8de385046a382d36a
+    image: docker.io/timberio/vector:0.61.0-debian@sha256:f6c23b5a7e16fb2838d33619ef7acf4bad2289a7cf22bc90efc2371f520c4ea2
     container_name: vector
     restart: unless-stopped
     user: root:root # required for docker socket access; replace root:root with vector:<docker-gid> for least-privilege
