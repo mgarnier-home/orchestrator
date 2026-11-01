@@ -4,7 +4,7 @@ services:
   go-autosaver:
     container_name: go-autosaver
     restart: unless-stopped
-    image: docker.io/mgarnier11/autosaver:1.2.0
+    image: docker.io/mgarnier11/autosaver:1.2.0@sha256:885c52e15c531ec0514d23858fc9149bbf1350659ed5f5bf917400e34400f920
     volumes:
       - docker-data-local:/backups
       - type: volume
