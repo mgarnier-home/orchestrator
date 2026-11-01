@@ -1,38 +1,6 @@
 name: media
 
 services:
-  jdownloader:
-    container_name: jdownloader
-    restart: unless-stopped
-    image: docker.io/jlesage/jdownloader-2:v26.09.1@sha256:bd6cd2fdc72818f30207e677b33cd7f1b425048c4e7132624e541e99f992be4c
-    ports:
-      - ${ATHENA_JDOWNLOADER_PORT}:5800
-    volumes:
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: media/jdownloader
-        target: /config
-      - type: volume
-        source: atlas-media
-        target: /output
-    labels:
-      homepage.service: JDownloader
-      traefik-conf.port: ${ATHENA_JDOWNLOADER_PORT}
-      # sablier.enable: true
-      # sablier.group: downloader
-      # sablier.group.strategy: dynamic
-
-    environment:
-      PUID: ${PUID}
-      PGID: ${PGID}
-      TIMEZONE: ${TIMEZONE}
-      # - NVIDIA_VISIBLE_DEVICES=all
-      # - JDOWNLOADER_PUBLISHED_SERVER_URL=
-    healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://localhost:5800 || exit 1
-      start_period: 10s
-
   jellyfin:
     container_name: jellyfin
     restart: unless-stopped
@@ -175,38 +143,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
-  downloader:
-    image: registry.gitlab.com/bockiii/deemix-docker@sha256:d325660d833c30c8bbb5cf0caa75135b42a2f69b82f2269fd5bea91a04c449e6
-    container_name: downloader
-    restart: unless-stopped
-    ports:
-      - ${ATHENA_DOWNLOADER_PORT}:6595
-    labels:
-      homepage.service: Downloader
-      traefik-conf.port: ${ATHENA_DOWNLOADER_PORT}
-      # sablier.enable: true
-      # sablier.group: downloader
-      # sablier.group.strategy: dynamic
-    environment:
-      PUID: ${PUID}
-      PGID: ${PGID}
-      UMASK_SET: 022
-      DEEMIX_SINGLE_USER: true
-    volumes:
-      - type: volume
-        source: atlas-media
-        volume:
-          subpath: musics
-        target: /downloads
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: media/downloader
-        target: /config
-    healthcheck:
-      test: wget -q --spider --timeout=5 --tries=1 http://127.0.0.1:6595 || exit 1
-      start_period: 10s
 
   # handbrake-server:
   #   image: ghcr.io/thenickoftime/handbrake-web-server:${HANDBRAKE_WEB_VERSION}

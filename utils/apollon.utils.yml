@@ -106,6 +106,7 @@ services:
       - ${APOLLON_MEMOS_PORT}:5230
     labels:
       homepage.service: Memos
+      homepage.stats: memos
       traefik-conf.port: ${APOLLON_MEMOS_PORT}
     volumes:
       - type: volume

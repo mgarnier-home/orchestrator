@@ -116,6 +116,7 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
     labels:
       homepage.service: InfluxDB
+      homepage.stats: influxdb
       traefik-conf.port: ${ATLAS_INFLUXDB_PORT}
     healthcheck:
       test: influx ping || exit 1
@@ -142,6 +143,7 @@ services:
         target: /data
     labels:
       homepage.service: OpenObserve
+      homepage.stats: openobserve
       traefik-conf.port: ${ATLAS_OPENOBSERVE_PORT}
 
   vector:

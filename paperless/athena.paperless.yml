@@ -44,6 +44,7 @@ services:
       MYSQL_PASSWORD: ${PAPERLESS_DB_PASSWD}
       MYSQL_ROOT_PASSWORD: ${PAPERLESS_DB_ROOT_PASSWD}
       MYSQL_LOG_CONSOLE: true
+      MARIADB_AUTO_UPGRADE: 1
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 30s

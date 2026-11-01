@@ -1,0 +1,37 @@
+name: media
+
+services:
+  downloader:
+    image: docker.io/mgarnier11/downloader:0.3.0
+    container_name: downloader
+    restart: unless-stopped
+    user: "1000:1000" # propriétaire de la médiathèque
+    ports:
+      - ${ATLAS_DOWNLOADER_PORT}:8080
+    environment:
+      DOWNLOADER_ALLDEBRID_API_KEY: ${DOWNLOADER_ALLDEBRID_API_KEY}
+      DOWNLOADER_DEEZER_ARL: ${DOWNLOADER_DEEZER_ARL}
+      DOWNLOADER_TMDB_API_KEY: ${DOWNLOADER_TMDB_API_KEY}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: media/downloader
+        target: /data
+      - type: volume
+        source: media
+        target: /media
+    labels:
+      homepage.service: Downloader
+      traefik-conf.port: ${ATLAS_DOWNLOADER_PORT}
+
+volumes:
+  docker-data:
+    external: true
+
+  media:
+    driver: local
+    driver_opts:
+      type: none
+      device: /export/media
+      o: bind

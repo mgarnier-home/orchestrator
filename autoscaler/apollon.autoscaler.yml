@@ -2,18 +2,24 @@ name: autoscaler
 
 services:
   autoscaler:
-    image: docker.io/mgarnier11/autoscaler:amd64
+    image: docker.io/mgarnier11/autoscaler:1.1.1
     restart: unless-stopped
     container_name: autoscaler
+    ports:
+      - ${APOLLON_AUTOSCALER_PORT}:8080
     labels:
       homepage.service: Autoscaler
+      homepage.stats: autoscaler
+      traefik-conf.port: ${APOLLON_AUTOSCALER_PORT}
+      traefik-conf.name: autoscaler.apollon
     environment:
       REGISTRATION_URL: "${REGISTRATION_URL}"
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
-      RUNNER_IMAGE: "docker.io/mgarnier11/runner:amd64"
+      RUNNER_IMAGE: "docker.io/mgarnier11/runner:1.1.1"
       DOCKER_REGISTRY_URL: "${DOCKER_REGISTRY_URL}"
       DOCKER_REGISTRY_USERNAME: "${DOCKER_REGISTRY_USERNAME}"
       DOCKER_REGISTRY_PASSWORD: "${DOCKER_REGISTRY_PASSWORD}"
+      CONTAINER_LABELS: "homepage.service=Autoscaler"
       SCALE_SET_NAME: "apollon"
       MAX_RUNNERS: "10"
       MIN_RUNNERS: "2"
@@ -21,5 +27,52 @@ services:
       RUNNER_GROUP: "default"
       DOCKER_HOSTS: "unix:///var/run/docker.sock"
       RUNTIME: "sysbox-runc"
+      # Les runners rejoignent le réseau de buildkit et partagent son cache de build.
+      DOCKER_NETWORK: "autoscaler-buildkit"
+      BUILDKIT_HOST_URL: "tcp://buildkit:1234"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  buildkit:
+    image: docker.io/moby/buildkit:v0.34.1@sha256:99368f3e46177c6405b9740e4461d91cee004128daeecca78d4ceac50ec1da5c
+    restart: unless-stopped
+    container_name: buildkit
+    privileged: true
+    # Pas de port publié : seuls les runners, sur le réseau autoscaler-buildkit, l'utilisent.
+    # GC « réservé, libre, maximum » en Mo : garde 10 Go libres sur le disque et plafonne le
+    # cache à 10 Go.
+    command:
+      - --addr
+      - tcp://0.0.0.0:1234
+      - --addr
+      - unix:///run/buildkit/buildkitd.sock
+      - --oci-worker-gc
+      - --oci-worker-gc-keepstorage=2000,10000,10000
+    volumes:
+      # Volume local : le snapshotter overlayfs de buildkit ne fonctionne pas sur le NFS de
+      # docker-data, et ce cache peut être reconstruit.
+      - buildkit-cache:/var/lib/buildkit
+    networks:
+      - buildkit
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "buildctl",
+          "--addr",
+          "unix:///run/buildkit/buildkitd.sock",
+          "debug",
+          "workers",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  buildkit-cache:
+
+# Nom fixe : DOCKER_NETWORK le désigne tel quel, alors que compose préfixerait sinon le nom du
+# réseau par celui du projet.
+networks:
+  buildkit:
+    name: autoscaler-buildkit
