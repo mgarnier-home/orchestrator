@@ -18,7 +18,7 @@ services:
       retries: 3
 
   telegraf:
-    image: docker.io/telegraf:1.40.2@sha256:3992a56245a9477dfad5b98d9354d3ea7c1bced0aab6630ba49f23ac9a4d269e
+    image: docker.io/telegraf:1.40.3@sha256:235cff5a4a5b4162ffabcb1e04ccf88b2a26a190bbc2f1d37e910c9e0d2f8304
     container_name: telegraf
     restart: unless-stopped
     command: ["--config", "/config/atlas.conf"]
