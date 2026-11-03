@@ -37,7 +37,7 @@ services:
       traefik-conf.http.routers.apollon_potixx_public.tls.certResolver: tls-resolver
 
   epsilon:
-    image: registry.gitlab.com/lgarnier11/epsilon-cms:v1.1.2@sha256:35307460fe9de85ca52405cdfe5d8ad28d603bb653fb07c0c7e67598d1e796fd
+    image: registry.gitlab.com/lgarnier11/epsilon-cms:v1.1.6
     container_name: epsilon
     restart: unless-stopped
     environment:

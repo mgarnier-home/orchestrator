@@ -2,7 +2,7 @@ name: media
 
 services:
   downloader:
-    image: docker.io/mgarnier11/downloader:0.3.0
+    image: docker.io/mgarnier11/downloader:0.7.0
     container_name: downloader
     restart: unless-stopped
     user: "1000:1000" # propriétaire de la médiathèque
@@ -23,7 +23,56 @@ services:
         target: /media
     labels:
       homepage.service: Downloader
+      homepage.stats: downloader
       traefik-conf.port: ${ATLAS_DOWNLOADER_PORT}
+
+  music:
+    image: docker.io/deluan/navidrome:0.64.2@sha256:38dc2727bfcfd5ede290f8ada114fc90368146f265ae4701ddddbcbe2a44ee52
+    container_name: music
+    user: 1000:1000 # should be owner of volumes
+    ports:
+      - ${ATLAS_MUSIC_PORT}:4533
+    restart: unless-stopped
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      ND_ARTISTARTPRIORITY: external
+      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
+      ND_ENABLEUSEREDITING: false
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: media/music
+        target: /data
+      - type: volume
+        source: media
+        volume:
+          subpath: musics
+        target: /music
+        read_only: true
+      - type: volume
+        source: media
+        volume:
+          subpath: sagas-mp3
+        target: /sagas
+        read_only: true
+    labels:
+      homepage.service: Music
+      homepage.stats: navidrome
+      traefik-conf.port: ${ATLAS_MUSIC_PORT}
+      traefik-conf.name: music
+      traefik-conf.http.routers.atlas_music_api.rule: Host(`music.${PUBLIC_DOMAIN_NAME}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+      traefik-conf.http.routers.atlas_music_api.service: atlas_music
+      traefik-conf.http.routers.atlas_music_api.entrypoints: https
+      traefik-conf.http.routers.atlas_music_api.middlewares: ip-wl@file,geoblock@file,authelia-basic@file
+      traefik-conf.http.routers.atlas_music_api.tls.certResolver: tls-resolver
+    healthcheck:
+      test: wget -q --spider --timeout=5 --tries=1 http://localhost:4533/ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   docker-data:
