@@ -2,7 +2,7 @@ name: media
 
 services:
   downloader:
-    image: docker.io/mgarnier11/downloader:0.7.0
+    image: docker.io/mgarnier11/downloader:0.7.0@sha256:eb7f96a3079ea36cd1e9b3221d69458f482e9ae34784870fe673621fc3b797dd
     container_name: downloader
     restart: unless-stopped
     user: "1000:1000" # propriétaire de la médiathèque
