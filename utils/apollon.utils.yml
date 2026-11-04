@@ -37,7 +37,7 @@ services:
       traefik-conf.http.routers.apollon_potixx_public.tls.certResolver: tls-resolver
 
   epsilon:
-    image: registry.gitlab.com/lgarnier11/epsilon-cms:v1.1.6@sha256:67d40e0f325e6a6d73ff01bac6c579be2e9e7ad6e9ae9144e94c7a1ac0ba4619
+    image: registry.gitlab.com/lgarnier11/epsilon-cms:v1.1.7@sha256:20439a2f77fceae75b3b9a52a743ff131326900d02a861cb77455db639127dec
     container_name: epsilon
     restart: unless-stopped
     environment:
@@ -116,7 +116,7 @@ services:
         target: /var/opt/memos
 
   ntfy:
-    image: docker.io/binwiederhier/ntfy:v2.37.1@sha256:a1dde1f3210b68ac0c29e53298c96a988d06c320d1201d72f3e8e224d1a546f3
+    image: docker.io/binwiederhier/ntfy:v2.37.2@sha256:1875ddcf815c8a3c981d6d78c67a93452d0abba79b1ab9520b1f5f5238902bd7
     container_name: ntfy
     restart: unless-stopped
     command:
