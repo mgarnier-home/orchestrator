@@ -29,7 +29,7 @@
   ],
   "docker-compose": {
     "managerFilePatterns": [
-      "/^(automation|autoscaler|backup|bitwarden|immich|mealie|media|monitoring|network|ollama|orchestrator|paperless|registry|satisfactory|storage|utils)\\/.+\\.ya?ml$/"
+      "/^(automation|autoscaler|backup|bitwarden|domotique|immich|mealie|media|monitoring|network|ollama|orchestrator|paperless|registry|satisfactory|storage|utils)\\/.+\\.ya?ml$/"
     ]
   },
   "packageRules": [
@@ -79,6 +79,16 @@
         "bitwarden/**"
       ],
       "groupName": "bitwarden"
+    },
+    {
+      "description": "One PR for domotique",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "domotique/**"
+      ],
+      "groupName": "domotique"
     },
     {
       "description": "One PR for immich",
