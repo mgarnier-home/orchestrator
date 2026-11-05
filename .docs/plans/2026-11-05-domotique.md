@@ -39,8 +39,6 @@ Frigate) et ses automatisations publient via l'intégration ntfy.
 - **Mosquitto sans volume.** Sa configuration et son fichier de mots de passe sont générés au
   démarrage depuis `MQTT_PASSWORD`, sans persistance : Frigate republie ses états. Il n'y a plus
   de dossier `domotique/mosquitto`.
-- **Carte de direct native de HA** (`picture-entity`, `camera_view: live`) au lieu d'une carte
-  HACS : l'intégration Frigate fournit l'entité caméra, rien d'autre à installer.
 - **Automatisations dans un paquet HA** (`packages/babyphone.yaml`), en YAML pur, pour qu'elles
   ne soient pas réécrites par l'éditeur d'automatisations de l'interface.
 
@@ -239,14 +237,18 @@ Frigate) et ses automatisations publient via l'intégration ntfy.
 
   Relever le nom réel de l'entité caméra Frigate. S'il diffère de `camera.babyphone`, corriger
   `babyphone_mouvement`, puis recharger les automatisations.
-- [ ] **Étape 5 : tableau de bord.** Le propriétaire ajoute une carte `picture-entity` sur
-  l'entité caméra, avec `camera_view: live`.
+- [ ] **Étape 5 : tableau de bord.** Le propriétaire installe par HACS la carte Frigate
+  (« Advanced Camera Card ») et l'ajoute au tableau de bord : `type: custom:advanced-camera-card`,
+  caméra `camera_entity: camera.babyphone` (ou le nom relevé à l'étape 4) avec
+  `live_provider: go2rtc`, et le bouton de son du menu activé (`menu.buttons.mute.enabled: true`).
+  Vérifier que le son s'active depuis ce bouton.
 - [ ] **Étape 6 : tests de bout en bout**, avec le propriétaire :
   - un claquement de mains donne une alerte « Bruit », et un second dans les 5 min n'en donne
     aucune (vigilance 2) ;
   - un geste devant la caméra donne une alerte « Mouvement » avec la capture jointe ;
   - la caméra débranchée 2 min donne une alerte « Caméra hors ligne » ;
   - `https://frigate.<domaine>` et `https://home-assistant.<domaine>` demandent Authelia, puis
-    le direct joue avec le son dans le navigateur du téléphone (vigilance 4) ;
+    le direct joue avec le son dans le navigateur du téléphone, dans la carte Frigate de HA
+    comme dans l'interface Frigate (vigilance 4) ;
   - au premier crépuscule, le basculement infrarouge ne donne aucune alerte « Mouvement »
     (vigilance 3).
