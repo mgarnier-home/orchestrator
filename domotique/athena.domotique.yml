@@ -24,10 +24,9 @@ services:
         volume:
           subpath: domotique/frigate/config
         target: /config
+      # Enregistrements sur le RAID d'atlas (disques durs), pas sur le SSD de docker-data
       - type: volume
-        source: docker-data
-        volume:
-          subpath: domotique/frigate/media
+        source: atlas-frigate
         target: /media/frigate
       - type: tmpfs
         target: /tmp/cache
@@ -103,3 +102,9 @@ services:
 volumes:
   docker-data:
     external: true
+  atlas-frigate:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=100.64.98.98,rw
+      device: :/export/media/frigate
