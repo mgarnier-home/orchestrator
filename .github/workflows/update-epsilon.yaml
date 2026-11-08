@@ -1,0 +1,101 @@
+name: Update epsilon-cms
+run-name: Update epsilon-cms to ${{ inputs.version }}
+
+# Appelé par la CI GitLab d'epsilon-cms une fois l'image d'un tag vX.Y.Z publiée.
+# Ouvre une PR qui met à jour l'image et l'approuve ; dès que le lint passe, elle se fusionne
+# seule et deploy.yaml redéploie la stack utils, sans action humaine.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag de l'image epsilon-cms (vX.Y.Z)"
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: update-epsilon
+  cancel-in-progress: false
+
+env:
+  IMAGE: registry.gitlab.com/lgarnier11/epsilon-cms
+  COMPOSE_FILE: utils/apollon.utils.yml
+  VERSION: ${{ inputs.version }}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check version
+        run: |
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Version invalide : '$VERSION' (attendu vX.Y.Z)"
+            exit 1
+          fi
+
+      # Le token de l'app Renovate, et non GITHUB_TOKEN : une PR ouverte avec GITHUB_TOKEN ne
+      # déclenche pas le lint, et sa fusion ne déclenche pas deploy.yaml.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.RENOVATE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+
+      # Le digest épingle l'image, comme le fait Renovate ; l'inspection échoue si le tag n'existe pas.
+      - name: Resolve image digest
+        id: digest
+        env:
+          GITLAB_REGISTRY_USER: ${{ secrets.GITLAB_REGISTRY_USER }}
+          GITLAB_REGISTRY_TOKEN: ${{ secrets.GITLAB_REGISTRY_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "$GITLAB_REGISTRY_TOKEN" | docker login registry.gitlab.com -u "$GITLAB_REGISTRY_USER" --password-stdin
+          digest=$(docker buildx imagetools inspect "$IMAGE:$VERSION" --format '{{.Manifest.Digest}}')
+          echo "Digest de $IMAGE:$VERSION : $digest"
+          echo "DIGEST=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          DIGEST: ${{ steps.digest.outputs.DIGEST }}
+          APPROVE_TOKEN: ${{ github.token }}
+          BRANCH: update-epsilon/${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          sed -i -E "s#(image: ${IMAGE}):[^[:space:]]+#\1:${VERSION}@${DIGEST}#" "$COMPOSE_FILE"
+
+          if git diff --quiet; then
+            echo "$COMPOSE_FILE utilise déjà $IMAGE:$VERSION, rien à faire."
+            exit 0
+          fi
+          git diff
+
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${APP_SLUG}[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git commit -am "chore(deps): update epsilon-cms to ${VERSION}"
+          # Branche propre à ce workflow : la réécrire permet de relancer un run en échec.
+          git push --force origin "$BRANCH"
+
+          if ! gh pr view "$BRANCH" --json url -q .url; then
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore(deps): update epsilon-cms to ${VERSION}" \
+              --body "Mise à jour de l'image epsilon-cms en ${VERSION}, déclenchée par la CI GitLab après la publication de l'image." \
+              --label dependencies
+          fi
+          # L'auteur d'une PR ne peut pas l'approuver : l'approbation vient de github-actions, ce
+          # que permet le réglage « Allow GitHub Actions to create and approve pull requests ».
+          GH_TOKEN="$APPROVE_TOKEN" gh pr review "$BRANCH" --approve --body "Approbation automatique de la mise à jour d'epsilon-cms."
+          # Fusion automatique dès que le lint passe.
+          gh pr merge "$BRANCH" --auto --merge
