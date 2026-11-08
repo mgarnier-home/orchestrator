@@ -115,38 +115,6 @@ services:
           subpath: utils/memos
         target: /var/opt/memos
 
-  ntfy:
-    image: docker.io/binwiederhier/ntfy:v2.37.2@sha256:1875ddcf815c8a3c981d6d78c67a93452d0abba79b1ab9520b1f5f5238902bd7
-    container_name: ntfy
-    restart: unless-stopped
-    command:
-      - serve
-    environment:
-      TZ: ${TIMEZONE}
-    ports:
-      - ${APOLLON_NTFY_PORT}:80
-    volumes:
-      - type: volume
-        source: docker-data
-        volume:
-          subpath: utils/ntfy
-        target: /etc/ntfy
-    labels:
-      homepage.service: Ntfy
-      traefik-conf.port: ${APOLLON_NTFY_PORT}
-      traefik-conf.http.routers.apollon_ntfy.rule: Host(`ntfy.${PUBLIC_DOMAIN_NAME}`)
-      traefik-conf.http.routers.apollon_ntfy.middlewares: ip-wl@file,geoblock@file,authelia-basic@file
-      traefik-conf.http.routers.apollon_ntfy.entrypoints: https
-      traefik-conf.http.routers.apollon_ntfy.tls.certResolver: tls-resolver
-      traefik-conf.http.routers.apollon_ntfy.service: apollon_ntfy
-
-    healthcheck:
-      test: wget -q --tries=1 http://localhost/v1/health -O - | grep -Eo '\"healthy\":true' || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
 volumes:
   docker-data:
     external: true

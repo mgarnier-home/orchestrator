@@ -3,18 +3,34 @@ name: immich
 services:
   immich-server:
     container_name: immich-server
-    image: ghcr.io/immich-app/immich-server:v2.7.5@sha256:c15bff75068effb03f4355997d03dc7e0fc58720c2b54ad6f7f10d1bc57efaa5
+    image: ghcr.io/immich-app/immich-server:v3.3.6@sha256:e1981983b1c13f6024b57d72e7ecae3342eed1581201ab09fb248932d86c593a
     networks:
       - immich-net
-    # extends:
-    #   file: hwaccel.transcoding.yml
-    #   service: cpu # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
+    # Transcodage NVENC sur la RTX d'athena (hwaccel.transcoding.yml d'Immich, service nvenc)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu, compute, video]
     volumes:
       - type: volume
         source: docker-data
         volume:
           subpath: immich/upload
         target: /usr/src/app/upload
+      # Originaux sur le RAID ; aperçus et vidéos 1080p restent sur le SSD (sauvegardé par autosaver)
+      - type: volume
+        source: atlas-media
+        volume:
+          subpath: immich-originaux/upload
+        target: /usr/src/app/upload/upload
+      - type: volume
+        source: atlas-media
+        volume:
+          subpath: immich-originaux/library
+        target: /usr/src/app/upload/library
       - /etc/localtime:/etc/localtime:ro
     ports:
       - ${ATHENA_IMMICH_PORT}:2283
@@ -43,7 +59,7 @@ services:
     labels:
       homepage.service: Immich
     # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
-    image: ghcr.io/immich-app/immich-machine-learning:v2.7.5@sha256:a2501141440f10516d329fdfba2c68082e19eb9ba6016c061ac80d23beadf7f3
+    image: ghcr.io/immich-app/immich-machine-learning:v3.3.6@sha256:14367bfb374b8576ddf49abd67c5ca0190a4c7fcf6303cdad65d7f7bf1a50bc2
     networks:
       - immich-net
     # extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
@@ -60,11 +76,11 @@ services:
 
   redis:
     container_name: immich-redis
-    image: docker.io/redis:6.2-alpine@sha256:63d5174750e285bc3069c4519c53c8b6de6ebe70715140a6c9d21d6f04b77319
+    image: docker.io/valkey/valkey:9@sha256:c123e3715db63d06d4ad6964884037aa0d5d4d703939b9929954112889708e1d
     networks:
       - immich-net
     healthcheck:
-      test: redis-cli ping || exit 1
+      test: redis-cli ping | grep -q PONG || exit 1
     labels:
       homepage.service: Immich
     restart: unless-stopped
@@ -122,6 +138,12 @@ volumes:
   model-cache:
   docker-data:
     external: true
+  atlas-media:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=100.64.98.98,rw
+      device: :/export/media
   # docker-data:
   #   driver: local
   #   driver_opts:
