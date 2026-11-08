@@ -49,11 +49,12 @@ jobs:
           else
             files=$(git diff --name-only --diff-filter=ACMR "${{ github.event.before }}" "${{ github.sha }}")
 
-            # Ignore .github directory
+            # Ignore les dossiers en « . » (.github, .docs) : ce ne sont pas des stacks.
+            # « || true » : un grep sans résultat sort en 1, ce que pipefail transformerait en échec.
             stacks_names=$(
               echo "$files" \
-                | grep '/' \
-                | grep -v '^.github/' \
+                | { grep '/' || true; } \
+                | { grep -v '^\.' || true; } \
                 | cut -d/ -f1 \
                 | sort -u \
                 | paste -sd,

@@ -1,0 +1,110 @@
+name: domotique
+
+services:
+  frigate:
+    container_name: frigate
+    restart: unless-stopped
+    image: ghcr.io/blakeblackshear/frigate:0.18.2@sha256:fd60f99ffd4eb6c42360ed4e14953e270586f239309ab3983e55b2e97ffac09a
+    shm_size: 256mb
+    ports:
+      # Port 5000 : API et interface sans authentification, protégées par Authelia via Traefik
+      - ${ATHENA_FRIGATE_PORT}:5000
+    labels:
+      homepage.service: Frigate
+      traefik-conf.port: ${ATHENA_FRIGATE_PORT}
+    environment:
+      TZ: ${TIMEZONE}
+      # Frigate ne substitue dans sa configuration que les variables préfixées par FRIGATE_
+      FRIGATE_MQTT_PASSWORD: ${MQTT_PASSWORD}
+      FRIGATE_RTSP_USER: ${CAMERA_RTSP_USER}
+      FRIGATE_RTSP_PASSWORD: ${CAMERA_RTSP_PASSWORD}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: domotique/frigate/config
+        target: /config
+      # Enregistrements sur le RAID d'atlas (disques durs), pas sur le SSD de docker-data
+      - type: volume
+        source: atlas-frigate
+        target: /media/frigate
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: curl -f http://localhost:5000/api/version || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  mosquitto:
+    container_name: mosquitto
+    restart: unless-stopped
+    image: docker.io/library/eclipse-mosquitto:2.1.2-alpine@sha256:48b5f8c14504da1155156282ecc557897ff002cd60fd604aa2fd74d47bb725ff
+    environment:
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+    # Configuration et comptes générés à chaque démarrage : aucun port publié, aucune persistance
+    # (Frigate republie ses états), donc rien à stocker.
+    command:
+      - sh
+      - -c
+      - |
+        printf 'listener 1883\nallow_anonymous false\npassword_file /tmp/passwd\n' > /tmp/mosquitto.conf
+        mosquitto_passwd -c -b /tmp/passwd domotique "$$MQTT_PASSWORD"
+        chown mosquitto:mosquitto /tmp/passwd
+        chmod 0700 /tmp/passwd
+        exec mosquitto -c /tmp/mosquitto.conf
+    healthcheck:
+      test: mosquitto_sub -u domotique -P "$$MQTT_PASSWORD" -t '$$SYS/broker/uptime' -C 1 -W 3 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  home-assistant:
+    container_name: home-assistant
+    restart: unless-stopped
+    image: ghcr.io/home-assistant/home-assistant:2026.11.0@sha256:c6c1ca9931036bf3a2c4cc088d8db25dfea3b33935a5ecc83c40349462e2f69e
+    ports:
+      - ${ATHENA_HOME_ASSISTANT_PORT}:8123
+    labels:
+      homepage.service: Home Assistant
+      traefik-conf.port: ${ATHENA_HOME_ASSISTANT_PORT}
+    environment:
+      TZ: ${TIMEZONE}
+      # Lien du direct dans les notifications ntfy (packages/babyphone.yaml)
+      FRIGATE_URL: https://frigate.${PUBLIC_DOMAIN_NAME}
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: domotique/home-assistant
+        target: /config
+    depends_on:
+      - mosquitto
+    healthcheck:
+      test: curl -f http://localhost:8123/manifest.json || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  docker-data:
+    external: true
+  atlas-frigate:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=100.64.98.98,rw
+      device: :/export/media/frigate
