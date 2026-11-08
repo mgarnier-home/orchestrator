@@ -41,6 +41,13 @@
       "pinDigests": true
     },
     {
+      "description": "epsilon-cms est mis à jour par .github/workflows/update-epsilon.yaml",
+      "matchPackageNames": [
+        "registry.gitlab.com/lgarnier11/epsilon-cms"
+      ],
+      "enabled": false
+    },
+    {
       "description": "One PR for autoscaler",
       "matchManagers": [
         "docker-compose"
