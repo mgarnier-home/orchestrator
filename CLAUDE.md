@@ -12,6 +12,9 @@ fichier décrit cette stack sur un hôte.
   Dependency Dashboard (issue #88) : une PR `renovate/stack-major-<stack>` n'est ouverte qu'après
   validation de sa case, et n'est jamais fusionnée automatiquement. `.github/workflows/pr-notify.yaml` envoie l'état de chaque
   PR sur ntfy, avec un bouton « Accept PR » qui dépose cette approbation quand Lint est vert.
+- epsilon-cms échappe à Renovate : sa CI GitLab appelle `.github/workflows/update-epsilon.yaml`
+  à chaque nouvelle version. Ce workflow ouvre la PR et l'approuve lui-même, et elle se fusionne
+  dès que Lint est vert. Une nouvelle version d'epsilon-cms est donc déployée sans validation.
 - Tu ne déploies jamais toi-même sans demande explicite, ni par un push sur `main`, ni par
   `orchestrator-cli`. Pousser une branche `release/*` ne déploie rien : la PR lance seulement Lint
   et la notification ntfy.
