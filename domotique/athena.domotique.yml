@@ -50,7 +50,7 @@ services:
   mosquitto:
     container_name: mosquitto
     restart: unless-stopped
-    image: docker.io/library/eclipse-mosquitto:2.1.2-alpine@sha256:48b5f8c14504da1155156282ecc557897ff002cd60fd604aa2fd74d47bb725ff
+    image: docker.io/library/eclipse-mosquitto:2.1.2-alpine@sha256:75d6662dee52c947dc9dd9c29f1d8d7ffef78ddaf38001caa09755681e8bbc98
     environment:
       MQTT_PASSWORD: ${MQTT_PASSWORD}
     # Configuration et comptes générés à chaque démarrage : aucun port publié, aucune persistance
