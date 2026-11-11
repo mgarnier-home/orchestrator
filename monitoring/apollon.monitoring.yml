@@ -100,7 +100,7 @@ services:
   # Page d'accueil du homelab (repo mgarnier-home/homepage). Image distroless, sans shell ni curl :
   # pas de healthcheck possible.
   dashboard:
-    image: docker.io/mgarnier11/homepage:1.8.0
+    image: docker.io/mgarnier11/homepage:1.9.1@sha256:02e34a3fbb87bbf5bfdf6a7afde7a55c5e4c65001dc421842cd3eafdfd7a99b8
     container_name: dashboard
     restart: unless-stopped
     ports:
