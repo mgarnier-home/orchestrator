@@ -20,7 +20,7 @@ services:
     #   sablier.group: paperless
 
   db:
-    image: docker.io/mariadb:10.11@sha256:d769e37960821dfdcf096954f6e7ac89f747e116c1bba98e48edd265dfc7deae
+    image: docker.io/mariadb:10.11@sha256:7d829180b5b2a9ba74f6242876ab401a0d7dd338a807e522ef92bc9698760f20
     container_name: paperless-db
     labels:
       homepage.service: Paperless
