@@ -2,7 +2,7 @@ name: utils
 
 services:
   visite:
-    image: docker.io/mgarnier11/visite:1.0.0
+    image: docker.io/mgarnier11/visite:1.0.0@sha256:e48bf70632936ada61353be2d433a6be32137faf9b6f3b834d5d849da78169f2
     container_name: visite
     restart: unless-stopped
     volumes:
