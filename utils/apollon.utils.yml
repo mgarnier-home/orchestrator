@@ -2,9 +2,15 @@ name: utils
 
 services:
   visite:
-    image: docker.io/mgarnier11/visite:0.0.3@sha256:7dc801e06eeb5af1a2eee4406fce7f193b5838e579436eada887d20a6d557428
+    image: docker.io/mgarnier11/visite:1.0.0
     container_name: visite
     restart: unless-stopped
+    volumes:
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: utils/visite
+        target: /data
     ports:
       - ${APOLLON_VISITE_PORT}:3001
     labels:
@@ -23,9 +29,18 @@ services:
       traefik-conf.name: aurelie
 
   potixx:
-    image: docker.io/mgarnier11/potixx:0.0.3@sha256:eeb6e38d2ea37bf889fc8a169e37983c00982218d8eece76390bc8327092f8d1
+    image: docker.io/mgarnier11/potixx:0.1.0@sha256:f16bd0830deadffcbd4b0945819a261935234f391371e209092cb81679872ada
     container_name: potixx
     restart: unless-stopped
+    environment:
+      POTIXX_ADMIN_PASSWORD: ${POTIXX_ADMIN_PASSWORD}
+    volumes:
+      # Pronostics (predictions.json) ; le dossier doit appartenir à 10001:10001.
+      - type: volume
+        source: docker-data
+        volume:
+          subpath: utils/potixx
+        target: /data
     ports:
       - ${APOLLON_POTIXX_PORT}:8080
     labels:
