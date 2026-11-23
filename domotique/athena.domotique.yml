@@ -4,7 +4,7 @@ services:
   frigate:
     container_name: frigate
     restart: unless-stopped
-    image: ghcr.io/blakeblackshear/frigate:0.18.2@sha256:fd60f99ffd4eb6c42360ed4e14953e270586f239309ab3983e55b2e97ffac09a
+    image: ghcr.io/blakeblackshear/frigate:0.18.3@sha256:d1a3e0008557bb3f3314d442ecd4ba68e9b16ab7872d64612649f7a6e5156635
     shm_size: 256mb
     ports:
       # Port 5000 : API et interface sans authentification, protégées par Authelia via Traefik
@@ -50,7 +50,7 @@ services:
   mosquitto:
     container_name: mosquitto
     restart: unless-stopped
-    image: docker.io/library/eclipse-mosquitto:2.1.2-alpine@sha256:75d6662dee52c947dc9dd9c29f1d8d7ffef78ddaf38001caa09755681e8bbc98
+    image: docker.io/library/eclipse-mosquitto:2.1.4-alpine@sha256:fa12172a051310efe5bcb7a6a11b77bd5faacb82cbacd7742aa758bf024fd8e4
     environment:
       MQTT_PASSWORD: ${MQTT_PASSWORD}
     # Configuration et comptes générés à chaque démarrage : aucun port publié, aucune persistance
@@ -74,7 +74,7 @@ services:
   home-assistant:
     container_name: home-assistant
     restart: unless-stopped
-    image: ghcr.io/home-assistant/home-assistant:2026.11.1@sha256:6785d1eca68747a524c156faae1b139ed415c07357386ae6fe17291986e59e82
+    image: ghcr.io/home-assistant/home-assistant:2026.11.2@sha256:493a07e8f6530fc640223f4a0a5248f20a61ca2f718bb1d31efbf08a2c5ea28f
     ports:
       - ${ATHENA_HOME_ASSISTANT_PORT}:8123
     labels:
