@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Publie sur ntfy le résultat d'un déploiement : succès ou échec global dans l'icône du titre,
+# Publie sur ntfy le résultat d'un déploiement : 🚀 ou ❌ dans l'icône du titre (🚀 et non ✅,
+# réservé aux PR prêtes à fusionner),
 # une ligne ✅ / ❌ par stack, et les dernières lignes de log des stacks en échec.
 #
 # Le dossier de résultats est écrit par l'étape « Restart updated stacks » de deploy.yaml :
@@ -105,7 +106,7 @@ case "$status" in
   cancelled) lines+=("Déploiement annulé.") ;;
   failure) [ ${#stacks[@]} -gt 0 ] || lines+=("Le workflow a échoué avant le redéploiement des stacks.") ;;
 esac
-[ "$status" = "success" ] && [ "$failed" = "0" ] && tag=white_check_mark || tag=x
+[ "$status" = "success" ] && [ "$failed" = "0" ] && tag=rocket || tag=x
 
 if [ ${#stacks[@]} -gt 0 ]; then
   joined=$(IFS=,; echo "${stacks[*]}")

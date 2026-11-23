@@ -16,7 +16,7 @@ usage() {
   cat >&2 <<'EOF'
 Usage : pr-notify.sh [options] <status> <pr.json>
 
-  status    pending | success | failure | closed
+  status    success | failure | closed
   pr.json   PR telle que renvoyée par GET /repos/{repo}/pulls/{n}
 
 Options :
@@ -54,7 +54,7 @@ done
 status=${args[0]}
 pr_json=${args[1]}
 case "$status" in
-  pending | success | failure | closed) ;;
+  success | failure | closed) ;;
   *) echo "Status inconnu : $status" >&2; usage ;;
 esac
 
@@ -116,16 +116,6 @@ mapfile -t changed_files < <(git diff --name-only "$base" "$head")
 log "comparaison $base..$head : ${#changed_files[@]} fichier(s) modifié(s)"
 for file in "${changed_files[@]}"; do log "  $file"; done
 
-# Lint ne tourne pas sur une PR qui ne touche que ces chemins (paths-ignore de lint.yml) :
-# aucune CI à attendre, la PR est prête.
-if [ "$status" = "pending" ]; then
-  linted=$(printf '%s\n' "${changed_files[@]}" | grep -cvE '^(autoscaler|\.github)/' || true)
-  if [ "$linted" -eq 0 ]; then
-    log "aucun fichier vérifié par Lint : statut pending -> success"
-    status=success
-  fi
-fi
-
 # Images par service d'un fichier compose à un commit donné ({} si le fichier n'existe pas).
 images_at() {
   local commit=$1 file=$2
@@ -177,7 +167,6 @@ fi
 message="${summary:-Aucune image modifiée}"$'\n\n'"By $(pr '.user.login')"
 
 case "$status" in
-  pending) tag=hourglass_flowing_sand ;;
   success) tag=white_check_mark ;;
   failure) tag=x ;;
 esac

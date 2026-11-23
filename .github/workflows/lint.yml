@@ -2,10 +2,8 @@ name: Lint
 run-name: Lint docker-compose files
 
 on:
+  # Sans paths-ignore : chaque PR passe par Lint, dont la fin déclenche la notification ntfy.
   pull_request:
-    paths-ignore:
-      - "autoscaler/**"
-      - ".github/**"
 
   workflow_dispatch:
 

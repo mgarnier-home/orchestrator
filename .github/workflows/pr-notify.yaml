@@ -2,10 +2,10 @@ name: PR notify
 run-name: Notify PR state on ntfy
 
 # Une notification ntfy par PR, remplacée à chaque changement d'état :
-# ⏳ à l'ouverture et à chaque push, ✅ ou ❌ à la fin de Lint, supprimée à la fermeture.
+# ✅ prête à fusionner ou ❌ lint en échec à la fin de Lint, supprimée à la fermeture.
 on:
   pull_request:
-    types: [opened, reopened, synchronize, closed]
+    types: [closed]
 
   # workflow_run n'utilise que la version de ce fichier présente sur main.
   workflow_run:
@@ -63,7 +63,7 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$pr_json"
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
-            [ "$PR_ACTION" = "closed" ] && status=closed || status=pending
+            status=closed
           else
             # Un Lint terminé sur un ancien commit, ou sur une PR déjà fermée, ne dit plus rien
             # de l'état actuel de la PR.
