@@ -29,7 +29,7 @@ services:
       traefik-conf.name: aurelie
 
   potixx:
-    image: docker.io/mgarnier11/potixx:0.2.0
+    image: docker.io/mgarnier11/potixx:0.2.0@sha256:085fd0141fe10c042a0f63980fbb5e51d0192e3863fba041ab41b2852ad7316a
     container_name: potixx
     restart: unless-stopped
     environment:
