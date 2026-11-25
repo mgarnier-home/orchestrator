@@ -53,7 +53,7 @@ services:
       start_period: 10s
 
   paperless:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.20@sha256:6c86cad803970ea782683a8e80e7403444c5bf3cf70de63b4d3c8e87500db92f
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.5@sha256:8508853b8a0f8394074260957d0be186c8c64f346973b24a7583de4580f306b9
     container_name: paperless-web
     restart: unless-stopped
     networks:
@@ -113,6 +113,15 @@ services:
       PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
       PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
       PAPERLESS_LOGOUT_REDIRECT_URL: https://authelia.${PUBLIC_DOMAIN_NAME}/logout
+      # Obligatoire depuis la v3
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
+      # IA native (v3), modèles servis par la stack ollama sur le même hôte
+      PAPERLESS_AI_ENABLED: true
+      PAPERLESS_AI_LLM_BACKEND: ollama
+      PAPERLESS_AI_LLM_ENDPOINT: http://${ATHENA_IP}:${ATHENA_OLLAMA_PORT}
+      PAPERLESS_AI_LLM_MODEL: qwen3.5:9b
+      PAPERLESS_AI_LLM_EMBEDDING_BACKEND: ollama
+      PAPERLESS_AI_LLM_EMBEDDING_MODEL: bge-m3
 
   gotenberg:
     image: docker.io/gotenberg/gotenberg:8.40@sha256:53073e798c8ef39ea2187e44cb67bab77894ea2509100b94c4fe3b461f7b2996
