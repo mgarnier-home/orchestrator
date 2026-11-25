@@ -105,6 +105,10 @@ services:
       PAPERLESS_DBPASS: ${PAPERLESS_DB_PASSWD}
       PAPERLESS_DBPORT: 3306
       PAPERLESS_URL: ${PAPERLESS_URL}
+      # Le dashboard interroge les services par IP:port
+      PAPERLESS_ALLOWED_HOSTS: ${ATHENA_IP}
+      PAPERLESS_FILENAME_FORMAT: "{{ document_type }}/{{ created_year }}/{{ created }} {{ correspondent }} - {{ title }}"
+      PAPERLESS_FILENAME_FORMAT_REMOVE_NONE: true
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_TIKA_ENABLED: 1
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
@@ -119,7 +123,9 @@ services:
       PAPERLESS_AI_ENABLED: true
       PAPERLESS_AI_LLM_BACKEND: ollama
       PAPERLESS_AI_LLM_ENDPOINT: http://${ATHENA_IP}:${ATHENA_OLLAMA_PORT}
-      PAPERLESS_AI_LLM_MODEL: qwen3.5:9b
+      # Sans phase de réflexion : qwen3.5 renvoyait des réponses vides ou dépassait le délai
+      PAPERLESS_AI_LLM_MODEL: ministral-3:8b
+      PAPERLESS_AI_LLM_REQUEST_TIMEOUT: 300
       PAPERLESS_AI_LLM_EMBEDDING_BACKEND: ollama
       PAPERLESS_AI_LLM_EMBEDDING_MODEL: bge-m3
 
