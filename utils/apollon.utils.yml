@@ -114,7 +114,7 @@ services:
       retries: 3
 
   memos:
-    image: docker.io/neosmemo/memos:26.11.2@sha256:3c7bd779510403350465ecabb7e6fbc0887206f9d55b8decf51a205613fa5616
+    image: docker.io/neosmemo/memos:26.11.3@sha256:544d36b5f2a0747addb16e320bd601fddf626e29d71ddcbd371c3443c2636274
     container_name: memos
     restart: unless-stopped
     ports:
